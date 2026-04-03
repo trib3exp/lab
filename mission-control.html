@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mission Control CRE — Operating System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+--bg:#0b1019;--card:#111b27;--panel:#0d1420;--border:#1a2332;--border2:#131d29;
+--white:#e8edf2;--text:#b8c4d0;--muted:#5a6a7a;--dim:#4a6070;--dark:#3a4a5a;
+--cyan:#00d4ff;--green:#00c853;--red:#ff4d6a;--amber:#ffb74d;--purple:#7c4dff;--orange:#ff8a65;
+--mono:'JetBrains Mono','SF Mono','Fira Code',monospace;
+--sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--sans);overflow:hidden;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input,select{font-family:var(--mono);background:var(--bg);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;outline:none;}
+input:focus,select:focus{border-color:var(--cyan);}
+button{font-family:var(--sans);cursor:pointer;border:none;outline:none;}
+/* Layout */
+.shell{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:220px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .25s;z-index:100;}
+.sidebar .logo{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
+.sidebar .logo h1{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--cyan);letter-spacing:.08em;margin:0;}
+.sidebar .logo p{font-family:var(--mono);font-size:8px;color:var(--dark);letter-spacing:.12em;margin:2px 0 0;}
+.sidebar nav{flex:1;padding:10px 8px;overflow-y:auto;}
+.sidebar nav .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:6px;margin-bottom:2px;cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:400;border:1px solid transparent;transition:all .15s;}
+.sidebar nav .nav-item:hover{color:var(--text);background:rgba(0,212,255,.04);}
+.sidebar nav .nav-item.active{color:var(--cyan);background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.15);font-weight:600;}
+.sidebar nav .nav-item svg{flex-shrink:0;}
+.sidebar .foot{padding:10px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--dark);font-family:var(--mono);}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:52px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:var(--panel);flex-shrink:0;}
+.topbar .left{display:flex;align-items:center;gap:10px;}
+.topbar .title{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar .right{display:flex;align-items:center;gap:12px;}
+.topbar .search-box{position:relative;}
+.topbar .search-box input{width:220px;padding-left:32px;font-family:var(--sans);font-size:12px;}
+.topbar .search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);}
+.topbar .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--green));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--mono);color:var(--bg);}
+.topbar .bell{position:relative;cursor:pointer;color:var(--muted);}
+.topbar .bell .dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--red);}
+.content{flex:1;overflow:auto;padding:22px;-webkit-overflow-scrolling:touch;}
+.hamburger{display:none;cursor:pointer;color:var(--muted);padding:4px;}
+/* Overlay */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90;}
+/* Cards */
+.crd{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;}
+.crd-title{font-size:10px;font-weight:700;font-family:var(--mono);color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
+/* Grid */
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+/* Metric */
+.met .met-label{font-size:10px;font-weight:700;font-family:var(--mono);color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.met .met-value{font-size:22px;font-weight:800;font-family:var(--mono);color:var(--white);line-height:1.1;}
+.met .met-change{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-family:var(--mono);font-weight:600;}
+.met .met-sub{font-size:11px;font-family:var(--mono);color:var(--muted);margin-top:4px;}
+/* Badge */
+.bdg{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;font-family:var(--mono);white-space:nowrap;letter-spacing:.02em;}
+.bdg-green{background:rgba(0,200,83,.15);color:#00c853;}
+.bdg-red{background:rgba(255,77,106,.15);color:#ff4d6a;}
+.bdg-blue{background:rgba(0,212,255,.15);color:#00d4ff;}
+.bdg-amber{background:rgba(255,183,77,.15);color:#ffb74d;}
+.bdg-purple{background:rgba(124,77,255,.15);color:#7c4dff;}
+.bdg-orange{background:rgba(255,138,101,.15);color:#ff8a65;}
+.bdg-gray{background:rgba(100,120,140,.15);color:#8899aa;}
+/* Table */
+.tbl{width:100%;border-collapse:collapse;min-width:500px;}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tbl th{padding:8px 10px;text-align:right;font-size:10px;font-family:var(--mono);font-weight:700;color:var(--dim);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+.tbl th:first-child{text-align:left;}
+.tbl td{padding:10px;text-align:right;font-size:12px;color:var(--text);border-bottom:1px solid var(--border2);white-space:nowrap;}
+.tbl td:first-child{text-align:left;color:var(--white);font-weight:600;}
+.tbl tr.clickable{cursor:pointer;}
+.tbl tr.clickable:hover td{background:rgba(0,212,255,.03);}
+.mono{font-family:var(--mono);}
+/* Tabs */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;margin-bottom:14px;}
+.tab-bar .tab{padding:10px 16px;font-size:13px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:var(--muted);}
+.tab-bar .tab.active{color:var(--cyan);border-bottom-color:var(--cyan);font-weight:600;}
+/* Kanban */
+.kanban{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;}
+.kanban .col{min-width:230px;flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;}
+.kanban .col-hdr{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.kanban .col-hdr .dot{width:8px;height:8px;border-radius:50%;}
+.kanban .col-hdr span{font-size:11px;font-family:var(--mono);font-weight:700;color:var(--muted);text-transform:uppercase;}
+.kanban .col-hdr .cnt{font-size:11px;font-family:var(--mono);color:var(--dim);}
+.kanban .k-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;}
+.kanban .k-card h4{font-size:13px;font-weight:600;margin-bottom:4px;}
+.kanban .k-card .sub{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.kanban .k-card .row{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--muted);}
+.kanban .k-card .prob-bar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;}
+.kanban .k-card .prob-bar .fill{height:3px;border-radius:2px;}
+/* Insight */
+.ins-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;border-left-width:3px;}
+.ins-card .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.ins-card .body{font-size:12px;color:var(--text);line-height:1.6;}
+.ins-card .meta{font-size:10px;color:var(--dim);margin-top:6px;font-family:var(--mono);}
+/* Donut */
+.donut{position:relative;flex-shrink:0;}
+.donut .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--white);}
+/* View toggle */
+.view-btns{display:flex;gap:8px;margin-bottom:12px;}
+.view-btns .vb{padding:6px 14px;border-radius:6px;font-size:12px;font-family:var(--mono);cursor:pointer;color:var(--muted);background:transparent;border:1px solid transparent;}
+.view-btns .vb.active{color:var(--cyan);background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.15);font-weight:600;}
+/* Filter btns */
+.filter-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.filter-btns .fb{padding:6px 14px;border-radius:6px;font-size:12px;font-family:var(--mono);cursor:pointer;color:var(--muted);background:transparent;border:1px solid transparent;}
+.filter-btns .fb.active{color:var(--cyan);background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.15);font-weight:600;}
+/* Score bar */
+.score-bar{display:flex;align-items:center;gap:8px;}
+.score-bar .track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.score-bar .fill{height:100%;border-radius:3px;}
+.score-bar .num{font-size:12px;font-family:var(--mono);font-weight:700;min-width:28px;}
+/* Back link */
+.back-link{font-size:12px;color:var(--cyan);cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:12px;}
+/* Import */
+.import-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;}
+.import-bar label{font-size:12px;font-family:var(--mono);color:var(--cyan);cursor:pointer;padding:6px 14px;border:1px solid rgba(0,212,255,.3);border-radius:6px;background:rgba(0,212,255,.08);}
+.import-bar label:hover{background:rgba(0,212,255,.15);}
+.import-bar .status{font-size:11px;color:var(--muted);font-family:var(--mono);}
+.import-bar input[type=file]{display:none;}
+/* SVG spark */
+.spark{width:100%;display:block;}
+/* Agent card */
+.agent-card{border-left-width:3px;border-left-style:solid;}
+.agent-card .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.agent-card .desc{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.agent-card .tasks .task-row{display:flex;align-items:center;gap:6px;padding:3px 0;}
+.agent-card .tasks .task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.agent-card .tasks span{font-size:12px;color:var(--text);}
+.agent-card .stats{display:flex;gap:8px;margin-top:12px;}
+.agent-card .stat{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 6px;text-align:center;}
+.agent-card .stat .sv{font-size:16px;font-weight:800;font-family:var(--mono);}
+.agent-card .stat .sl{font-size:8px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;}
+/* Sub box */
+.sub-box{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 6px;text-align:center;}
+.sub-box .sv{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--white);}
+.sub-box .sl{font-size:9px;font-family:var(--mono);color:var(--muted);margin-top:2px;}
+/* Prop card */
+.prop-card{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;}
+.prop-card:hover{border-color:rgba(0,212,255,.2);}
+/* Search results */
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-top:4px;z-index:200;max-height:300px;overflow-y:auto;}
+.search-results .sr{padding:8px 12px;border-bottom:1px solid var(--border2);cursor:pointer;display:flex;justify-content:space-between;font-size:12px;}
+.search-results .sr:hover{background:rgba(0,212,255,.05);}
+/* Progress bar */
+.prog{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.prog .track{flex:1;height:12px;background:var(--border);border-radius:6px;overflow:hidden;}
+.prog .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--cyan),var(--green));}
+.prog .pct{font-size:13px;font-family:var(--mono);font-weight:700;color:var(--white);}
+/* UW input */
+.uw-field{margin-bottom:10px;}
+.uw-field label{display:block;font-size:10px;font-family:var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.uw-field .inp-wrap{display:flex;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;}
+.uw-field .inp-wrap input{flex:1;background:transparent;border:none;color:var(--white);font-size:13px;font-family:var(--mono);outline:none;width:60px;}
+.uw-field .inp-wrap .pfx,.uw-field .inp-wrap .sfx{font-size:12px;font-family:var(--mono);color:var(--muted);}
+/* Responsive */
+@media(max-width:1024px){
+  .sidebar{position:fixed;top:0;left:0;bottom:0;transform:translateX(-100%);z-index:100;width:260px;}
+  .sidebar.open{transform:translateX(0);}
+  .overlay.show{display:block;}
+  .hamburger{display:flex;}
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .topbar{padding:0 12px;}
+  .content{padding:16px;}
+}
+@media(max-width:640px){
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .content{padding:12px;}
+  .topbar .search-box{display:none;}
+  .topbar .title{font-size:14px;}
+}
+/* Animation */
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page-enter{animation:fadeIn .25s ease;}
+</style>
+</head>
+<body>
+<div class="shell" id="app">
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <h1>MISSION CONTROL</h1>
+      <p>CRE OPERATING SYSTEM</p>
+    </div>
+    <nav id="nav"></nav>
+    <div class="foot" id="foot"></div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="left">
+        <div class="hamburger" onclick="openSidebar()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </div>
+        <div class="title" id="pageTitle">Dashboard</div>
+      </div>
+      <div class="right">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="searchInput" placeholder="Search..." oninput="doSearch()" onfocus="doSearch()" onblur="setTimeout(()=>document.getElementById('searchResults').innerHTML='',200)">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div class="bell" onclick="alert('Notifications coming soon')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <div class="dot"></div>
+        </div>
+        <div class="avatar">MC</div>
+      </div>
+    </header>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════
+let DATA={
+properties:[
+{id:"901-tower",name:"901 Tower Drive",type:"Office",sqft:123488,occupancy:72,noi:2840000,revenue:4200000,expenses:1360000,city:"Troy",state:"MI",strategy:["Creative Office","Entrepreneurial Hub","Media Studios","Community Workspace","Event Activations"],vacancy:34688,debtService:1800000,capRate:7.2,valuation:39400000,dscr:1.58,acquisitionDate:"2023-06-15",acquisitionPrice:35200000,
+tenants:[
+{name:"Apex Media Group",sqft:18500,rent:22.5,annual:416250,leaseEnd:"2026-08-15",status:"active",industry:"Media",suite:"200",contact:"David Chen",email:"dchen@apexmedia.com",phone:"(248) 555-0101"},
+{name:"Velocity Coworking",sqft:12000,rent:19.0,annual:228000,leaseEnd:"2027-03-01",status:"active",industry:"Coworking",suite:"300",contact:"Maria Santos",email:"maria@velocityco.com",phone:"(248) 555-0102"},
+{name:"Bright Studios",sqft:8200,rent:24.0,annual:196800,leaseEnd:"2025-12-31",status:"expiring",industry:"Creative",suite:"150",contact:"Jake Morrison",email:"jake@brightstudios.com",phone:"(248) 555-0103"},
+{name:"NexGen Robotics",sqft:15000,rent:21.0,annual:315000,leaseEnd:"2028-06-30",status:"active",industry:"Technology",suite:"400",contact:"Priya Patel",email:"ppatel@nexgenrobotics.com",phone:"(248) 555-0104"},
+{name:"Crestline Advisors",sqft:9800,rent:23.5,annual:230300,leaseEnd:"2026-01-15",status:"expiring",industry:"Financial Services",suite:"250",contact:"Robert Kim",email:"rkim@crestlineadv.com",phone:"(248) 555-0105"},
+{name:"Pulse Digital",sqft:6500,rent:20.0,annual:130000,leaseEnd:"2027-09-30",status:"active",industry:"Digital Marketing",suite:"120",contact:"Leah Torres",email:"leah@pulsedigital.com",phone:"(248) 555-0106"},
+{name:"Summit Health",sqft:11000,rent:25.0,annual:275000,leaseEnd:"2029-02-28",status:"active",industry:"Healthcare",suite:"500",contact:"Dr. James Wu",email:"jwu@summithealth.com",phone:"(248) 555-0107"},
+{name:"Forge Innovation Lab",sqft:7800,rent:18.5,annual:144300,leaseEnd:"2026-05-31",status:"active",industry:"R&D",suite:"110",contact:"Anna Kowalski",email:"anna@forgelab.com",phone:"(248) 555-0108"}
+],financials:[{period:"2025-Q1",revenue:980000,expenses:320000,noi:660000,cashFlow:210000,occupancy:68},{period:"2025-Q2",revenue:1020000,expenses:335000,noi:685000,cashFlow:235000,occupancy:69},{period:"2025-Q3",revenue:1050000,expenses:340000,noi:710000,cashFlow:260000,occupancy:71},{period:"2025-Q4",revenue:1080000,expenses:345000,noi:735000,cashFlow:285000,occupancy:72},{period:"2026-Q1",revenue:1070000,expenses:320000,noi:750000,cashFlow:300000,occupancy:72}],
+maintenance:[{title:"HVAC Unit 3 repair",category:"HVAC",priority:"High",status:"In Progress",date:"2026-03-05"},{title:"Lobby lighting upgrade",category:"Electrical",priority:"Medium",status:"Open",date:"2026-03-08"},{title:"Suite 150 plumbing leak",category:"Plumbing",priority:"High",status:"Completed",date:"2026-02-28"}]
+},
+{id:"1075-entrance",name:"1075 W Entrance Drive",type:"Flex / Experiential",sqft:85000,occupancy:58,noi:1620000,revenue:2800000,expenses:1180000,city:"Auburn Hills",state:"MI",strategy:["Car Shows","Card Shows","Trade Shows","RE Networking","Experiential Events"],vacancy:59000,debtService:1100000,capRate:8.1,valuation:20000000,dscr:1.47,acquisitionDate:"2024-01-20",acquisitionPrice:17500000,
+tenants:[
+{name:"Motor City Classics",sqft:12000,rent:14.0,annual:168000,leaseEnd:"2026-04-30",status:"active",industry:"Automotive",suite:"A1",contact:"Mike Reynolds",email:"mike@motorcityclassics.com",phone:"(248) 555-0201"},
+{name:"Gridiron Collectibles",sqft:8000,rent:15.5,annual:124000,leaseEnd:"2025-11-30",status:"expiring",industry:"Retail",suite:"B1",contact:"Tony Russo",email:"tony@gridironcollect.com",phone:"(248) 555-0202"},
+{name:"Event Horizon Productions",sqft:6000,rent:16.0,annual:96000,leaseEnd:"2027-07-31",status:"active",industry:"Events",suite:"C1",contact:"Rachel Green",email:"rachel@eventhorizon.com",phone:"(248) 555-0203"}
+],
+events:[
+{name:"Motor City Auto Expo",date:"2026-04-12",revenue:85000,expenses:28000,attendance:3200,type:"Car Show",status:"Confirmed",organizer:"MC Events LLC",space:45000},
+{name:"Midwest Card Fest",date:"2026-04-26",revenue:42000,expenses:14000,attendance:1800,type:"Card Show",status:"Confirmed",organizer:"Midwest Cards Inc",space:25000},
+{name:"CRE Networking Summit",date:"2026-05-10",revenue:35000,expenses:12000,attendance:450,type:"Networking",status:"Confirmed",organizer:"CRE Connect",space:15000},
+{name:"Tech Trade Expo",date:"2026-05-24",revenue:95000,expenses:32000,attendance:2800,type:"Trade Show",status:"Confirmed",organizer:"TechExpo Group",space:50000},
+{name:"Vintage Auto Fair",date:"2026-06-07",revenue:72000,expenses:24000,attendance:2400,type:"Car Show",status:"Tentative",organizer:"Vintage Auto Society",space:40000},
+{name:"Sports Memorabilia Show",date:"2026-06-21",revenue:38000,expenses:13000,attendance:1500,type:"Card Show",status:"Tentative",organizer:"Sports Mem LLC",space:20000}
+],
+vendors:[{name:"Detroit Eats Catering",category:"Food",events:4,revenue:12000,status:"Active"},{name:"AutoGlow Detailing",category:"Service",events:2,revenue:4500,status:"Active"},{name:"Card Castle Supplies",category:"Merchandise",events:3,revenue:8200,status:"Active"},{name:"TechAV Solutions",category:"Service",events:6,revenue:18000,status:"Active"},{name:"Metro Signs & Banners",category:"Service",events:5,revenue:7500,status:"Active"}],
+financials:[{period:"2025-Q1",revenue:650000,expenses:280000,noi:370000,cashFlow:95000,occupancy:55},{period:"2025-Q2",revenue:680000,expenses:290000,noi:390000,cashFlow:115000,occupancy:56},{period:"2025-Q3",revenue:710000,expenses:295000,noi:415000,cashFlow:140000,occupancy:57},{period:"2025-Q4",revenue:730000,expenses:300000,noi:430000,cashFlow:155000,occupancy:58},{period:"2026-Q1",revenue:750000,expenses:295000,noi:455000,cashFlow:180000,occupancy:58}],
+maintenance:[{title:"Loading dock door repair",category:"General",priority:"High",status:"Open",date:"2026-03-10"},{title:"Fire suppression inspection",category:"Safety",priority:"Critical",status:"In Progress",date:"2026-03-01"}]
+}],
+leasing:[
+{id:1,company:"Redline Creative",sqft:8500,rent:22.0,broker:"Marcus Webb",stage:"Lead",property:"901 Tower Drive",source:"Broker",priority:"High",probability:35},
+{id:2,company:"Atlas Ventures",sqft:12000,rent:21.5,broker:"Sarah Chen",stage:"Tour",property:"901 Tower Drive",source:"Direct",priority:"High",probability:50},
+{id:3,company:"Pinnacle Media",sqft:6200,rent:23.0,broker:"James Ortiz",stage:"LOI",property:"901 Tower Drive",source:"AI",priority:"Medium",probability:70},
+{id:4,company:"Quantum Labs",sqft:15000,rent:20.0,broker:"Lisa Park",stage:"Negotiation",property:"901 Tower Drive",source:"Broker",priority:"High",probability:80},
+{id:5,company:"Evergreen Studios",sqft:4800,rent:24.0,broker:"Marcus Webb",stage:"Signed",property:"901 Tower Drive",source:"Referral",priority:"Low",probability:100},
+{id:6,company:"Drift Motorsport",sqft:10000,rent:14.5,broker:"Tom Bradley",stage:"Lead",property:"1075 W Entrance Drive",source:"Direct",priority:"Medium",probability:25},
+{id:7,company:"Metro Events Co.",sqft:20000,rent:15.0,broker:"Sarah Chen",stage:"Tour",property:"1075 W Entrance Drive",source:"Broker",priority:"High",probability:45},
+{id:8,company:"Ironclad Fitness",sqft:8000,rent:16.0,broker:"James Ortiz",stage:"LOI",property:"1075 W Entrance Drive",source:"Website",priority:"Medium",probability:65}
+],
+deals:[
+{id:1,address:"2400 Commerce Blvd",market:"Troy",type:"Office",size:65000,price:8200000,capRate:7.8,noi:639600,score:82,stage:"Underwriting",broker:"Marcus Webb",source:"Broker",irr:14.2,equity:2800000,notes:"Value-add opportunity. Below market rents with 40% near-term rollover."},
+{id:2,address:"550 Industrial Pkwy",market:"Auburn Hills",type:"Industrial",size:42000,price:4800000,capRate:8.5,noi:408000,score:74,stage:"Screening",broker:"Lisa Park",source:"LoopNet",irr:12.8,equity:1600000,notes:"Single-tenant industrial. NNN lease 3 years remaining."},
+{id:3,address:"1200 Tech Center Dr",market:"Southfield",type:"Office",size:95000,price:14500000,capRate:7.2,noi:1044000,score:88,stage:"Under Contract",broker:"Sarah Chen",source:"Off-Market",irr:16.5,equity:5200000,notes:"Class A office. 91% occupied. Institutional quality."},
+{id:4,address:"880 Gateway Ave",market:"Novi",type:"Flex",size:38000,price:5200000,capRate:7.5,noi:390000,score:71,stage:"LOI",broker:"Tom Bradley",source:"Broker",irr:13.1,equity:1800000,notes:"Mixed office/warehouse near Twelve Oaks."},
+{id:5,address:"3100 Executive Way",market:"Birmingham",type:"Office",size:28000,price:6800000,capRate:6.9,noi:469200,score:91,stage:"Under Contract",broker:"James Ortiz",source:"Off-Market",irr:15.8,equity:2400000,notes:"Premium Birmingham. Creative repositioning."},
+{id:6,address:"745 Maple Industrial",market:"Sterling Hts",type:"Industrial",size:110000,price:9800000,capRate:9.2,noi:901600,score:85,stage:"Closed",broker:"Lisa Park",source:"Broker",irr:18.2,equity:3500000,notes:"Closed March 2026. Multi-tenant industrial."}
+],
+brokers:[
+{name:"Marcus Webb",firm:"CBRE",specialty:"Office",deals:24,volume:186000000,rating:4.8,market:"Troy / Oakland County",phone:"(248) 555-0401",email:"mwebb@cbre.com",lastContact:"2026-03-10"},
+{name:"Sarah Chen",firm:"JLL",specialty:"Flex",deals:18,volume:142000000,rating:4.6,market:"Southeast Michigan",phone:"(248) 555-0402",email:"schen@jll.com",lastContact:"2026-03-08"},
+{name:"Lisa Park",firm:"Colliers",specialty:"Sales",deals:31,volume:278000000,rating:4.7,market:"Metro Detroit",phone:"(248) 555-0403",email:"lpark@colliers.com",lastContact:"2026-03-11"},
+{name:"Tom Bradley",firm:"Cushman & Wakefield",specialty:"Retail",deals:15,volume:98000000,rating:4.5,market:"Oakland County",phone:"(248) 555-0404",email:"tbradley@cushwake.com",lastContact:"2026-03-05"},
+{name:"James Ortiz",firm:"Newmark",specialty:"Creative",deals:12,volume:67000000,rating:4.3,market:"Birmingham / Royal Oak",phone:"(248) 555-0405",email:"jortiz@newmark.com",lastContact:"2026-03-09"}
+],
+investors:[
+{name:"Meridian Capital",type:"Family Office",committed:5000000,deployed:3200000,irr:14.2,status:"Active",contact:"Richard Meridian",email:"richard@meridiancap.com",targetIrr:12.0,distQ4:125000,distQ1:130000},
+{name:"Great Lakes Equity",type:"Fund",committed:8000000,deployed:6500000,irr:12.8,status:"Active",contact:"Jennifer Lakes",email:"jlakes@gleq.com",targetIrr:11.0,distQ4:200000,distQ1:210000},
+{name:"Northshore Holdings",type:"Individual",committed:3000000,deployed:3000000,irr:16.1,status:"Deployed",contact:"Mark Northshore",email:"mark@northshoreh.com",targetIrr:14.0,distQ4:95000,distQ1:98000},
+{name:"Apex Family Office",type:"Family Office",committed:12000000,deployed:7800000,irr:11.5,status:"Active",contact:"Sarah Apex",email:"sarah@apexfo.com",targetIrr:10.0,distQ4:310000,distQ1:320000},
+{name:"Lakeview Partners",type:"Institution",committed:15000000,deployed:0,irr:0,status:"Prospective",contact:"Thomas Lake",email:"thomas@lakeviewp.com",targetIrr:13.0,distQ4:0,distQ1:0}
+],
+tasks:[
+{title:"Schedule tour for Atlas Ventures",module:"Leasing",priority:"High",status:"Open",assignee:"Leasing Team",due:"2026-03-15",property:"901 Tower Drive"},
+{title:"Review Pinnacle Media LOI terms",module:"Leasing",priority:"High",status:"In Progress",assignee:"Legal",due:"2026-03-14",property:"901 Tower Drive"},
+{title:"Initiate Bright Studios renewal",module:"Tenants",priority:"Critical",status:"Open",assignee:"Asset Manager",due:"2026-03-20",property:"901 Tower Drive"},
+{title:"Complete 1200 Tech Center due diligence",module:"Deals",priority:"High",status:"In Progress",assignee:"Acquisitions",due:"2026-03-25",property:""},
+{title:"Prepare Q1 investor report",module:"Investors",priority:"Medium",status:"Open",assignee:"Finance",due:"2026-04-05",property:""},
+{title:"Confirm Motor City Auto Expo vendors",module:"Events",priority:"High",status:"In Progress",assignee:"Events Team",due:"2026-03-28",property:"1075 W Entrance Drive"},
+{title:"HVAC Unit 3 repair follow-up",module:"Maintenance",priority:"High",status:"Open",assignee:"Facilities",due:"2026-03-12",property:"901 Tower Drive"},
+{title:"Update market comp analysis",module:"Market",priority:"Medium",status:"Open",assignee:"Research",due:"2026-03-18",property:""},
+{title:"Negotiate Quantum Labs TI allowance",module:"Leasing",priority:"High",status:"In Progress",assignee:"Leasing Team",due:"2026-03-16",property:"901 Tower Drive"},
+{title:"Fire suppression inspection completion",module:"Maintenance",priority:"Critical",status:"In Progress",assignee:"Facilities",due:"2026-03-13",property:"1075 W Entrance Drive"}
+],
+market:{
+  vacancy:[8.2,8.5,9.1,9.8,10.2,10.5,11.1,10.8,10.4,10.1,9.7,9.5],
+  rents:[19.2,19.5,19.8,20.1,20.0,19.8,19.5,19.8,20.2,20.5,20.8,21.1],
+  absorption:[45,32,-18,-42,-25,15,38,52,61,48,55,72],
+  months:["Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar"],
+  submarkets:[
+    {name:"Troy",vacancy:9.5,rent:21.1,absorption:72000,construction:45000},
+    {name:"Auburn Hills",vacancy:11.2,rent:16.8,absorption:38000,construction:0},
+    {name:"Southfield",vacancy:14.8,rent:18.5,absorption:-12000,construction:0},
+    {name:"Birmingham",vacancy:5.2,rent:28.5,absorption:15000,construction:22000},
+    {name:"Novi",vacancy:8.8,rent:22.0,absorption:28000,construction:35000},
+    {name:"Sterling Heights",vacancy:7.1,rent:14.2,absorption:55000,construction:18000}
+  ]
+},
+insights:[
+{type:"opportunity",text:"3 tech companies in Oakland County expanding — leasing prospects for 901 Tower Drive.",priority:"high",module:"leasing",agent:"Leasing AI",confidence:.89},
+{type:"risk",text:"Bright Studios lease expires in 9 months. Initiate renewal.",priority:"high",module:"tenants",agent:"Asset Mgmt AI",confidence:.95},
+{type:"market",text:"Troy office vacancy decreased 0.6% QoQ — positive absorption.",priority:"medium",module:"market",agent:"Market AI",confidence:.92},
+{type:"opportunity",text:"1075 W Entrance: Car show demand up 22% YoY.",priority:"high",module:"events",agent:"Market AI",confidence:.87},
+{type:"financial",text:"901 Tower NOI can increase 18% if vacancy hits market avg.",priority:"medium",module:"financials",agent:"Asset Mgmt AI",confidence:.84},
+{type:"deal",text:"1200 Tech Center scores 88/100. Strong value-add.",priority:"high",module:"deals",agent:"Deal Hunter AI",confidence:.91},
+{type:"risk",text:"Crestline exploring relocation. 9,800 SF risk at 901 Tower.",priority:"high",module:"tenants",agent:"Leasing AI",confidence:.78},
+{type:"market",text:"Auburn Hills event venue demand growing 15% annually.",priority:"medium",module:"events",agent:"Market AI",confidence:.86}
+]
+};
+
+// Underwriting state
+let UW={purchasePrice:8200000,noi:639600,rentGrowth:3,expenseRatio:35,vacancyLoss:8,exitCap:7.5,holdPeriod:5,ltvRatio:65,interestRate:5.5};
+
+// ══════════════════════════════════════════════════════════
+// FORMATTERS
+// ══════════════════════════════════════════════════════════
+const ff=n=>new Intl.NumberFormat("en-US").format(n);
+const fd=n=>"$"+new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(n);
+const fm=n=>{if(Math.abs(n)>=1e9)return"$"+(n/1e9).toFixed(1)+"B";if(Math.abs(n)>=1e6)return"$"+(n/1e6).toFixed(1)+"M";if(Math.abs(n)>=1e3)return"$"+(n/1e3).toFixed(0)+"K";return"$"+n;};
+
+function bdg(txt,color){return`<span class="bdg bdg-${color}">${txt}</span>`;}
+function met(label,value,opts={}){
+  let h=`<div class="crd met"><div class="met-label">${label}</div><div class="met-value" style="color:${opts.color||'var(--white)'}">${value}</div>`;
+  if(opts.change)h+=`<div class="met-change" style="color:${opts.up?'var(--green)':'var(--red)'}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${opts.up?'18 15 12 9 6 15':'6 9 12 15 18 9'}"/></svg>${opts.change}</div>`;
+  if(opts.sub)h+=`<div class="met-sub">${opts.sub}</div>`;
+  return h+"</div>";
+}
+function spark(data,color="#00d4ff",h=48){
+  if(!data||data.length<2)return"";
+  const mx=Math.max(...data),mn=Math.min(...data),rng=mx-mn||1;
+  const pts=data.map((v,i)=>`${(i/(data.length-1))*200},${h-((v-mn)/rng)*(h-8)-4}`).join(" ");
+  const id="sg"+color.replace("#","");
+  return`<svg viewBox="0 0 200 ${h}" preserveAspectRatio="none" class="spark" style="height:${h}px"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.2"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><polygon points="0,${h} ${pts} 200,${h}" fill="url(#${id})"/><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function donut(val,size=56){
+  const c=val>=70?"var(--green)":val>=50?"var(--amber)":"var(--red)";
+  const r=(size-8)/2,circ=2*Math.PI*r;
+  return`<div class="donut" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--border)" stroke-width="5"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${c}" stroke-width="5" stroke-dasharray="${circ}" stroke-dashoffset="${circ-(circ*val)/100}" transform="rotate(-90 ${size/2} ${size/2})" stroke-linecap="round"/></svg><div class="val" style="font-size:${size>50?13:10}px">${val}%</div></div>`;
+}
+function bars(data,labels,color="#00d4ff",h=120,showNeg=false){
+  if(!data||!data.length)return"";
+  const mx=Math.max(...data.map(Math.abs)),barW=Math.min(24,(200-data.length*2)/data.length);
+  const mid=showNeg?h/2:h;
+  let s=`<svg viewBox="0 0 200 ${h+20}" preserveAspectRatio="none" class="spark" style="height:${h+20}px">`;
+  if(showNeg)s+=`<line x1="0" y1="${mid}" x2="200" y2="${mid}" stroke="var(--border)" stroke-width="1"/>`;
+  data.forEach((v,i)=>{
+    const x=(i/data.length)*200+(200/data.length-barW)/2;
+    const bh=(Math.abs(v)/(mx||1))*(showNeg?mid-4:h-4);
+    const y=showNeg?(v>=0?mid-bh:mid):h-bh;
+    s+=`<rect x="${x}" y="${y}" width="${barW}" height="${bh}" rx="3" fill="${v<0?'var(--red)':color}" opacity="0.8"/>`;
+    if(labels)s+=`<text x="${x+barW/2}" y="${h+14}" text-anchor="middle" fill="var(--muted)" font-size="8" font-family="var(--mono)">${labels[i]}</text>`;
+  });
+  return s+"</svg>";
+}
+function ins(item,compact=false){
+  const cm={risk:"red",opportunity:"blue",deal:"green",financial:"amber",market:"amber"};
+  const c=cm[item.type]||"gray";
+  let h=`<div class="ins-card" style="border-left-color:var(--${c})"><div class="badges">${bdg(item.type.toUpperCase(),c)}${bdg(item.priority.toUpperCase(),item.priority==="high"?"red":"amber")}</div><div class="body">${item.text}</div>`;
+  if(!compact&&item.agent)h+=`<div class="meta">${item.agent} · ${Math.round(item.confidence*100)}% confidence</div>`;
+  return h+"</div>";
+}
+function tbl(cols,rows,opts={}){
+  let h='<div class="tbl-wrap"><table class="tbl"><thead><tr>';
+  cols.forEach(c=>h+=`<th>${c.label}</th>`);
+  h+="</tr></thead><tbody>";
+  rows.forEach(r=>{
+    h+=`<tr class="${opts.clickable?'clickable':''}" ${opts.onclick?`onclick="${opts.onclick}(${typeof r.id!=='undefined'?r.id:"'"+r.name+"'"})"`:""}>`;
+    cols.forEach((c,i)=>{
+      const val=c.render?c.render(r):(r[c.key]||"—");
+      h+=`<td class="${c.mono?'mono':''}">${val}</td>`;
+    });
+    h+="</tr>";
+  });
+  return h+"</tbody></table></div>";
+}
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+const NAVS=[
+{id:"dashboard",label:"Dashboard",icon:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'},
+{id:"portfolio",label:"Portfolio",icon:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'},
+{id:"leasing",label:"Leasing",icon:'<circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 014-4h6a4 4 0 014 4v2"/>'},
+{id:"deals",label:"Deals",icon:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'},
+{id:"events",label:"Events",icon:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'},
+{id:"market",label:"Market Intel",icon:'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>'},
+{id:"brokers",label:"Brokers",icon:'<circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a4 4 0 014-4h5a4 4 0 014 4v2"/>'},
+{id:"investors",label:"Investors",icon:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>'},
+{id:"financials",label:"Financials",icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'},
+{id:"tasks",label:"Tasks",icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},
+{id:"underwriting",label:"Underwriting",icon:'<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>'},
+{id:"ai",label:"AI Agents",icon:'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'}
+];
+
+let currentPage="dashboard";
+let currentPropId=null;
+let dealDetail=null;
+let leasingView="kanban";
+let taskFilter="All";
+let importStatus="";
+
+function navIcon(d){return`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;}
+
+function buildNav(){
+  let h="";
+  NAVS.forEach(n=>{
+    const act=(currentPage===n.id||(n.id==="portfolio"&&currentPage==="property"))?"active":"";
+    h+=`<div class="nav-item ${act}" onclick="go('${n.id}')">${navIcon(n.icon)}<span>${n.label}</span></div>`;
+  });
+  document.getElementById("nav").innerHTML=h;
+  const P=DATA.properties;
+  document.getElementById("foot").textContent=`v1.0 · ${P.length} Assets · ${fm(P.reduce((s,p)=>s+p.valuation,0))}`;
+}
+
+function go(page,id){
+  if(page==="property"){currentPage="property";currentPropId=id;}
+  else{currentPage=page;currentPropId=null;dealDetail=null;}
+  closeSidebar();
+  render();
+}
+function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("show");}
+function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("show");}
+
+// ══════════════════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════════════════
+function doSearch(){
+  const q=document.getElementById("searchInput").value.toLowerCase().trim();
+  const el=document.getElementById("searchResults");
+  if(!q){el.innerHTML="";return;}
+  let results=[];
+  DATA.properties.forEach(p=>{if(p.name.toLowerCase().includes(q))results.push({type:"Property",name:p.name,action:`go('property','${p.id}')`});
+    p.tenants.forEach(t=>{if(t.name.toLowerCase().includes(q))results.push({type:"Tenant",name:t.name,action:`go('property','${p.id}')`});});
+  });
+  DATA.leasing.forEach(l=>{if(l.company.toLowerCase().includes(q))results.push({type:"Prospect",name:l.company,action:`go('leasing')`});});
+  DATA.deals.forEach(d=>{if(d.address.toLowerCase().includes(q))results.push({type:"Deal",name:d.address,action:`go('deals')`});});
+  DATA.brokers.forEach(b=>{if(b.name.toLowerCase().includes(q))results.push({type:"Broker",name:b.name,action:`go('brokers')`});});
+  DATA.investors.forEach(i=>{if(i.name.toLowerCase().includes(q))results.push({type:"Investor",name:i.name,action:`go('investors')`});});
+  el.innerHTML=results.slice(0,8).map(r=>`<div class="sr" onclick="${r.action};document.getElementById('searchInput').value='';document.getElementById('searchResults').innerHTML=''">${r.name}${bdg(r.type,"blue")}</div>`).join("");
+}
+
+// ══════════════════════════════════════════════════════════
+// XLSX IMPORT
+// ══════════════════════════════════════════════════════════
+function importBar(){
+  return`<div class="import-bar"><label for="xlsxFile">📁 Import XLSX Data</label><input type="file" id="xlsxFile" accept=".xlsx,.xls" onchange="handleImport(event)"><div class="status" id="importStatus">${importStatus||'Load Mission_Control_CRE_Data.xlsx to update all modules'}</div></div>`;
+}
+function handleImport(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const wb=XLSX.read(ev.target.result,{type:"binary"});
+      // Properties
+      if(wb.SheetNames.includes("Properties")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Properties"]);
+        if(rows.length){
+          DATA.properties.forEach((p,i)=>{
+            if(rows[i]){
+              const r=rows[i];
+              if(r["Property Name"])p.name=r["Property Name"];
+              if(r["Asset Type"])p.type=r["Asset Type"];
+              if(r["Total SQFT"])p.sqft=+r["Total SQFT"];
+              if(r["Occupancy %"])p.occupancy=Math.round((+r["Occupancy %"])*100)||p.occupancy;
+              if(r["Annual Revenue"])p.revenue=+r["Annual Revenue"];
+              if(r["Annual Expenses"])p.expenses=+r["Annual Expenses"];
+              if(r["NOI"])p.noi=+r["NOI"];
+              if(r["Debt Service"])p.debtService=+r["Debt Service"];
+              if(r["Cap Rate"])p.capRate=Math.round((+r["Cap Rate"])*1000)/10||p.capRate;
+              if(r["Valuation"])p.valuation=+r["Valuation"];
+              if(r["DSCR"])p.dscr=+r["DSCR"];
+              if(r["Vacant SQFT"])p.vacancy=+r["Vacant SQFT"];
+            }
+          });
+        }
+      }
+      // Tenants
+      if(wb.SheetNames.includes("Tenants")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Tenants"]);
+        if(rows.length){
+          DATA.properties.forEach(p=>{p.tenants=[];});
+          rows.forEach(r=>{
+            const prop=DATA.properties.find(p=>p.name===r["Property"]);
+            if(prop){
+              prop.tenants.push({name:r["Tenant Name"]||"",sqft:+r["SQFT"]||0,rent:+r["Rent/SF"]||0,annual:+r["Annual Rent"]||0,leaseEnd:r["Lease End"]||"",status:(r["Status"]||"active").toLowerCase(),industry:r["Industry"]||"",suite:r["Suite"]||"",contact:r["Contact Name"]||"",email:r["Contact Email"]||"",phone:r["Contact Phone"]||""});
+            }
+          });
+        }
+      }
+      // Leasing
+      if(wb.SheetNames.includes("Leasing Pipeline")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Leasing Pipeline"]);
+        if(rows.length){
+          DATA.leasing=rows.filter(r=>r["Company"]).map((r,i)=>({id:i+1,company:r["Company"]||"",sqft:+r["SQFT Requested"]||0,rent:+r["Target Rent/SF"]||0,broker:r["Broker"]||"",stage:r["Stage"]||"Lead",property:r["Property"]||"",source:r["Source"]||"",priority:r["Priority"]||"Medium",probability:Math.round((+r["Probability %"]||0)*100)||0}));
+        }
+      }
+      // Deals
+      if(wb.SheetNames.includes("Deal Pipeline")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Deal Pipeline"]);
+        if(rows.length){
+          DATA.deals=rows.filter(r=>r["Address"]).map((r,i)=>({id:i+1,address:r["Address"]||"",market:r["Market"]||"",type:r["Type"]||"",size:+r["Size SQFT"]||0,price:+r["Price"]||0,capRate:Math.round((+r["Cap Rate"]||0)*1000)/10,noi:+r["NOI"]||0,score:+r["AI Score"]||0,stage:r["Stage"]||"",broker:r["Broker"]||"",source:r["Source"]||"",irr:Math.round((+r["Projected IRR"]||0)*1000)/10,equity:+r["Equity Required"]||0,notes:r["Notes"]||""}));
+        }
+      }
+      // Brokers
+      if(wb.SheetNames.includes("Brokers")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Brokers"]);
+        if(rows.length){
+          DATA.brokers=rows.filter(r=>r["Broker Name"]).map(r=>({name:r["Broker Name"]||"",firm:r["Firm"]||"",specialty:r["Specialty"]||"",deals:+r["Total Deals"]||0,volume:+r["Total Volume"]||0,rating:+r["Rating"]||0,market:r["Market"]||"",phone:r["Phone"]||"",email:r["Email"]||"",lastContact:r["Last Contact"]||""}));
+        }
+      }
+      // Investors
+      if(wb.SheetNames.includes("Investors")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Investors"]);
+        if(rows.length){
+          DATA.investors=rows.filter(r=>r["Investor Name"]).map(r=>({name:r["Investor Name"]||"",type:r["Type"]||"",committed:+r["Capital Committed"]||0,deployed:+r["Capital Deployed"]||0,irr:Math.round((+r["Actual IRR"]||0)*1000)/10,status:r["Status"]||"",contact:r["Contact"]||"",email:r["Email"]||"",targetIrr:Math.round((+r["Target IRR"]||0)*1000)/10,distQ4:+r["Q4 2025 Distribution"]||0,distQ1:+r["Q1 2026 Distribution"]||0}));
+        }
+      }
+      // Events
+      if(wb.SheetNames.includes("Events")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Events"]);
+        if(rows.length){
+          DATA.properties.forEach(p=>{if(p.events)p.events=[];});
+          rows.forEach(r=>{
+            const prop=DATA.properties.find(p=>p.name===r["Property"]);
+            if(prop){
+              if(!prop.events)prop.events=[];
+              prop.events.push({name:r["Event Name"]||"",date:r["Date"]||"",revenue:+r["Revenue"]||0,expenses:+r["Expenses"]||0,attendance:+r["Attendance"]||0,type:r["Type"]||"",status:r["Status"]||"",organizer:r["Organizer"]||"",space:+r["Space SQFT"]||0});
+            }
+          });
+        }
+      }
+      // Tasks
+      if(wb.SheetNames.includes("Tasks")){
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets["Tasks"]);
+        if(rows.length){
+          DATA.tasks=rows.filter(r=>r["Task"]).map(r=>({title:r["Task"]||"",module:r["Module"]||"",priority:r["Priority"]||"Medium",status:r["Status"]||"Open",assignee:r["Assignee"]||"",due:r["Due Date"]||"",property:r["Property"]||""}));
+        }
+      }
+      importStatus=`✅ Imported ${wb.SheetNames.length} sheets from ${file.name}`;
+      render();
+    }catch(err){
+      importStatus="❌ Error: "+err.message;
+      render();
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+// ══════════════════════════════════════════════════════════
+// PAGE RENDERERS
+// ══════════════════════════════════════════════════════════
+
+function pgDash(){
+  const P=DATA.properties,tv=P.reduce((s,p)=>s+p.valuation,0),tn=P.reduce((s,p)=>s+p.noi,0),ts=P.reduce((s,p)=>s+p.sqft,0),ao=Math.round(P.reduce((s,p)=>s+p.occupancy,0)/P.length);
+  const stages=["Lead","Tour","LOI","Negotiation","Signed"];
+  const sc={Lead:"var(--muted)",Tour:"var(--cyan)",LOI:"var(--amber)",Negotiation:"var(--orange)",Signed:"var(--green)"};
+  const rev12=[520,540,555,560,575,580,595,610,625,640,660,680],noi12=[340,350,360,365,375,380,390,400,410,420,435,450];
+  const expirations=P.flatMap(p=>p.tenants.filter(t=>t.status==="expiring").map(t=>({name:t.name,property:p.name,sqft:t.sqft,leaseEnd:t.leaseEnd,propId:p.id})));
+
+  let h=importBar();
+  h+=`<div class="g4">${met("Portfolio Value",fm(tv),{change:"+8.2%",up:true})}${met("Total NOI",fm(tn),{change:"+12.4%",up:true,color:"var(--green)"})}${met("Avg Occupancy",ao+"%",{change:"-2.1%",up:false})}${met("Total SQFT",ff(ts),{sub:P.length+" Assets"})}</div>`;
+
+  h+=`<div class="g2"><div class="crd"><div class="crd-title">Revenue & NOI (12M)</div><div style="font-size:10px;font-family:var(--mono);margin-bottom:8px"><span style="color:var(--cyan)">━ Revenue</span> &nbsp; <span style="color:var(--green)">━ NOI</span></div><div style="position:relative">${spark(rev12,"#00d4ff",80)}<div style="position:absolute;top:0;left:0;right:0">${spark(noi12,"#00c853",80)}</div></div></div>`;
+  h+=`<div class="crd"><div class="crd-title">Pipeline</div><div style="display:flex;gap:6px;flex-wrap:wrap">`;
+  stages.forEach(st=>{
+    const cnt=DATA.leasing.filter(l=>l.stage===st).length;
+    h+=`<div style="flex:1;min-width:50px" class="sub-box"><div class="sv" style="color:${sc[st]};font-size:18px">${cnt}</div><div class="sl">${st}</div></div>`;
+  });
+  h+=`</div></div></div>`;
+
+  h+=`<div class="g2"><div class="crd"><div class="crd-title">Properties</div>`;
+  P.forEach(p=>{h+=`<div class="prop-card" onclick="go('property','${p.id}')"><div><div style="font-size:14px;font-weight:600">${p.name}</div><div style="font-size:11px;color:var(--muted)">${p.type} · ${ff(p.sqft)} SF</div></div>${donut(p.occupancy,48)}</div>`;});
+  h+=`</div><div class="crd"><div class="crd-title">AI Insights</div>${DATA.insights.slice(0,4).map(i=>ins(i,true)).join("")}</div></div>`;
+
+  h+=`<div class="g2"><div class="crd"><div class="crd-title">Deal Pipeline</div>`;
+  DATA.deals.slice(0,4).forEach(d=>{h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2);cursor:pointer" onclick="go('deals')"><div><div style="font-size:12px;font-weight:600">${d.address}</div><div style="font-size:10px;color:var(--muted)">${d.market} · ${d.type}</div></div><div style="text-align:right"><div class="mono" style="font-size:12px;color:var(--green)">${fm(d.price)}</div>${bdg(d.stage,d.stage==="Closed"?"green":d.stage==="Under Contract"?"purple":"blue")}</div></div>`;});
+  h+=`</div><div class="crd"><div class="crd-title">Upcoming Tasks</div>`;
+  DATA.tasks.filter(t=>t.status!=="Completed").slice(0,5).forEach(t=>{h+=`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border2)"><div style="flex:1"><div style="font-size:12px;font-weight:500">${t.title}</div><div style="font-size:10px;color:var(--muted)">${t.module} · Due ${t.due}</div></div>${bdg(t.priority,t.priority==="Critical"?"red":t.priority==="High"?"amber":"gray")}</div>`;});
+  h+=`</div></div>`;
+
+  if(expirations.length){
+    h+=`<div class="crd"><div class="crd-title">Lease Expirations</div>${tbl([{label:"Tenant",key:"name"},{label:"Property",key:"property"},{label:"SQFT",key:"sqft",mono:true,render:r=>ff(r.sqft)},{label:"Expiration",key:"leaseEnd",mono:true},{label:"Status",render:()=>bdg("EXPIRING","red")}],expirations)}</div>`;
+  }
+  return h;
+}
+
+function pgPortfolio(){
+  let h=importBar()+'<div class="g2">';
+  DATA.properties.forEach(p=>{
+    h+=`<div class="crd" style="cursor:pointer" onclick="go('property','${p.id}')"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:18px;font-weight:700">${p.name}</div><div style="font-size:12px;color:var(--muted)">${p.city}, ${p.state} · ${p.type}</div></div>${bdg(p.type.split(" ")[0],"blue")}</div>`;
+    h+=`<div class="g3">`;
+    [[ff(p.sqft),"SQFT"],[p.occupancy+"%","Occ."],[fm(p.noi),"NOI"],[fm(p.revenue),"Rev"],[p.capRate+"%","Cap"],[fm(p.valuation),"Value"]].forEach(([v,l])=>{h+=`<div class="sub-box"><div class="sv">${v}</div><div class="sl">${l}</div></div>`;});
+    h+=`</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">${p.strategy.map(s=>bdg(s,"blue")).join("")}</div></div>`;
+  });
+  return h+"</div>";
+}
+
+function pgProperty(){
+  const p=DATA.properties.find(x=>x.id===currentPropId);
+  if(!p)return"<div>Property not found</div>";
+  const tabs=["Overview","Tenants","Financials"];
+  if(p.events)tabs.push("Events");
+  tabs.push("Maintenance","Insights");
+  if(!window._propTab||!tabs.includes(window._propTab))window._propTab="Overview";
+  const tab=window._propTab;
+
+  let h=`<div class="back-link" onclick="go('portfolio')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="15 18 9 12 15 6"/></svg> Back to Portfolio</div>`;
+  h+=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px"><div><div style="font-size:22px;font-weight:800">${p.name}</div><div style="font-size:13px;color:var(--muted)">${p.city}, ${p.state} · ${ff(p.sqft)} SF</div></div>${donut(p.occupancy,64)}</div>`;
+  h+=`<div class="tab-bar">${tabs.map(t=>`<div class="tab ${tab===t?'active':''}" onclick="window._propTab='${t}';render()">${t}</div>`).join("")}</div>`;
+
+  if(tab==="Overview"){
+    h+=`<div class="g4">${met("NOI",fm(p.noi),{color:"var(--green)"})}${met("Revenue",fm(p.revenue))}${met("Expenses",fm(p.expenses),{color:"var(--red)"})}${met("Valuation",fm(p.valuation),{color:"var(--cyan)"})}</div>`;
+    h+=`<div class="g2"><div class="crd"><div class="crd-title">Occupancy (12M)</div>${spark([65,64,66,68,67,69,70,68,69,71,72,72],"#00d4ff",80)}</div>`;
+    h+=`<div class="crd"><div class="crd-title">Space</div><div class="g2"><div class="sub-box"><div class="sv" style="color:var(--green);font-size:20px">${ff(p.sqft-p.vacancy)}</div><div class="sl">Leased</div></div><div class="sub-box" style="border-color:rgba(255,77,106,.2)"><div class="sv" style="color:var(--red);font-size:20px">${ff(p.vacancy)}</div><div class="sl">Vacant</div></div></div></div></div>`;
+    h+=`<div class="g3">${met("Cap Rate",p.capRate+"%")}${met("DSCR",p.dscr+"x")}${met("Debt Service",fm(p.debtService),{color:"var(--red)"})}</div>`;
+    h+=`<div class="crd"><div class="crd-title">Strategy</div><div style="display:flex;gap:8px;flex-wrap:wrap">${p.strategy.map(s=>bdg(s,"blue")).join("")}</div></div>`;
+  }
+  else if(tab==="Tenants"){
+    h+=`<div class="crd"><div class="crd-title">Tenant Roster</div>${tbl([{label:"Tenant",key:"name"},{label:"Suite",key:"suite",mono:true},{label:"SQFT",key:"sqft",mono:true,render:r=>ff(r.sqft)},{label:"Rent/SF",key:"rent",mono:true,render:r=>"$"+r.rent.toFixed(2)},{label:"Annual",key:"annual",mono:true,render:r=>fd(r.annual)},{label:"Lease End",key:"leaseEnd",mono:true},{label:"Status",render:r=>bdg(r.status.toUpperCase(),r.status==="active"?"green":"red")}],p.tenants)}</div>`;
+  }
+  else if(tab==="Financials"){
+    const cf=p.revenue-p.expenses-p.debtService;
+    h+=`<div class="g3">${met("Cap Rate",p.capRate+"%")}${met("DSCR",p.dscr+"x")}${met("Cash Flow",fm(cf),{color:"var(--green)"})}</div>`;
+    h+=`<div class="crd"><div class="crd-title">Quarterly Performance</div>${tbl([{label:"Period",key:"period",mono:true},{label:"Revenue",mono:true,render:r=>fd(r.revenue)},{label:"Expenses",mono:true,render:r=>fd(r.expenses)},{label:"NOI",mono:true,render:r=>fd(r.noi)},{label:"Cash Flow",mono:true,render:r=>fd(r.cashFlow)},{label:"Occ.",mono:true,render:r=>r.occupancy+"%"}],p.financials)}</div>`;
+  }
+  else if(tab==="Events"&&p.events){
+    const tr=p.events.reduce((s,e)=>s+e.revenue,0),ta=p.events.reduce((s,e)=>s+e.attendance,0);
+    h+=`<div class="g4">${met("Events",p.events.length)}${met("Revenue",fd(tr),{color:"var(--green)"})}${met("Attendance",ff(ta))}${met("Avg/Event",fd(Math.round(tr/p.events.length)))}</div>`;
+    h+=`<div class="crd"><div class="crd-title">Event Schedule</div>${tbl([{label:"Event",key:"name"},{label:"Date",key:"date",mono:true},{label:"Type",render:r=>bdg(r.type,"blue")},{label:"Revenue",mono:true,render:r=>fd(r.revenue)},{label:"Attendance",mono:true,render:r=>ff(r.attendance)},{label:"Status",render:r=>bdg(r.status,r.status==="Confirmed"?"green":"amber")}],p.events)}</div>`;
+  }
+  else if(tab==="Maintenance"){
+    h+=`<div class="crd"><div class="crd-title">Maintenance Requests</div>${tbl([{label:"Request",key:"title"},{label:"Category",render:r=>bdg(r.category,"blue")},{label:"Priority",render:r=>bdg(r.priority,r.priority==="Critical"?"red":r.priority==="High"?"amber":"gray")},{label:"Status",render:r=>bdg(r.status,r.status==="Completed"?"green":r.status==="In Progress"?"amber":"gray")},{label:"Date",key:"date",mono:true}],p.maintenance)}</div>`;
+  }
+  else if(tab==="Insights"){
+    h+=DATA.insights.filter(i=>i.text.toLowerCase().includes(p.name.toLowerCase())||i.text.toLowerCase().includes(p.city.toLowerCase())).map(i=>ins(i)).join("")||'<div style="color:var(--muted);font-size:12px;padding:12px">No property-specific insights at this time.</div>';
+  }
+  return h;
+}
+
+function pgLeasing(){
+  const L=DATA.leasing,totSqft=L.reduce((s,l)=>s+l.sqft,0),totVal=L.reduce((s,l)=>s+l.sqft*l.rent,0);
+  const stages=["Lead","Tour","LOI","Negotiation","Signed"];
+  const sc={Lead:"var(--muted)",Tour:"var(--cyan)",LOI:"var(--amber)",Negotiation:"var(--orange)",Signed:"var(--green)"};
+  let h=importBar();
+  h+=`<div class="g4">${met("Prospects",L.length)}${met("Pipeline SQFT",ff(totSqft))}${met("Pipeline Value",fd(totVal),{sub:"/year",color:"var(--green)"})}${met("Avg Rent/SF","$"+(totVal/totSqft).toFixed(2))}</div>`;
+  h+=`<div class="view-btns"><div class="vb ${leasingView==="kanban"?"active":""}" onclick="leasingView='kanban';render()">Kanban</div><div class="vb ${leasingView==="table"?"active":""}" onclick="leasingView='table';render()">Table</div></div>`;
+
+  if(leasingView==="kanban"){
+    h+=`<div class="kanban">`;
+    stages.forEach(st=>{
+      const items=L.filter(l=>l.stage===st);
+      h+=`<div class="col"><div class="col-hdr"><div class="dot" style="background:${sc[st]}"></div><span>${st}</span><span class="cnt">(${items.length})</span></div>`;
+      items.forEach(l=>{h+=`<div class="k-card"><h4>${l.company}</h4><div class="sub">${l.property}</div><div class="row"><span>${ff(l.sqft)} SF</span><span>$${l.rent}/SF</span></div><div style="font-size:10px;color:var(--dim);margin-top:6px">${l.broker}</div>${l.probability?`<div class="prob-bar"><div class="fill" style="width:${l.probability}%;background:${sc[st]}"></div></div>`:""}</div>`;});
+      h+=`</div>`;
+    });
+    h+=`</div>`;
+  }else{
+    h+=`<div class="crd"><div class="crd-title">All Prospects</div>${tbl([{label:"Company",key:"company"},{label:"Property",key:"property"},{label:"SQFT",key:"sqft",mono:true,render:r=>ff(r.sqft)},{label:"Rent/SF",mono:true,render:r=>"$"+r.rent.toFixed(2)},{label:"Broker",key:"broker"},{label:"Stage",render:r=>bdg(r.stage,r.stage==="Signed"?"green":r.stage==="Negotiation"?"orange":r.stage==="LOI"?"amber":r.stage==="Tour"?"blue":"gray")},{label:"Source",render:r=>bdg(r.source,r.source==="AI"?"purple":"gray")},{label:"Prob.",mono:true,render:r=>r.probability+"%"}],L)}</div>`;
+  }
+  return h;
+}
+
+function pgDeals(){
+  const D=DATA.deals;
+  if(dealDetail){
+    const d=D.find(x=>x.id===dealDetail);
+    if(!d){dealDetail=null;return pgDeals();}
+    let h=`<div class="back-link" onclick="dealDetail=null;render()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="15 18 9 12 15 6"/></svg> Back to Deals</div>`;
+    h+=`<div style="font-size:20px;font-weight:800;margin-bottom:4px">${d.address}</div><div style="font-size:13px;color:var(--muted);margin-bottom:14px">${d.market} · ${d.type} · ${ff(d.size)} SF</div>`;
+    h+=`<div class="g4">${met("Price",fm(d.price))}${met("Cap Rate",d.capRate+"%")}${met("NOI",fm(d.noi),{color:"var(--green)"})}${met("AI Score",d.score+"/100",{color:d.score>=85?"var(--green)":d.score>=70?"var(--amber)":"var(--red)"})}</div>`;
+    h+=`<div class="g3">${met("Projected IRR",d.irr+"%",{color:"var(--cyan)"})}${met("Equity Required",fm(d.equity))}${met("Stage",d.stage)}</div>`;
+    const sc=d.score>=85?"var(--green)":d.score>=70?"var(--amber)":"var(--red)";
+    h+=`<div class="crd"><div class="crd-title">Deal Score</div><div class="score-bar"><div class="track"><div class="fill" style="width:${d.score}%;background:${sc}"></div></div><div class="num" style="color:${sc}">${d.score}</div></div></div>`;
+    h+=`<div class="crd"><div class="crd-title">Notes</div><div style="font-size:12px;color:var(--text);line-height:1.7">${d.notes}</div></div>`;
+    return h;
+  }
+
+  let h=importBar();
+  const totPipeline=D.reduce((s,d)=>s+d.price,0),avgCap=(D.reduce((s,d)=>s+d.capRate,0)/D.length).toFixed(1),avgScore=Math.round(D.reduce((s,d)=>s+d.score,0)/D.length);
+  h+=`<div class="g4">${met("Active Deals",D.filter(d=>d.stage!=="Closed").length)}${met("Pipeline Value",fm(totPipeline),{color:"var(--green)"})}${met("Avg Cap Rate",avgCap+"%")}${met("Avg Score",avgScore+"/100")}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Deal Pipeline</div>${tbl([{label:"Address",key:"address"},{label:"Market",key:"market"},{label:"Type",render:r=>bdg(r.type,"blue")},{label:"Size",mono:true,render:r=>ff(r.size)},{label:"Price",mono:true,render:r=>fm(r.price)},{label:"Cap",mono:true,render:r=>r.capRate+"%"},{label:"Score",mono:true,render:r=>`<span style="color:${r.score>=85?'var(--green)':r.score>=70?'var(--amber)':'var(--red)'};font-weight:700">${r.score}</span>`},{label:"Stage",render:r=>bdg(r.stage,r.stage==="Closed"?"green":r.stage==="Under Contract"?"purple":r.stage==="LOI"?"amber":"gray")}],D,{clickable:true,onclick:"showDeal"})}</div>`;
+  return h;
+}
+function showDeal(id){dealDetail=id;render();}
+
+function pgEvents(){
+  const all=DATA.properties.flatMap(p=>(p.events||[]).map(e=>({...e,property:p.name})));
+  const totRev=all.reduce((s,e)=>s+e.revenue,0),totAtt=all.reduce((s,e)=>s+e.attendance,0);
+  const types=[...new Set(all.map(e=>e.type))];
+  const revByType=types.map(t=>all.filter(e=>e.type===t).reduce((s,e)=>s+e.revenue,0));
+  const vendors=DATA.properties.find(p=>p.vendors)?.vendors||[];
+  let h=importBar();
+  h+=`<div class="g4">${met("Events",all.length)}${met("Revenue",fd(totRev),{color:"var(--green)"})}${met("Attendance",ff(totAtt))}${met("Avg/Event",fd(Math.round(totRev/(all.length||1))))}</div>`;
+  h+=`<div class="g2"><div class="crd"><div class="crd-title">Rev by Type</div>${bars(revByType,types.map(t=>t.replace(" Show","").substring(0,6)),"#00d4ff",120)}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Top Events</div>`;
+  [...all].sort((a,b)=>b.revenue-a.revenue).slice(0,4).forEach(e=>{h+=`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border2)"><div><div style="font-size:12px;font-weight:600">${e.name}</div><div style="font-size:10px;color:var(--muted)">${e.date}</div></div><div class="mono" style="font-size:13px;color:var(--green);font-weight:700">${fd(e.revenue)}</div></div>`;});
+  h+=`</div></div>`;
+  h+=`<div class="crd"><div class="crd-title">All Events</div>${tbl([{label:"Event",key:"name"},{label:"Date",key:"date",mono:true},{label:"Type",render:r=>bdg(r.type,"blue")},{label:"Revenue",mono:true,render:r=>fd(r.revenue)},{label:"Net",mono:true,render:r=>fd(r.revenue-r.expenses)},{label:"Attendance",mono:true,render:r=>ff(r.attendance)},{label:"Property",key:"property"},{label:"Status",render:r=>bdg(r.status,r.status==="Confirmed"?"green":"amber")}],all)}</div>`;
+  if(vendors.length){h+=`<div class="crd"><div class="crd-title">Vendor Network</div>${tbl([{label:"Vendor",key:"name"},{label:"Category",render:r=>bdg(r.category,"blue")},{label:"Events",key:"events",mono:true},{label:"Revenue",mono:true,render:r=>fd(r.revenue)},{label:"Status",render:r=>bdg(r.status,"green")}],vendors)}</div>`;}
+  return h;
+}
+
+function pgMarket(){
+  const M=DATA.market,lv=M.vacancy[M.vacancy.length-1],pv=M.vacancy[M.vacancy.length-2],lr=M.rents[M.rents.length-1],pr=M.rents[M.rents.length-2],la=M.absorption[M.absorption.length-1];
+  let h=`<div class="g3">${met("Vacancy",lv+"%",{change:(lv-pv>0?"+":"")+(lv-pv).toFixed(1)+"%",up:lv<pv})}${met("Avg Rent","$"+lr.toFixed(1)+"/SF",{change:"+"+((lr-pr)/pr*100).toFixed(1)+"%",up:true,color:"var(--green)"})}${met("Absorption",ff(la)+"K SF",{change:"+38%",up:true,color:"var(--cyan)"})}</div>`;
+  h+=`<div class="g2"><div class="crd"><div class="crd-title">Vacancy (12M)</div>${spark(M.vacancy,"#ff4d6a",80)}</div><div class="crd"><div class="crd-title">Rents (12M)</div>${spark(M.rents,"#00c853",80)}</div></div>`;
+  h+=`<div class="crd"><div class="crd-title">Net Absorption</div>${bars(M.absorption,M.months,"#00d4ff",120,true)}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Submarket Comparison</div>${tbl([{label:"Submarket",key:"name"},{label:"Vacancy",mono:true,render:r=>r.vacancy+"%"},{label:"Avg Rent",mono:true,render:r=>"$"+r.rent.toFixed(1)},{label:"Absorption",mono:true,render:r=>ff(r.absorption)+" SF"},{label:"Construction",mono:true,render:r=>r.construction>0?ff(r.construction)+" SF":"—"}],M.submarkets)}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Market Alerts</div>${DATA.insights.filter(i=>i.module==="market").map(i=>ins(i)).join("")}</div>`;
+  return h;
+}
+
+function pgBrokers(){
+  const B=DATA.brokers;
+  let h=importBar();
+  h+=`<div class="g3">${met("Brokers",B.length)}${met("Total Deals",B.reduce((s,b)=>s+b.deals,0))}${met("Total Volume",fm(B.reduce((s,b)=>s+b.volume,0)),{color:"var(--green)"})}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Broker Network</div>${tbl([{label:"Broker",key:"name"},{label:"Firm",key:"firm"},{label:"Spec.",render:r=>bdg(r.specialty,"blue")},{label:"Deals",key:"deals",mono:true},{label:"Volume",mono:true,render:r=>fm(r.volume)},{label:"Rating",mono:true,render:r=>`<span style="color:var(--amber)">${r.rating}</span>`},{label:"Market",key:"market"},{label:"Last Contact",key:"lastContact",mono:true}],B)}</div>`;
+  return h;
+}
+
+function pgInvestors(){
+  const I=DATA.investors,tc=I.reduce((s,i)=>s+i.committed,0),td=I.reduce((s,i)=>s+i.deployed,0),ac=I.filter(i=>i.status!=="Prospective").length;
+  const irrs=I.filter(i=>i.irr>0);const ai=irrs.length?(irrs.reduce((s,i)=>s+i.irr,0)/irrs.length).toFixed(1):0;
+  const totDist=I.reduce((s,i)=>s+(i.distQ4||0)+(i.distQ1||0),0);
+  let h=importBar();
+  h+=`<div class="g4">${met("Committed",fm(tc))}${met("Deployed",fm(td),{color:"var(--cyan)"})}${met("Active LPs",ac)}${met("Avg IRR",ai+"%",{color:"var(--green)"})}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Investor Portfolio</div>${tbl([{label:"Investor",key:"name"},{label:"Type",render:r=>bdg(r.type,"blue")},{label:"Committed",mono:true,render:r=>fm(r.committed)},{label:"Deployed",mono:true,render:r=>fm(r.deployed)},{label:"IRR",mono:true,render:r=>r.irr>0?r.irr+"%":"—"},{label:"Target",mono:true,render:r=>r.targetIrr+"%"},{label:"Status",render:r=>bdg(r.status,r.status==="Active"?"green":r.status==="Deployed"?"blue":"amber")}],I)}</div>`;
+  const pct=tc>0?Math.round(td/tc*100):0;
+  h+=`<div class="g2"><div class="crd"><div class="crd-title">Capital Deployment</div><div class="prog"><div class="track"><div class="fill" style="width:${pct}%"></div></div><div class="pct">${pct}%</div></div><div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--muted)"><span>Deployed: ${fm(td)}</span><span>Remaining: ${fm(tc-td)}</span></div></div>`;
+  h+=`<div class="crd"><div class="crd-title">Total Distributions</div><div class="mono" style="font-size:24px;font-weight:800;color:var(--green)">${fd(totDist)}</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Across all investors</div></div></div>`;
+  return h;
+}
+
+function pgFinancials(){
+  const P=DATA.properties,tr=P.reduce((a,p)=>a+p.revenue,0),te=P.reduce((a,p)=>a+p.expenses,0),tn=P.reduce((a,p)=>a+p.noi,0),td=P.reduce((a,p)=>a+p.debtService,0),cf=tn-td;
+  let h=importBar();
+  h+=`<div class="g4">${met("Revenue",fm(tr))}${met("Expenses",fm(te),{color:"var(--red)"})}${met("NOI",fm(tn),{color:"var(--green)"})}${met("Cash Flow",fm(cf),{color:"var(--cyan)"})}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Revenue (12M)</div>${spark([520,540,555,560,575,580,595,610,625,640,660,680],"#00d4ff",90)}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Financial Summary</div>${tbl([{label:"Property",key:"name"},{label:"Revenue",mono:true,render:r=>fm(r.revenue)},{label:"Expenses",mono:true,render:r=>fm(r.expenses)},{label:"NOI",mono:true,render:r=>fm(r.noi)},{label:"Debt Svc",mono:true,render:r=>fm(r.debtService)},{label:"DSCR",mono:true,render:r=>r.dscr+"x"},{label:"Cap Rate",mono:true,render:r=>r.capRate+"%"}],P)}</div>`;
+  return h;
+}
+
+function pgTasks(){
+  const T=DATA.tasks,filtered=taskFilter==="All"?T:T.filter(t=>t.status===taskFilter);
+  let h=`<div class="g4">${met("Total Tasks",T.length)}${met("Open",T.filter(t=>t.status==="Open").length)}${met("In Progress",T.filter(t=>t.status==="In Progress").length,{color:"var(--amber)"})}${met("Critical",T.filter(t=>t.priority==="Critical").length,{color:"var(--red)"})}</div>`;
+  h+=`<div class="filter-btns">${["All","Open","In Progress","Completed"].map(s=>`<div class="fb ${taskFilter===s?'active':''}" onclick="taskFilter='${s}';render()">${s}</div>`).join("")}</div>`;
+  h+=`<div class="crd"><div class="crd-title">Tasks</div>${tbl([{label:"Task",key:"title"},{label:"Module",render:r=>bdg(r.module,"blue")},{label:"Priority",render:r=>bdg(r.priority,r.priority==="Critical"?"red":r.priority==="High"?"amber":"gray")},{label:"Status",render:r=>bdg(r.status,r.status==="Completed"?"green":r.status==="In Progress"?"amber":"gray")},{label:"Assignee",key:"assignee"},{label:"Due",key:"due",mono:true},{label:"Property",render:r=>r.property||"—"}],filtered)}</div>`;
+  return h;
+}
+
+function pgUnderwriting(){
+  const u=UW;
+  const loanAmt=u.purchasePrice*(u.ltvRatio/100),equity=u.purchasePrice-loanAmt,annualDebt=loanAmt*(u.interestRate/100);
+  const cashFlow=u.noi-annualDebt,goingInCap=u.purchasePrice>0?((u.noi/u.purchasePrice)*100).toFixed(2):0;
+  const cocReturn=equity>0?((cashFlow/equity)*100).toFixed(1):0;
+  const projections=[];
+  for(let yr=1;yr<=u.holdPeriod;yr++){
+    const projNoi=u.noi*Math.pow(1+u.rentGrowth/100,yr);
+    projections.push({year:yr,noi:projNoi,cashFlow:projNoi-annualDebt});
+  }
+  const exitNoi=projections.length?projections[projections.length-1].noi:u.noi;
+  const exitValue=u.exitCap>0?exitNoi/(u.exitCap/100):0;
+  const totalCf=projections.reduce((s,p)=>s+p.cashFlow,0);
+  const equityMultiple=equity>0?((totalCf+(exitValue-loanAmt))/equity).toFixed(2):0;
+
+  function field(label,key,prefix,suffix){
+    return`<div class="uw-field"><label>${label}</label><div class="inp-wrap">${prefix?`<span class="pfx">${prefix}</span>`:""}<input type="number" value="${u[key]}" onchange="UW.${key}=parseFloat(this.value)||0;render()">${suffix?`<span class="sfx">${suffix}</span>`:""}</div></div>`;
+  }
+
+  let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><span class="mono" style="font-size:12px;color:var(--muted);align-self:center">Load deal:</span>`;
+  DATA.deals.filter(d=>d.stage!=="Closed").forEach(d=>{h+=`<div class="vb" style="font-size:11px;padding:4px 10px" onclick="UW.purchasePrice=${d.price};UW.noi=${d.noi};render()">${d.address}</div>`;});
+  h+=`</div>`;
+
+  h+=`<div class="g2"><div class="crd"><div class="crd-title">Assumptions</div>${field("Purchase Price","purchasePrice","$","")}${field("NOI","noi","$","")}${field("Rent Growth","rentGrowth","","%")}${field("Expense Ratio","expenseRatio","","%")}${field("Vacancy Loss","vacancyLoss","","%")}${field("Exit Cap Rate","exitCap","","%")}${field("Hold Period","holdPeriod","","yrs")}${field("LTV Ratio","ltvRatio","","%")}${field("Interest Rate","interestRate","","%")}</div>`;
+  h+=`<div><div class="g2">${met("Going-In Cap",goingInCap+"%")}${met("Cash-on-Cash",cocReturn+"%",{color:"var(--green)"})}${met("Equity Multiple",equityMultiple+"x",{color:"var(--cyan)"})}${met("Exit Value",fm(exitValue))}</div><div class="g2">${met("Loan Amount",fm(loanAmt))}${met("Equity",fm(equity))}${met("Annual Debt",fm(annualDebt),{color:"var(--red)"})}${met("Year 1 CF",fm(cashFlow),{color:"var(--green)"})}</div></div></div>`;
+
+  let cumCf=0;
+  h+=`<div class="crd"><div class="crd-title">Pro Forma Projections</div>${tbl([{label:"Year",key:"year",mono:true},{label:"NOI",mono:true,render:r=>fd(Math.round(r.noi))},{label:"Debt Service",mono:true,render:()=>fd(Math.round(annualDebt))},{label:"Cash Flow",mono:true,render:r=>fd(Math.round(r.cashFlow))},{label:"Cumulative CF",mono:true,render:r=>{cumCf+=r.cashFlow;return fd(Math.round(cumCf));}}],projections)}</div>`;
+  return h;
+}
+
+function pgAI(){
+  const agents=[
+    {name:"Leasing AI",desc:"Finds expanding companies, generates outreach, scores prospects.",color:"var(--cyan)",tasks:["Scanning Oakland County expansions","Generating outreach for 3 prospects","Scoring pipeline leads"],stats:[["Prospects","14"],["Emails","32"],["Matches","8"]]},
+    {name:"Deal Hunter",desc:"Scans listings for acquisitions.",color:"var(--green)",tasks:["Monitoring 8 feeds","2 off-market flagged","Daily scan done"],stats:[["Deals","6"],["Alerts","15"],["Scored","42"]]},
+    {name:"Asset Mgmt",desc:"Occupancy, rollover risk, rent optimization.",color:"var(--amber)",tasks:["Rollover updated","Rent model running","2 risk alerts"],stats:[["Assets","2"],["Insights","8"],["Saved","$142K"]]},
+    {name:"Market AI",desc:"Weekly vacancy, rents, absorption reports.",color:"var(--purple)",tasks:["Report generated","5 indicators","Competitor done"],stats:[["Reports","12"],["Markets","4"],["Alerts","6"]]}
+  ];
+  let h=`<div class="g2">`;
+  agents.forEach(a=>{
+    h+=`<div class="crd agent-card" style="border-left-color:${a.color}"><div class="hdr"><div style="font-size:16px;font-weight:700">${a.name}</div>${bdg("ACTIVE","green")}</div><div class="desc">${a.desc}</div><div class="tasks">`;
+    a.tasks.forEach(t=>{h+=`<div class="task-row"><div class="task-dot" style="background:${a.color}"></div><span>${t}</span></div>`;});
+    h+=`</div><div class="stats">`;
+    a.stats.forEach(([l,v])=>{h+=`<div class="stat"><div class="sv" style="color:${a.color}">${v}</div><div class="sl">${l}</div></div>`;});
+    h+=`</div></div>`;
+  });
+  h+=`</div>`;
+  h+=`<div class="crd"><div class="crd-title">All AI Insights</div>${DATA.insights.map(i=>ins(i)).join("")}</div>`;
+  return h;
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════
+function render(){
+  buildNav();
+  let title="Dashboard",html="";
+  switch(currentPage){
+    case"dashboard":title="Dashboard";html=pgDash();break;
+    case"portfolio":title="Portfolio";html=pgPortfolio();break;
+    case"property":const p=DATA.properties.find(x=>x.id===currentPropId);title=p?p.name:"Property";html=pgProperty();break;
+    case"leasing":title="Leasing Command Center";html=pgLeasing();break;
+    case"deals":title="Deal Flow Pipeline";html=pgDeals();break;
+    case"events":title="Event Monetization";html=pgEvents();break;
+    case"market":title="Market Intelligence";html=pgMarket();break;
+    case"brokers":title="Broker CRM";html=pgBrokers();break;
+    case"investors":title="Investor Portal";html=pgInvestors();break;
+    case"financials":title="Financial Command Center";html=pgFinancials();break;
+    case"tasks":title="Task Control Center";html=pgTasks();break;
+    case"underwriting":title="Underwriting Engine";html=pgUnderwriting();break;
+    case"ai":title="AI Agents";html=pgAI();break;
+    default:html=pgDash();
+  }
+  document.getElementById("pageTitle").textContent=title;
+  const c=document.getElementById("content");
+  c.innerHTML=`<div class="page-enter">${html}</div>`;
+  c.scrollTop=0;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
