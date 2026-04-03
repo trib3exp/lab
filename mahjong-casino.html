@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390px, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mahjong Casino — Macau Noir</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary:#04060F; --bg-card:#111827; --bg-nav:#080C18; --bg-navy:#0D1428;
+  --border:#1E2A40; --border-hover:#2D3F60;
+  --gold:#F0A500; --gold-dark:#C8860A; --gold-glow:rgba(240,165,0,0.18);
+  --green:#10B981; --green-dark:#065F46;
+  --red:#E84040; --red-dark:#7F1D1D;
+  --purple:#8B5CF6; --blue:#3B82F6;
+  --text-primary:#F1F5F9; --text-secondary:#9CA3AF; --text-muted:#6B7280; --text-dim:#4B5563;
+  --tile-bg:#EDE0C8; --tile-border:#C0A070; --tile-felt:#071810; --tile-felt-border:#10B981;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#000;color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;height:100%;width:100%;overflow:hidden}
+body{display:flex;justify-content:center;align-items:center}
+#app{width:390px;height:844px;position:relative;background:var(--bg-primary);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 80px rgba(0,0,0,0.9)}
+@media(max-width:420px){#app{width:100vw;height:100dvh}body{align-items:flex-start}}
+@media(min-width:421px) and (min-height:845px){#app{border-radius:40px;border:1px solid var(--border)}}
+
+/* SCREENS */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(20px);transition:opacity 250ms ease,transform 250ms ease;overflow:hidden}
+.screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.scr{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 12px 8px;scrollbar-width:none}
+.scr::-webkit-scrollbar{display:none}
+
+/* TOP BAR */
+.topbar{height:44px;min-height:44px;background:var(--bg-nav);border-bottom:1px solid var(--border);border-top:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0;z-index:10}
+.topbar-logo{font-family:'Cinzel',Georgia,serif;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:1.5px;display:flex;align-items:center;gap:5px}
+.tileico{width:18px;height:22px;background:var(--tile-bg);border-radius:2px;border:.5px solid var(--tile-border);display:flex;align-items:center;justify-content:center;font-size:10px;color:#CC2222;font-weight:900;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.bals{display:flex;align-items:center;gap:8px}
+.bal{display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;font-family:monospace}
+.bal.g{color:var(--gold)}.bal.p{color:var(--purple)}
+.bdot{width:8px;height:8px;border-radius:50%}
+.bdot.g{background:var(--gold)}.bdot.p{background:var(--purple)}
+
+/* BOTTOM NAV */
+.botnav{height:72px;min-height:72px;background:var(--bg-nav);border-top:1px solid var(--border);border-bottom:4px solid var(--gold);display:flex;align-items:stretch;flex-shrink:0;z-index:10}
+.ntab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;position:relative;background:none;border:none;padding:0;transition:opacity 150ms}
+.ntab:active{opacity:.6}
+.ntab.active::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;background:var(--gold);border-radius:0 0 2px 2px}
+.nico{font-size:18px;line-height:1}
+.nlbl{font-size:8px;letter-spacing:.5px;text-transform:uppercase;font-weight:600}
+.ntab.active .nlbl{color:var(--gold)}.ntab:not(.active) .nlbl{color:var(--text-dim)}
+
+/* BUTTONS */
+.bg{background:var(--gold);color:#000;font-weight:700;border:none;border-radius:8px;letter-spacing:1.5px;text-transform:uppercase;font-size:12px;cursor:pointer;box-shadow:0 4px 16px rgba(240,165,0,.35);transition:background 120ms,transform 80ms;display:flex;align-items:center;justify-content:center;gap:6px}
+.bg:hover{background:var(--gold-dark)}.bg:active{transform:translateY(1px)}
+.bg.full{width:100%;height:52px;font-size:16px}.bg.sm{height:36px;padding:0 16px}
+.bgg{background:transparent;color:var(--green);border:1px solid var(--green);border-radius:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:12px;cursor:pointer;transition:background 120ms;display:flex;align-items:center;justify-content:center;gap:6px}
+.bgg:hover{background:rgba(16,185,129,.12)}.bgg.full{width:100%;height:44px}
+.bgb{background:transparent;color:var(--blue);border:1px solid var(--blue);border-radius:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:12px;cursor:pointer;transition:background 120ms;display:flex;align-items:center;justify-content:center;gap:6px}
+.bgb:hover{background:rgba(59,130,246,.12)}.bgb.full{width:100%;height:44px}
+
+/* CARDS */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.4);padding:14px}
+.card.ag{border-top:4px solid var(--gold)}.card.agn{border-top:4px solid var(--green)}
+.card.ab{border-top:4px solid var(--blue)}.card.ap{border-top:4px solid var(--purple)}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:24px;padding:4px 10px;font-size:10px;font-weight:700;letter-spacing:.5px;cursor:pointer;border:1px solid;transition:all 120ms;white-space:nowrap}
+.pill.on{background:var(--gold);color:#000;border-color:var(--gold)}
+.pill.off{background:transparent;color:var(--text-muted);border-color:var(--border)}
+.pill.off:hover{border-color:var(--border-hover);color:var(--text-secondary)}
+
+/* SECTION HEADER */
+.sh{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin:18px 0 10px}
+
+/* TILES */
+.mjtile{background:var(--tile-bg);border:.5px solid var(--tile-border);border-radius:2px;display:flex;align-items:center;justify-content:center;user-select:none;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.5),inset 0 -1px 2px rgba(0,0,0,.15);transition:transform 100ms,box-shadow 100ms,outline 80ms;font-size:13px;line-height:1;flex-shrink:0}
+.mjtile:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,.5)}
+.mjtile.sel{transform:translateY(-6px);outline:2px solid var(--gold);box-shadow:0 0 12px var(--gold-glow)}
+.mjtile.drw{background:#FFFFF0;outline:2px solid var(--gold)}
+.mjtile.hint{outline:2px solid var(--green);animation:hint-pulse 1s infinite}
+@keyframes hint-pulse{0%,100%{outline-color:var(--green)}50%{outline-color:var(--gold)}}
+
+/* LIVE / ONLINE */
+.livebadge{display:inline-flex;align-items:center;gap:4px;background:rgba(232,64,64,.15);border:1px solid var(--red);border-radius:24px;padding:2px 7px;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--red)}
+.ldot{width:5px;height:5px;background:var(--red);border-radius:50%;animation:plive 1.5s infinite}
+@keyframes plive{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.onbadge{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--green);font-weight:600}
+.odot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:ponline 2s infinite}
+@keyframes ponline{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+/* TOAST */
+#toast{position:absolute;top:54px;left:50%;transform:translateX(-50%) translateY(-8px);background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:8px 18px;font-size:12px;font-weight:600;color:var(--text-primary);z-index:300;opacity:0;pointer-events:none;transition:opacity 200ms,transform 200ms;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.6)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* MODAL OVERLAY */
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 200ms}
+.modal-bg.show{opacity:1;pointer-events:all}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;width:330px;max-height:600px;overflow-y:auto;position:relative}
+.modal-title{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:2px;text-align:center;margin-bottom:16px}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--text-primary)}
+
+/* ═══ SPLASH ═══ */
+#screen-splash{background:var(--bg-primary);justify-content:flex-end}
+.spl-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.spl-glow{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(240,165,0,.18) 0%,transparent 70%)}
+.spl-corner{position:absolute;opacity:.12;width:60px;height:74px;border-radius:4px;border:1.5px solid var(--gold)}
+.spl-corner:nth-child(1){top:-10px;left:-10px;transform:rotate(-15deg)}
+.spl-corner:nth-child(2){top:-10px;right:-10px;transform:rotate(15deg)}
+.spl-corner:nth-child(3){bottom:90px;left:-10px;transform:rotate(10deg)}
+.spl-corner:nth-child(4){bottom:90px;right:-10px;transform:rotate(-10deg)}
+.spl-hero{position:absolute;top:55px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.spl-tileico{width:80px;height:110px;background:var(--tile-bg);border-radius:8px;border:1px solid var(--tile-border);display:flex;align-items:center;justify-content:center;font-size:52px;color:#CC2222;font-weight:900;box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(240,165,0,.2)}
+.spl-word{font-family:'Cinzel',Georgia,serif;font-size:26px;font-weight:700;color:var(--gold);letter-spacing:4px;text-align:center}
+.spl-sub{font-size:11px;letter-spacing:2px;color:var(--text-secondary);text-align:center;text-transform:uppercase}
+.spl-div{width:150px;height:1px;background:var(--gold);opacity:.5}
+.spl-tag{font-size:11px;color:var(--text-secondary);text-align:center}
+.spl-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg-card);width:calc(100% - 24px);margin:0 12px}
+.spl-stat{flex:1;padding:10px 6px;text-align:center;border-right:1px solid var(--border)}
+.spl-stat:last-child{border-right:none}
+.spl-sv{font-size:13px;font-weight:700;color:var(--gold)}
+.spl-sl{font-size:9px;color:var(--text-muted);letter-spacing:.5px;margin-top:2px;text-transform:uppercase}
+.spl-acts{width:calc(100% - 24px);margin:0 12px 12px;display:flex;flex-direction:column;gap:8px}
+.spl-half{display:flex;gap:8px;width:100%}
+.spl-sels{width:calc(100% - 24px);margin:0 12px 10px;display:flex;flex-direction:column;gap:10px}
+.sel-row{display:flex;flex-direction:column;gap:6px}
+.sel-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted)}
+.pills-row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ═══ LOBBY ═══ */
+.pcard{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.pav{width:52px;height:52px;border-radius:50%;background:var(--bg-navy);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 0 12px rgba(240,165,0,.2)}
+.pname{font-size:16px;font-weight:700}
+.pmeta{display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap}
+.tier-badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:3px}
+.tb-g{background:rgba(240,165,0,.18);color:var(--gold);border:1px solid var(--gold)}
+.tb-s{background:rgba(148,163,184,.15);color:#94A3B8;border:1px solid #475569}
+.tb-p{background:rgba(139,92,246,.18);color:var(--purple);border:1px solid var(--purple)}
+.tb-d{background:rgba(232,64,64,.18);color:var(--red);border:1px solid var(--red)}
+.pright{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.lvlbadge{background:var(--gold);color:#000;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.5px}
+.dbb{background:linear-gradient(135deg,rgba(240,165,0,.15),rgba(240,165,0,.05));border:1px solid rgba(240,165,0,.4);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dbb-title{font-size:12px;font-weight:700;color:var(--gold)}.dbb-sub{font-size:10px;color:var(--text-secondary);margin-top:2px}
+.gmrow{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;cursor:pointer;transition:border-color 120ms}
+.gmrow:hover{border-color:var(--border-hover)}
+.gmico{font-size:22px}.gmlbl{font-size:12px;font-weight:700}.gmsub{font-size:10px;color:var(--text-muted);margin-top:2px}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.scell{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 6px;text-align:center;cursor:pointer;transition:border-color 120ms}
+.scell:hover:not(.sa){border-color:var(--border-hover)}
+.scell.sa{border-color:var(--gold);background:rgba(240,165,0,.06)}
+.sname{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary)}
+.scell.sa .sname{color:var(--gold)}
+.srange{font-size:10px;font-weight:700;color:var(--gold);font-family:monospace;margin-top:2px}
+.stag{font-size:8px;color:var(--text-muted);margin-top:1px}
+
+/* ═══ GAME TABLE ═══ */
+#screen-game{background:var(--bg-primary)}
+.gtopbar{background:var(--bg-nav);border-bottom:1px solid var(--border);border-top:2px solid var(--gold);height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 10px}
+.gback{background:none;border:none;color:var(--gold);cursor:pointer;padding:4px;display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700}
+.gctr{text-align:center}
+.grl{font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+.grv{font-size:12px;font-weight:700;color:var(--green)}
+.gpot{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--gold);font-weight:700;font-family:monospace}
+.opp-area{display:flex;gap:4px;padding:5px 8px 3px;flex-shrink:0}
+.opanel{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:5px;padding:4px;text-align:center;transition:border-color 200ms}
+.opanel.aturn{border-color:var(--gold);background:rgba(240,165,0,.04)}
+.opanel.thinking::after{content:'...';color:var(--gold);font-size:8px}
+.oname{font-size:8px;font-weight:700;color:var(--text-secondary);letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ometa{font-size:7px;color:var(--text-muted);margin-bottom:2px}
+.otiles{display:flex;gap:1px;justify-content:center;flex-wrap:wrap}
+.otile{width:5px;height:9px;background:#1E3A5F;border:.5px solid #1A3060;border-radius:1px}
+.otile.melded{background:var(--tile-bg);border-color:var(--tile-border);width:8px}
+.ctimer-wrap{padding:0 8px 3px;flex-shrink:0}
+.ctimer-lbl{display:flex;justify-content:space-between;align-items:center;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.cta{color:var(--red)}.ctm{color:var(--text-muted);font-family:monospace}
+.ctbar-bg{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.ctbar-fill{height:100%;background:var(--red);border-radius:2px;transition:width 100ms linear}
+.dp-wrap{padding:0 8px;flex-shrink:0}
+.dp{background:var(--tile-felt);border:1px solid var(--tile-felt-border);border-radius:6px;padding:5px;position:relative}
+.dp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.dp-lbl{font-size:9px;color:var(--green);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.dp-wind{font-size:10px;font-weight:700;color:var(--text-secondary);font-family:monospace}
+.dp-pot{font-size:9px;color:var(--gold);font-weight:700;font-family:monospace}
+.dp-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:2px}
+.dtile{width:100%;aspect-ratio:24/28;background:var(--tile-bg);border:.5px solid var(--tile-border);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:9px;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.dtile.empty{background:rgba(7,24,16,.3);border-color:rgba(16,185,129,.12)}
+.dtile.last{outline:1.5px solid var(--red)}
+.hand-area{background:var(--bg-card);border-top:1px solid var(--border);padding:7px 8px 5px;flex-shrink:0}
+.hand-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.hlbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+.tenpai-badge{display:flex;align-items:center;gap:3px;font-size:9px;font-weight:700;color:var(--gold);letter-spacing:1px;animation:tpulse 1.5s infinite}
+@keyframes tpulse{0%,100%{opacity:1}50%{opacity:.4}}
+.riichi-badge{font-size:9px;font-weight:700;color:var(--purple);letter-spacing:1px}
+.hand-row{display:flex;gap:3px;align-items:flex-end;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.hand-row::-webkit-scrollbar{display:none}
+.htile{width:24px;height:36px;flex-shrink:0;font-size:11px}
+.actbtns{display:flex;gap:5px;padding:5px 8px;background:var(--bg-nav);border-top:1px solid var(--border);flex-shrink:0}
+.ab{flex:1;height:40px;border:none;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;transition:transform 80ms,opacity 150ms}
+.ab:active{transform:scale(.95)}
+.ab.dis{background:var(--gold);color:#000}
+.ab.pong{background:transparent;color:var(--green);border:1px solid var(--green)}
+.ab.chi{background:transparent;color:var(--blue);border:1px solid var(--blue)}
+.ab.skip{background:var(--border);color:var(--text-secondary)}
+.ab.ron{background:var(--red);color:#fff;animation:ronpulse .8s infinite}
+.ab.riichi{background:transparent;color:var(--purple);border:1px solid var(--purple)}
+.ab.tsumo{background:var(--green);color:#fff}
+@keyframes ronpulse{0%,100%{box-shadow:0 0 0 0 rgba(232,64,64,.5)}50%{box-shadow:0 0 0 6px rgba(232,64,64,0)}}
+.ab.off{opacity:.3;pointer-events:none}
+.chatbar{display:flex;gap:6px;padding:5px 8px;border-top:1px solid var(--border);background:var(--bg-nav);flex-shrink:0}
+.chatmsgs{flex:1;overflow:hidden}.chatmsg{font-size:10px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chatmsg span{color:var(--gold);font-weight:700}
+.coachbtn{background:rgba(59,130,246,.12);border:1px solid var(--blue);border-radius:4px;padding:3px 8px;font-size:9px;font-weight:700;color:var(--blue);cursor:pointer;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase}
+
+/* WIN / LOSS OVERLAY */
+.result-overlay{position:absolute;inset:0;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:150;opacity:0;pointer-events:none;transition:opacity 300ms}
+.result-overlay.show{opacity:1;pointer-events:all}
+.win-glow{width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(240,165,0,.35) 0%,transparent 70%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;animation:winglow 700ms 3}
+@keyframes winglow{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.loss-glow{width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(232,64,64,.2) 0%,transparent 70%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+.res-title{font-family:'Cinzel',serif;font-size:34px;font-weight:700;letter-spacing:3px}
+.res-amt{font-size:20px;font-weight:700;font-family:monospace;margin-top:4px}
+.res-hand{font-size:11px;color:var(--text-secondary);margin-top:3px;letter-spacing:1px;text-align:center;max-width:200px}
+.res-btns{display:flex;gap:12px;margin-top:28px}
+
+/* CALL POPUP */
+.call-popup{position:absolute;bottom:180px;left:50%;transform:translateX(-50%);background:var(--bg-card);border:2px solid var(--gold);border-radius:12px;padding:12px 20px;z-index:100;display:flex;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.7);animation:popIn .2s ease}
+@keyframes popIn{from{transform:translateX(-50%) scale(.8);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
+.cpbtn{height:38px;padding:0 14px;border:none;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.cpbtn.pong{background:var(--green);color:#fff}.cpbtn.chi{background:var(--blue);color:#fff}
+.cpbtn.kan{background:var(--purple);color:#fff}.cpbtn.ron{background:var(--red);color:#fff;animation:ronpulse .8s infinite}
+.cpbtn.skip{background:var(--border);color:var(--text-secondary)}
+
+/* ═══ TOURNAMENTS ═══ */
+.tcard{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px;transition:border-color 150ms}
+.tcard:hover{border-color:var(--border-hover)}
+.tcard-hdr{padding:10px 14px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tname{font-size:12px;font-weight:700}.ttype{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px}
+.tt-d{background:rgba(59,130,246,.18);color:var(--blue);border:1px solid var(--blue)}
+.tt-w{background:rgba(240,165,0,.18);color:var(--gold);border:1px solid var(--gold)}
+.tt-s{background:rgba(139,92,246,.18);color:var(--purple);border:1px solid var(--purple)}
+.tt-sp{background:rgba(232,64,64,.18);color:var(--red);border:1px solid var(--red)}
+.tcard-body{padding:10px 14px;display:flex;gap:16px;align-items:center}
+.tstat{text-align:center;flex:1}
+.tsv{font-size:12px;font-weight:700;font-family:monospace}
+.tsv.g{color:var(--gold)}.tsv.gn{color:var(--green)}.tsv.r{color:var(--red)}
+.tsl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.tcard-foot{padding:8px 14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ttime{font-size:10px;color:var(--text-secondary)}
+.treg{background:var(--gold);color:#000;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:5px;padding:6px 14px;cursor:pointer;transition:background 120ms}
+.treg:hover{background:var(--gold-dark)}.treg.gn{background:var(--green);color:#fff}.treg.ot{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}
+.treg:disabled{opacity:.5;cursor:default}
+
+/* ═══ WALLET ═══ */
+.wbal-card{background:linear-gradient(135deg,#0D1428,#111827);border:1px solid var(--border);border-radius:8px;padding:20px 16px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden}
+.wbal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.wbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.wba{font-size:36px;font-weight:700;color:var(--gold);font-family:monospace;letter-spacing:-1px}
+.wbu{font-size:12px;color:var(--text-secondary);margin-top:4px}
+.wbg{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.wactgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.wact{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:border-color 120ms}
+.wact:hover{border-color:var(--gold)}
+.wact-ico{font-size:20px}.wact-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)}
+.bndl-row{display:flex;flex-direction:column;gap:8px}
+.bndl{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;transition:border-color 120ms;cursor:pointer}
+.bndl:hover{border-color:var(--gold)}.bndl.best{border-color:rgba(240,165,0,.5);position:relative}
+.bndl.best::before{content:'BEST VALUE';position:absolute;top:-1px;right:12px;background:var(--gold);color:#000;font-size:7px;font-weight:700;letter-spacing:1px;padding:1px 5px;border-radius:0 0 3px 3px}
+.bchips{font-size:15px;font-weight:700;color:var(--gold);font-family:monospace}
+.bbonus{font-size:10px;color:var(--green);font-weight:700;margin-top:1px}
+.bprice{background:var(--gold);color:#000;font-size:12px;font-weight:700;border-radius:5px;padding:6px 14px;cursor:pointer;border:none;transition:background 120ms}
+.bprice:hover{background:var(--gold-dark)}
+.tx-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.tx-row:last-child{border-bottom:none}
+.tx-l{display:flex;align-items:center;gap:10px}
+.tx-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+.tx-ico.w{background:rgba(16,185,129,.15)}.tx-ico.l{background:rgba(232,64,64,.15)}
+.tx-ico.b{background:rgba(240,165,0,.15)}.tx-ico.p{background:rgba(59,130,246,.15)}
+.tx-desc{font-size:12px;font-weight:600}.tx-time{font-size:10px;color:var(--text-muted);margin-top:1px}
+.tx-amt{font-size:12px;font-weight:700;font-family:monospace}
+.tx-amt.pos{color:var(--green)}.tx-amt.neg{color:var(--red)}.tx-amt.gld{color:var(--gold)}
+
+/* ═══ SHOP ═══ */
+.sgrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sitem{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color 150ms,transform 120ms}
+.sitem:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.sitem-prev{height:80px;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;background:linear-gradient(135deg,var(--bg-navy),var(--bg-card))}
+.rarity{position:absolute;top:6px;right:6px;font-size:7px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 5px;border-radius:2px}
+.rc{background:rgba(148,163,184,.2);color:#94A3B8;border:1px solid #475569}
+.rr{background:rgba(59,130,246,.2);color:var(--blue);border:1px solid var(--blue)}
+.re{background:rgba(139,92,246,.2);color:var(--purple);border:1px solid var(--purple)}
+.rl{background:rgba(240,165,0,.2);color:var(--gold);border:1px solid var(--gold)}
+.sitem-body{padding:8px 10px}
+.siname{font-size:12px;font-weight:700}.sisub{font-size:10px;color:var(--text-muted);margin-top:1px}
+.siprice{display:flex;align-items:center;gap:5px;margin-top:7px}
+.spval{font-size:12px;font-weight:700;font-family:monospace}.spval.g{color:var(--gold)}.spval.p{color:var(--purple)}
+.sbuy{margin-left:auto;background:var(--gold);color:#000;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;transition:background 120ms}
+.sbuy:hover{background:var(--gold-dark)}.sbuy.owned{background:var(--green);color:#fff;cursor:default}
+
+/* ═══ RANKS ═══ */
+.rcard{background:linear-gradient(135deg,#0D1428,#111827);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:14px;text-align:center;position:relative;overflow:hidden}
+.rcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.rtier-icon{font-size:36px;margin-bottom:6px}
+.rtier-name{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--gold);letter-spacing:2px}
+.relo{font-size:28px;font-weight:700;font-family:monospace;margin:8px 0 4px}
+.relo-lbl{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+.rprog{margin-top:14px}
+.rp-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-bottom:5px}
+.rp-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.rp-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:2px;transition:width 600ms ease}
+.rsgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.rscard{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 6px;text-align:center}
+.rsv{font-size:16px;font-weight:700;font-family:monospace}
+.rsl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.lbrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.lbrow:last-child{border-bottom:none}
+.lbrk{width:24px;text-align:center;font-size:12px;font-weight:700;font-family:monospace}
+.lbav{width:32px;height:32px;border-radius:50%;background:var(--bg-navy);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px}
+.lbinfo{flex:1;min-width:0}
+.lbname{font-size:12px;font-weight:700}
+.lbmeta{font-size:10px;color:var(--text-muted);margin-top:1px}
+.lbelo{font-size:12px;font-weight:700;font-family:monospace;color:var(--gold)}
+
+/* ═══ CLUBS ═══ */
+.myclub{background:linear-gradient(135deg,#0D1428,#111827);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;position:relative;overflow:hidden}
+.myclub::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.club-hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.club-av{width:46px;height:46px;border-radius:10px;background:var(--bg-navy);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px}
+.club-name{font-size:15px;font-weight:700}.club-meta{font-size:10px;color:var(--text-muted);margin-top:2px}
+.csgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.csv{font-size:15px;font-weight:700;font-family:monospace;color:var(--blue)}.csl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.clubrow{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:border-color 120ms;cursor:pointer}
+.clubrow:hover{border-color:var(--blue)}
+.crname{font-size:12px;font-weight:700}.crsub{font-size:10px;color:var(--text-muted);margin-top:1px}
+.cjoin{background:transparent;border:1px solid var(--blue);color:var(--blue);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;padding:5px 10px;cursor:pointer;transition:background 120ms;white-space:nowrap}
+.cjoin:hover{background:rgba(59,130,246,.12)}
+.cjoin:disabled{opacity:.4;cursor:default}
+
+/* ═══ PROFILE ═══ */
+.phero{background:linear-gradient(160deg,#0D1428,#111827);border:1px solid var(--border);border-radius:8px;padding:20px 16px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden}
+.phero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.phav{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:var(--bg-navy);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 10px;box-shadow:0 0 24px rgba(240,165,0,.25)}
+.phname{font-size:22px;font-weight:700}.phsub{font-size:10px;color:var(--text-secondary);margin-top:4px;letter-spacing:1px}
+.pbadges{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.psgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.pscard{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center}
+.psv{font-size:22px;font-weight:700;font-family:monospace}
+.psl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.achrow{display:flex;flex-direction:column;gap:8px}
+.achcard{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;display:flex;align-items:center;gap:12px}
+.ach-ico{font-size:22px}
+.ach-name{font-size:12px;font-weight:700}.ach-desc{font-size:10px;color:var(--text-muted);margin-top:1px}
+.achbadge{font-size:8px;font-weight:700;letter-spacing:.5px;padding:2px 6px;border-radius:3px;text-transform:uppercase;white-space:nowrap}
+.ab-done{background:rgba(16,185,129,.2);color:var(--green);border:1px solid var(--green)}
+.ab-lock{background:var(--border);color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-deposit">
+  <div class="modal">
+    <div class="modal-title">DEPOSIT CHIPS</div>
+    <button class="modal-close" onclick="closeModal('modal-deposit')">×</button>
+    <div style="display:flex;flex-direction:column;gap:10px" id="dep-bundles"></div>
+    <div style="margin-top:14px;font-size:10px;color:var(--text-muted);text-align:center">Powered by Stripe · SSL Encrypted · Instant delivery</div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-history">
+  <div class="modal">
+    <div class="modal-title">TRANSACTION HISTORY</div>
+    <button class="modal-close" onclick="closeModal('modal-history')">×</button>
+    <div id="tx-history-full"></div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-coach">
+  <div class="modal">
+    <div class="modal-title">🤖 AI COACH</div>
+    <button class="modal-close" onclick="closeModal('modal-coach')">×</button>
+    <div id="coach-content"></div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-settings">
+  <div class="modal">
+    <div class="modal-title">SETTINGS</div>
+    <button class="modal-close" onclick="closeModal('modal-settings')">×</button>
+    <div id="settings-content"></div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-room">
+  <div class="modal">
+    <div class="modal-title">CREATE ROOM</div>
+    <button class="modal-close" onclick="closeModal('modal-room')">×</button>
+    <div id="room-content"></div>
+  </div>
+</div>
+
+<!-- CALL POPUP (game) -->
+<div id="call-popup" style="display:none;position:absolute;bottom:195px;left:50%;transform:translateX(-50%);background:var(--bg-card);border:2px solid var(--gold);border-radius:12px;padding:12px 16px;z-index:100;display:none;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.7)"></div>
+
+<!-- ═══════════ SCREEN: SPLASH ═══════════ -->
+<div id="screen-splash" class="screen active">
+  <div class="spl-bg">
+    <div class="spl-glow"></div>
+    <div class="spl-corner"></div><div class="spl-corner"></div>
+    <div class="spl-corner"></div><div class="spl-corner"></div>
+  </div>
+  <div class="spl-hero" id="spl-hero">
+    <div class="spl-tileico">中</div>
+    <div class="spl-word">MAHJONG CASINO</div>
+    <div class="spl-sub">Macau Noir · The PokerStars of Mahjong</div>
+    <div class="spl-div"></div>
+    <div class="spl-tag">The World's Premier Online Mahjong Platform</div>
+  </div>
+  <div style="flex:1"></div>
+  <div class="spl-stats">
+    <div class="spl-stat"><div class="spl-sv">600M+</div><div class="spl-sl">Players</div></div>
+    <div class="spl-stat"><div class="spl-sv">4</div><div class="spl-sl">Rule Sets</div></div>
+    <div class="spl-stat" style="border-right:none"><div class="spl-sv" style="color:var(--green)">LIVE</div><div class="spl-sl">Production</div></div>
+  </div>
+  <div style="height:10px"></div>
+  <div class="spl-acts">
+    <button class="bg full" onclick="Nav.go('lobby')">🎰 ENTER CASINO</button>
+    <div class="spl-half">
+      <button class="bgg full" onclick="Nav.go('game',{mode:'practice'})">🤖 vs AI — Free</button>
+      <button class="bgb full" onclick="openModal('modal-room')">🌐 Multiplayer</button>
+    </div>
+  </div>
+  <div class="spl-sels">
+    <div class="sel-row">
+      <div class="sel-lbl">Rule Set</div>
+      <div class="pills-row" id="splash-ruleset"></div>
+    </div>
+    <div class="sel-row">
+      <div class="sel-lbl">Stakes</div>
+      <div class="pills-row" id="splash-stakes"></div>
+    </div>
+    <div class="onbadge"><div class="odot"></div><span id="online-count">1,247 online now</span></div>
+  </div>
+  <div class="botnav">
+    <button class="ntab active" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: LOBBY ═══════════ -->
+<div id="screen-lobby" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo"><div class="tileico">中</div>MAHJONG CASINO</div>
+    <div class="bals"><div class="bal g"><div class="bdot g"></div><span id="lb-chips">15,200</span></div><div class="bal p"><div class="bdot p"></div><span id="lb-gems">340</span></div></div>
+  </div>
+  <div class="scr">
+    <div style="margin-top:12px" class="pcard">
+      <div class="pav" id="lb-avatar">🐉</div>
+      <div style="flex:1">
+        <div class="pname" id="lb-name">Dragon_Master</div>
+        <div class="pmeta">
+          <span class="tier-badge tb-g" id="lb-tier">Gold VIP</span>
+          <span style="font-size:10px;color:var(--text-secondary);font-family:monospace" id="lb-elo">ELO 1,847</span>
+          <span style="font-size:10px;color:var(--text-secondary)" id="lb-streak">🔥 7 streak</span>
+        </div>
+      </div>
+      <div class="pright"><span class="lvlbadge" id="lb-level">LVL 42</span><div class="onbadge"><div class="odot"></div><span style="color:var(--text-muted);font-size:10px">Online</span></div></div>
+    </div>
+    <div class="dbb" id="daily-banner">
+      <div><div class="dbb-title">🎁 Daily Login Bonus — Day <span id="streak-day">7</span></div><div class="dbb-sub">+<span id="bonus-amt">1,500</span> Coins + 10% on all wins today</div></div>
+      <button class="bg sm" id="claim-btn" onclick="Economy.claimDailyBonus()">CLAIM</button>
+    </div>
+    <div class="sel-row" style="margin-bottom:14px">
+      <div class="sel-lbl">Rule Set</div>
+      <div class="pills-row" id="lobby-ruleset"></div>
+    </div>
+    <div class="sh">⚡ QUICK PLAY</div>
+    <div class="gmrow" onclick="Nav.go('game',{mode:'practice'})">
+      <div style="display:flex;align-items:center;gap:12px"><div class="gmico">🤖</div><div><div class="gmlbl">Practice vs AI</div><div class="gmsub">3 difficulty levels · No wager required</div></div></div>
+      <button class="bgg" style="height:34px;padding:0 14px;font-size:10px">FREE</button>
+    </div>
+    <div class="gmrow" onclick="Nav.go('game',{mode:'quickmatch'})">
+      <div style="display:flex;align-items:center;gap:12px"><div class="gmico">⚡</div><div><div class="gmlbl">Quick Match</div><div class="gmsub">Auto-fill · <span id="qm-stake-lbl">Micro stake</span></div></div></div>
+      <button class="bg sm">PLAY</button>
+    </div>
+    <div class="gmrow" onclick="openModal('modal-room')">
+      <div style="display:flex;align-items:center;gap:12px"><div class="gmico">🔗</div><div><div class="gmlbl">Create / Join Room</div><div class="gmsub">Share link · Play with friends</div></div></div>
+      <button class="bgb" style="height:34px;padding:0 14px;font-size:10px">MULTI</button>
+    </div>
+    <div class="sh">💰 STAKE LEVELS</div>
+    <div class="sgrid" id="stake-grid"></div>
+    <div style="height:12px"></div>
+  </div>
+  <div class="botnav" id="botnav-lobby">
+    <button class="ntab active" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: GAME ═══════════ -->
+<div id="screen-game" class="screen">
+  <div class="result-overlay" id="result-overlay">
+    <div id="result-glow">
+      <div class="res-title" id="res-title">RON!</div>
+      <div class="res-amt" id="res-amt">+3,200 ●</div>
+      <div class="res-hand" id="res-hand">Tanyao · Menzen Tsumo</div>
+    </div>
+    <div class="res-btns">
+      <button class="bg sm" onclick="Game.newGame()">NEW GAME</button>
+      <button class="bgg" style="height:36px;padding:0 16px;font-size:11px;letter-spacing:1px" onclick="Nav.go('lobby')">LOBBY</button>
+    </div>
+  </div>
+  <div class="gtopbar">
+    <button class="gback" onclick="Nav.go('lobby')">← LOBBY</button>
+    <div class="gctr"><div class="grl">ROUND</div><div class="grv" id="g-round">東 ROUND 1</div></div>
+    <div class="gpot"><div class="bdot g" style="width:7px;height:7px"></div><span id="g-pot">POT: 0</span></div>
+  </div>
+  <div class="opp-area" id="opp-area"></div>
+  <div class="ctimer-wrap">
+    <div class="ctimer-lbl"><span class="cta" id="ct-action">WAITING</span><span class="ctm" id="ct-time">—</span></div>
+    <div class="ctbar-bg"><div class="ctbar-fill" id="ct-bar" style="width:0%;background:var(--border)"></div></div>
+  </div>
+  <div class="dp-wrap">
+    <div class="dp">
+      <div class="dp-hdr">
+        <div class="dp-lbl">DISCARD POOL</div>
+        <div class="dp-wind" id="g-wind">東 R1</div>
+        <div class="dp-pot" id="g-pot2">● 0</div>
+      </div>
+      <div class="dp-grid" id="dp-grid"></div>
+    </div>
+  </div>
+  <div class="hand-area">
+    <div class="hand-hdr">
+      <div class="hlbl">YOUR HAND · <span id="g-ruleset-lbl" style="color:var(--gold)">RIICHI</span></div>
+      <div id="tenpai-indicator" style="display:none" class="tenpai-badge">⚡ TENPAI</div>
+      <div id="riichi-indicator" style="display:none" class="riichi-badge">⚑ RIICHI</div>
+    </div>
+    <div class="hand-row" id="player-hand"></div>
+  </div>
+  <div class="actbtns" id="actbtns">
+    <button class="ab dis" id="btn-discard" onclick="Game.discard()">DISCARD</button>
+    <button class="ab pong off" id="btn-pong" onclick="Game.declarePong()">PONG</button>
+    <button class="ab riichi off" id="btn-riichi" onclick="Game.declareRiichi()">RIICHI</button>
+    <button class="ab skip" id="btn-skip" onclick="Game.skip()">SKIP</button>
+    <button class="ab ron off" id="btn-ron" onclick="Game.declareRon()">RON!</button>
+  </div>
+  <div class="chatbar">
+    <div class="chatmsgs"><div class="chatmsg" id="chat-line"><span>System:</span> Game started!</div></div>
+    <button class="coachbtn" onclick="openCoach()">🤖 Coach</button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: EVENTS ═══════════ -->
+<div id="screen-events" class="screen">
+  <div class="topbar"><div class="topbar-logo"><div class="tileico">中</div>EVENTS</div><div class="bals"><div class="bal g"><div class="bdot g"></div><span class="sync-chips">15,200</span></div><div class="bal p"><div class="bdot p"></div><span class="sync-gems">340</span></div></div></div>
+  <div class="scr">
+    <div style="margin-top:12px;margin-bottom:10px"><div class="livebadge"><div class="ldot"></div>2 TOURNAMENTS LIVE NOW</div></div>
+    <div id="tournament-list"></div>
+    <div style="height:10px"></div>
+  </div>
+  <div class="botnav">
+    <button class="ntab" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab active" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: WALLET ═══════════ -->
+<div id="screen-wallet" class="screen">
+  <div class="topbar"><div class="topbar-logo"><div class="tileico">中</div>WALLET</div><div class="bals"><div class="bal g"><div class="bdot g"></div><span class="sync-chips">15,200</span></div><div class="bal p"><div class="bdot p"></div><span class="sync-gems">340</span></div></div></div>
+  <div class="scr">
+    <div style="margin-top:12px">
+      <div class="wbal-card">
+        <div class="wbl">CHIP BALANCE</div>
+        <div class="wba" id="w-chips-big">15,200</div>
+        <div class="wbu">≈ $<span id="w-usd">15.20</span> USD equivalent</div>
+        <div class="wbg"><div class="bdot p" style="width:10px;height:10px"></div><span style="font-size:16px;font-weight:700;color:var(--purple);font-family:monospace" id="w-gems-big">340</span><span style="font-size:10px;color:var(--text-muted)">Gems (Premium)</span></div>
+      </div>
+      <div class="wactgrid">
+        <div class="wact" onclick="openModal('modal-deposit')"><div class="wact-ico">💳</div><div class="wact-lbl">Deposit</div></div>
+        <div class="wact" onclick="Toast.show('🏦 Withdrawal — KYC required. Min 10K chips')"><div class="wact-ico">🏦</div><div class="wact-lbl">Withdraw</div></div>
+        <div class="wact" onclick="openModal('modal-history')"><div class="wact-ico">📊</div><div class="wact-lbl">History</div></div>
+        <div class="wact" onclick="promptPromo()"><div class="wact-ico">🎁</div><div class="wact-lbl">Promo</div></div>
+      </div>
+      <div class="sh">🛒 BUY CHIPS</div>
+      <div class="bndl-row" id="wallet-bundles"></div>
+      <div class="sh">📋 RECENT TRANSACTIONS</div>
+      <div class="card" style="padding:0 12px"><div id="tx-recent"></div></div>
+      <div style="height:12px"></div>
+    </div>
+  </div>
+  <div class="botnav">
+    <button class="ntab" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab active" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: SHOP ═══════════ -->
+<div id="screen-shop" class="screen">
+  <div class="topbar"><div class="topbar-logo"><div class="tileico">中</div>SHOP</div><div class="bals"><div class="bal g"><div class="bdot g"></div><span class="sync-chips">15,200</span></div><div class="bal p"><div class="bdot p"></div><span class="sync-gems">340</span></div></div></div>
+  <div class="scr">
+    <div style="margin-top:12px">
+      <div class="pills-row" id="shop-filters" style="overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:14px"></div>
+      <div class="sgrid2" id="shop-grid"></div>
+      <div style="height:10px"></div>
+    </div>
+  </div>
+  <div class="botnav">
+    <button class="ntab" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab active" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: RANKS ═══════════ -->
+<div id="screen-ranks" class="screen">
+  <div class="topbar"><div class="topbar-logo"><div class="tileico">中</div>RANKS</div><div class="bals"><div class="bal g"><div class="bdot g"></div><span class="sync-chips">15,200</span></div><div class="bal p"><div class="bdot p"></div><span class="sync-gems">340</span></div></div></div>
+  <div class="scr">
+    <div style="margin-top:12px">
+      <div class="rcard">
+        <div class="rtier-icon" id="r-icon">🥇</div>
+        <div class="rtier-name" id="r-tier">GOLD</div>
+        <div class="relo" id="r-elo">1,847</div>
+        <div class="relo-lbl">ELO RATING</div>
+        <div class="rprog">
+          <div class="rp-lbl"><span id="r-prog-lbl">Gold → Platinum</span><span id="r-prog-vals">1,847 / 2,000</span></div>
+          <div class="rp-bg"><div class="rp-fill" id="r-prog-fill" style="width:72%"></div></div>
+        </div>
+      </div>
+      <div class="rsgrid">
+        <div class="rscard"><div class="rsv" style="color:var(--green)" id="r-wr">67.2%</div><div class="rsl">Win Rate</div></div>
+        <div class="rscard"><div class="rsv" style="color:var(--gold)" id="r-games">284</div><div class="rsl">Games</div></div>
+        <div class="rscard"><div class="rsv" style="color:var(--purple)" id="r-rank">#312</div><div class="rsl">Season Rank</div></div>
+      </div>
+      <div class="pills-row" style="margin-bottom:14px" id="lb-filters"></div>
+      <div class="card" style="padding:0 12px"><div id="leaderboard"></div></div>
+      <div style="height:10px"></div>
+    </div>
+  </div>
+  <div class="botnav">
+    <button class="ntab" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab active" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: CLUBS ═══════════ -->
+<div id="screen-clubs" class="screen">
+  <div class="topbar"><div class="topbar-logo"><div class="tileico">中</div>CLUBS</div><div class="bals"><div class="bal g"><div class="bdot g"></div><span class="sync-chips">15,200</span></div><div class="bal p"><div class="bdot p"></div><span class="sync-gems">340</span></div></div></div>
+  <div class="scr">
+    <div style="margin-top:12px">
+      <div class="myclub">
+        <div class="club-hdr">
+          <div class="club-av">🐉</div>
+          <div style="flex:1"><div class="club-name">Dragon's Den</div><div class="club-meta">Officer · ELO-gated 1500+ · Riichi/HK</div></div>
+          <button class="bg sm" onclick="Toast.show('🐉 Club management panel coming in v2!')">MANAGE</button>
+        </div>
+        <div class="csgrid">
+          <div style="text-align:center"><div class="csv" id="club-members">42</div><div class="csl">Members</div></div>
+          <div style="text-align:center"><div class="csv" id="club-online">8</div><div class="csl">Online</div></div>
+          <div style="text-align:center"><div class="csv" style="color:var(--gold)">#7</div><div class="csl">Club Rank</div></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="sh" style="margin:0">🔍 DISCOVER CLUBS</div>
+        <button class="bg sm" onclick="Economy.createClub()">+ CREATE</button>
+      </div>
+      <div id="clubs-list"></div>
+      <div style="height:10px"></div>
+    </div>
+  </div>
+  <div class="botnav">
+    <button class="ntab" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab active" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ SCREEN: PROFILE ═══════════ -->
+<div id="screen-profile" class="screen">
+  <div class="topbar"><div class="topbar-logo"><div class="tileico">中</div>PROFILE</div><div class="bals"><div class="bal g"><div class="bdot g"></div><span class="sync-chips">15,200</span></div><div class="bal p"><div class="bdot p"></div><span class="sync-gems">340</span></div></div></div>
+  <div class="scr">
+    <div style="margin-top:12px">
+      <div class="phero">
+        <div class="phav" id="prof-avatar">🐉</div>
+        <div class="phname" id="prof-name">Dragon_Master</div>
+        <div class="phsub" id="prof-sub">GOLD TIER · ELO 1,847 · LVL 42</div>
+        <div class="pbadges"><span class="tier-badge tb-g" id="prof-tier-badge">Gold VIP</span><span class="livebadge"><div class="ldot"></div>ONLINE</span></div>
+      </div>
+      <div class="psgrid">
+        <div class="pscard"><div class="psv" style="color:var(--green)" id="prof-games">284</div><div class="psl">Games Played</div></div>
+        <div class="pscard"><div class="psv" style="color:var(--gold)" id="prof-wr">67.2%</div><div class="psl">Win Rate</div></div>
+        <div class="pscard"><div class="psv" style="color:var(--gold)" id="prof-winnings">48,700 ●</div><div class="psl">Total Winnings</div></div>
+        <div class="pscard"><div class="psv" style="color:var(--purple)" id="prof-rank">#312</div><div class="psl">Season Rank</div></div>
+      </div>
+      <div class="sh">🏅 ACHIEVEMENTS</div>
+      <div class="achrow" id="achievements"></div>
+      <div style="height:14px"></div>
+      <button class="bgb full" onclick="openModal('modal-settings')">⚙️ SETTINGS & PREFERENCES</button>
+      <div style="height:8px"></div>
+      <button class="bgg full" onclick="shareProfile()">🔗 SHARE PROFILE</button>
+      <div style="height:12px"></div>
+    </div>
+  </div>
+  <div class="botnav">
+    <button class="ntab" onclick="Nav.go('lobby')"><span class="nico">🀄</span><span class="nlbl">Play</span></button>
+    <button class="ntab" onclick="Nav.go('events')"><span class="nico">🏆</span><span class="nlbl">Events</span></button>
+    <button class="ntab" onclick="Nav.go('wallet')"><span class="nico">💰</span><span class="nlbl">Wallet</span></button>
+    <button class="ntab" onclick="Nav.go('shop')"><span class="nico">🛒</span><span class="nlbl">Shop</span></button>
+    <button class="ntab" onclick="Nav.go('ranks')"><span class="nico">📊</span><span class="nlbl">Ranks</span></button>
+    <button class="ntab" onclick="Nav.go('clubs')"><span class="nico">👥</span><span class="nlbl">Clubs</span></button>
+    <button class="ntab active" onclick="Nav.go('profile')"><span class="nico">👤</span><span class="nlbl">Profile</span></button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════
+   STATE — single source of truth
+═══════════════════════════════════════════ */
+const STATE = {
+  player: {
+    name:'Dragon_Master', avatar:'🐉', chips:15200, gems:340,
+    level:42, xp:8400, xpNext:10000,
+    elo:1847, wins:191, games:284,
+    streak:7, lastLogin: new Date().toDateString(),
+    dailyClaimed: false, bonusActive: false,
+    vip:'gold', totalWinnings:48700,
+    seasonRank:312, inventory: new Set(['classic-tiles','dragon-frame']),
+    joinedClubs: new Set(['dragons-den'])
+  },
+  settings: { ruleset:'riichi', stake:'micro', difficulty:'medium', sound:true, haptics:true },
+  transactions: [
+    {type:'w',icon:'🏆',desc:'Tournament Win — Dragon\'s Cup',time:'Today, 14:32',amt:2400},
+    {type:'l',icon:'🎴',desc:'Game Wager — Medium Stake',time:'Today, 13:18',amt:-1000},
+    {type:'b',icon:'🎁',desc:'Daily Login Bonus — Day 7',time:'Today, 09:00',amt:1500,gld:true},
+    {type:'w',icon:'⚡',desc:'Game Win — Riichi Tsumo',time:'Yesterday 22:41',amt:3200},
+    {type:'p',icon:'💳',desc:'Chip Purchase — 10K Bundle',time:'Mar 17',amt:0,fiat:'$4.99'},
+    {type:'w',icon:'🀄',desc:'Game Win — Ron vs TigerClaw',time:'Mar 17',amt:1800},
+    {type:'l',icon:'🎴',desc:'Game Loss — Low Stake',time:'Mar 16',amt:-500},
+    {type:'b',icon:'🎁',desc:'Daily Login Bonus — Day 6',time:'Mar 16',amt:1200,gld:true},
+  ],
+  tournaments: [
+    {id:'daily-cup',name:"🏆 Dragon's Cup — Daily",type:'d',prize:'$500',players:'38/64',buyin:500,time:'Starts in 14m',registered:false,live:true},
+    {id:'weekly-slam',name:"⚡ Grand Slam — Weekly",type:'w',prize:'$5,000',players:'124/256',buyin:5000,time:'Sunday 20:00 UTC',registered:false,live:false},
+    {id:'season-3',name:"👑 Season 3 — World Ladder",type:'s',prize:'$50,000',players:'2,841',buyin:0,time:'Ends in 22 days',registered:true,live:false},
+    {id:'riichi-inv',name:"🎌 Riichi Invitational",type:'sp',prize:'$10,000',players:'64/64',buyin:10000,time:'March 28, 2026',registered:false,live:false,req:1800},
+  ],
+  shopItems: [
+    {id:'dragon-tiles',cat:'tiles',name:'Dragon\'s Breath Tiles',sub:'Animated fire effect',ico:'🀄',rarity:'l',gemCost:800,chipCost:0},
+    {id:'jade-table',cat:'tables',name:'Jade Garden Table',sub:'Emerald felt design',ico:'🍀',rarity:'e',gemCost:0,chipCost:5000},
+    {id:'dragon-frame',cat:'avatars',name:'Dragon Avatar Frame',sub:'Animated golden border',ico:'🐉',rarity:'l',gemCost:500,chipCost:0},
+    {id:'lightning-emotes',cat:'emotes',name:'Lightning Emote Pack',sub:'8 animated emotes',ico:'⚡',rarity:'r',gemCost:0,chipCost:2000},
+    {id:'xp-boost',cat:'boosts',name:'XP Boost ×2 — 7 Days',sub:'Double XP on all games',ico:'🔥',rarity:'e',gemCost:150,chipCost:0},
+    {id:'midnight-tiles',cat:'tiles',name:'Midnight Tile Set',sub:'Dark obsidian theme',ico:'🌙',rarity:'r',gemCost:0,chipCost:3500},
+    {id:'diamond-vip',cat:'vip',name:'Diamond VIP — Monthly',sub:'Max rake cap + 25% bonus',ico:'💎',rarity:'l',gemCost:0,chipCost:0,fiat:'$49.99/mo'},
+    {id:'classic-tiles',cat:'tiles',name:'Classic Tile Skin',sub:'Standard ivory tiles',ico:'🀄',rarity:'c',gemCost:0,chipCost:500},
+    {id:'sakura-table',cat:'tables',name:'Sakura Blossom Table',sub:'Cherry blossom felt',ico:'🌸',rarity:'r',gemCost:200,chipCost:0},
+    {id:'phoenix-avatar',cat:'avatars',name:'Phoenix Frame',sub:'Blazing bird border',ico:'🔥',rarity:'e',gemCost:400,chipCost:0},
+  ],
+  shopFilter:'all',
+  lbFilter:'global',
+  leaderboard: [
+    {rank:1,av:'👑',name:'PhoenixKing',meta:'Diamond · 🔥 47 streak',elo:2847},
+    {rank:2,av:'🐉',name:'DragonLord_JP',meta:'Diamond · Riichi Master',elo:2791},
+    {rank:3,av:'🦁',name:'LionHeart88',meta:'Platinum · HK Legend',elo:2634},
+    {rank:4,av:'🌸',name:'SakuraMaster',meta:'Platinum',elo:2512},
+    {rank:5,av:'⚡',name:'TigerClaw',meta:'Platinum',elo:2104},
+    {rank:6,av:'🎌',name:'RiichiGod_KY',meta:'Gold',elo:1991},
+    {rank:7,av:'🌙',name:'MidnightBamboo',meta:'Gold',elo:1923},
+    {rank:8,av:'🐲',name:'ZhongKing',meta:'Gold',elo:1891},
+  ],
+  clubs:[
+    {id:'sakura',ico:'🌸',name:'Sakura Society',sub:'128 members · Riichi · ELO 1200+',joined:false},
+    {id:'lightning',ico:'⚡',name:'Lightning League',sub:'87 members · Speed · ELO 1600+',joined:false},
+    {id:'hk-lions',ico:'🦁',name:'HK Lions',sub:'214 members · HK rules · Open',joined:false},
+    {id:'midnight',ico:'🌙',name:'Midnight Masters',sub:'55 members · High stakes · Invite',joined:false,invite:true},
+    {id:'riichi-fed',ico:'🎌',name:'Riichi Federation JP',sub:'341 members · Official · ELO 1800+',joined:false},
+  ],
+  achievements:[
+    {id:'kokushi',ico:'🀄',name:'Kokushi Musou',desc:'Complete the 13 orphans hand',done:true,progress:''},
+    {id:'streak7',ico:'🔥',name:'Hot Streak ×7',desc:'7 consecutive daily logins',done:true,progress:''},
+    {id:'chiitoitsu',ico:'⚡',name:'Chiitoitsu Master',desc:'Win 10 games with 7-pairs hand',done:true,progress:''},
+    {id:'tourney',ico:'🏆',name:'Tournament Champion',desc:'Win a Daily Cup tournament',done:false,progress:'0/1'},
+    {id:'diamond',ico:'💎',name:'Diamond Player',desc:'Reach Diamond ELO tier (2000+)',done:false,progress:'1847/2000'},
+    {id:'centurion',ico:'⚔️',name:'Centurion',desc:'Play 100 games',done:true,progress:''},
+    {id:'whale',ico:'🐳',name:'Whale',desc:'Win 50K chips total',done:false,progress:'48700/50000'},
+  ],
+  bundles:[
+    {chips:1000,bonus:0,price:'$0.99',best:false},
+    {chips:10000,bonus:500,price:'$4.99',best:false},
+    {chips:50000,bonus:5000,price:'$19.99',best:true},
+    {chips:120000,bonus:20000,price:'$44.99',best:false},
+    {chips:280000,bonus:80000,price:'$99.99',best:false},
+  ],
+  ruleSets:[
+    {id:'riichi',label:'🔴 Riichi',flag:'JP'},
+    {id:'hk',label:'🇭🇰 HK',flag:'HK'},
+    {id:'official',label:'🇨🇳 Official',flag:'CN'},
+    {id:'american',label:'🇺🇸 American',flag:'US'},
+  ],
+  stakes:[
+    {id:'free',label:'FREE',min:0,max:0,tier:'Practice'},
+    {id:'micro',label:'MICRO',min:50,max:200,tier:'Beginner'},
+    {id:'low',label:'LOW',min:200,max:1000,tier:'Standard'},
+    {id:'med',label:'MED',min:1000,max:5000,tier:'Standard'},
+    {id:'high',label:'HIGH',min:5000,max:25000,tier:'Advanced'},
+    {id:'vip',label:'VIP',min:25000,max:0,tier:'Elite'},
+  ],
+  onlineCount: 1247,
+  roomCode: null,
+};
+
+/* ═══════════════════════════════════════════
+   TILE ENGINE
+═══════════════════════════════════════════ */
+const TILES = {
+  man:  [{s:'man',c:'一'},{s:'man',c:'二'},{s:'man',c:'三'},{s:'man',c:'四'},{s:'man',c:'五'},{s:'man',c:'六'},{s:'man',c:'七'},{s:'man',c:'八'},{s:'man',c:'九'}],
+  pin:  [{s:'pin',c:'①'},{s:'pin',c:'②'},{s:'pin',c:'③'},{s:'pin',c:'④'},{s:'pin',c:'⑤'},{s:'pin',c:'⑥'},{s:'pin',c:'⑦'},{s:'pin',c:'⑧'},{s:'pin',c:'⑨'}],
+  sou:  [{s:'sou',c:'1'},{s:'sou',c:'2'},{s:'sou',c:'3'},{s:'sou',c:'4'},{s:'sou',c:'5'},{s:'sou',c:'6'},{s:'sou',c:'7'},{s:'sou',c:'8'},{s:'sou',c:'9'}],
+  hon:  [{s:'hon',c:'東'},{s:'hon',c:'南'},{s:'hon',c:'西'},{s:'hon',c:'北'},{s:'hon',c:'中'},{s:'hon',c:'發'},{s:'hon',c:'白'}],
+};
+const TCOL = {man:'#CC2222',pin:'#1155AA',sou:'#1A7A1A',hon:'#222222'};
+const TVAL = {man:[1,2,3,4,5,6,7,8,9],pin:[1,2,3,4,5,6,7,8,9],sou:[1,2,3,4,5,6,7,8,9],hon:[11,12,13,14,21,22,23]};
+
+const ALL_TILES = [];
+for(let suit of ['man','pin','sou']){
+  for(let t of TILES[suit]){
+    for(let i=0;i<4;i++) ALL_TILES.push({...t});
+  }
+}
+for(let t of TILES.hon){
+  for(let i=0;i<4;i++) ALL_TILES.push({...t});
+}
+
+function makeDeck(){ return [...ALL_TILES].sort(()=>Math.random()-.5); }
+function tileVal(t){ const idx=TILES[t.s].findIndex(x=>x.c===t.c); return idx>=0?idx+1:0; }
+
+/* Win Detection — checks if 14-tile hand contains valid winning combination */
+function canWin(hand14){
+  const h=[...hand14].sort((a,b)=>a.s.localeCompare(b.s)||tileVal(a)-tileVal(b));
+  return chiitoitsu(h)||kokushi(h)||standardWin(h);
+}
+function chiitoitsu(h){
+  if(h.length!==14)return false;
+  const cnt={};
+  for(let t of h){const k=t.s+t.c; cnt[k]=(cnt[k]||0)+1;}
+  const pairs=Object.values(cnt).filter(v=>v>=2);
+  return pairs.length===7;
+}
+function kokushi(h){
+  if(h.length!==14)return false;
+  const terminals=['man-一','man-九','pin-①','pin-⑨','sou-1','sou-9','hon-東','hon-南','hon-西','hon-北','hon-中','hon-發','hon-白'];
+  const inHand=new Set(h.map(t=>t.s+'-'+t.c));
+  const hasAll=terminals.every(t=>inHand.has(t));
+  if(!hasAll)return false;
+  const cnt={};for(let t of h){const k=t.s+'-'+t.c;cnt[k]=(cnt[k]||0)+1;}
+  return terminals.some(t=>(cnt[t]||0)>=2);
+}
+function standardWin(h){
+  // try all pairs
+  const sorted=[...h].sort((a,b)=>a.s.localeCompare(b.s)||tileVal(a)-tileVal(b));
+  return tryPair(sorted);
+}
+function tryPair(tiles){
+  for(let i=0;i<tiles.length-1;i++){
+    if(tiles[i].s===tiles[i+1].s&&tiles[i].c===tiles[i+1].c){
+      const rest=[...tiles];rest.splice(i,2);
+      if(tryMelds(rest))return true;
+    }
+  }
+  return false;
+}
+function tryMelds(tiles){
+  if(tiles.length===0)return true;
+  const t=tiles[0];
+  // try pung
+  if(tiles.filter(x=>x.s===t.s&&x.c===t.c).length>=3){
+    const rest=[...tiles];let removed=0;
+    const nr=rest.filter(x=>{if(removed<3&&x.s===t.s&&x.c===t.c){removed++;return false;}return true;});
+    if(tryMelds(nr))return true;
+  }
+  // try chow (number suits only)
+  if(t.s!=='hon'){
+    const v=tileVal(t);
+    if(v<=7){
+      const t2=tiles.find(x=>x.s===t.s&&tileVal(x)===v+1);
+      const t3=tiles.find(x=>x.s===t.s&&tileVal(x)===v+2);
+      if(t2&&t3){
+        const rest=[...tiles];
+        [t,t2,t3].forEach(rem=>{const i=rest.findIndex(x=>x.s===rem.s&&x.c===rem.c);if(i>=0)rest.splice(i,1);});
+        if(tryMelds(rest))return true;
+      }
+    }
+  }
+  return false;
+}
+/* Tenpai detection — does discarding any tile make remaining 13 one away from win? */
+function isTenpai(hand13){
+  const deck=makeDeck();
+  for(let draw of deck.slice(0,30)){
+    if(canWin([...hand13,draw]))return true;
+  }
+  return false;
+}
+/* Best discard hint */
+function bestDiscard(hand13,drawnTile){
+  const full=[...hand13,drawnTile];
+  let best=null,bestScore=-1;
+  for(let i=0;i<full.length;i++){
+    const rest=[...full];rest.splice(i,1);
+    let score=0;
+    const deck=makeDeck();
+    for(let draw of deck.slice(0,20)){if(canWin([...rest,draw]))score++;}
+    if(score>bestScore){bestScore=score;best=i;}
+  }
+  return best;
+}
+/* Yaku (hand value) */
+function calcYaku(hand14,riichiDeclared,tsumo){
+  const yaku=[];let han=0;
+  if(kokushi(hand14)){yaku.push('Kokushi Musou');han=13;}
+  else if(chiitoitsu(hand14)){yaku.push('Chiitoitsu');han=2;}
+  else{
+    if(tsumo){yaku.push('Menzen Tsumo');han++;}
+    if(riichiDeclared){yaku.push('Riichi');han++;}
+    const allNum=hand14.every(t=>t.s!=='hon');
+    if(allNum){yaku.push('Tanyao');han++;}
+    if(hand14.filter(t=>t.s==='hon'&&t.c==='中').length>=3){yaku.push('Hatsu');han++;}
+    if(han===0){yaku.push('Pinfu');han=1;}
+  }
+  return {yaku,han:Math.max(1,han)};
+}
+/* Score from han */
+function hanToScore(han,stake){
+  const base={free:0,micro:100,low:500,med:2000,high:8000,vip:25000};
+  const b=base[stake]||100;
+  const mul=[0,1,2,4,8,13,20];
+  return b*(mul[Math.min(han,6)]||20);
+}
+
+/* ═══════════════════════════════════════════
+   AI ENGINE
+═══════════════════════════════════════════ */
+const AI = {
+  names:['SakuraMaster','TigerClaw','NorthWind42'],
+  avatars:['🌸','⚡','🌙'],
+  elos:[1920,2104,1654],
+  tiers:['gold','plat','silver'],
+  
+  think(hand,discard,difficulty){
+    // Easy: random discard
+    if(difficulty==='easy') return Math.floor(Math.random()*hand.length);
+    // Medium/Hard: discard tile that reduces hand shanten
+    if(difficulty==='hard'){
+      return bestDiscard(hand.slice(0,13),hand[13])||0;
+    }
+    // Medium: mostly good but occasional mistake
+    if(Math.random()<0.3) return Math.floor(Math.random()*hand.length);
+    return bestDiscard(hand.slice(0,13),hand[13])||0;
+  },
+  
+  shouldPong(hand,tile){
+    const matches=hand.filter(t=>t.s===tile.s&&t.c===tile.c);
+    return matches.length>=2&&Math.random()>0.4;
+  },
+  
+  shouldRon(hand13,tile,difficulty){
+    return canWin([...hand13,tile])&&(difficulty==='hard'||Math.random()>0.1);
+  }
+};
+
+/* ═══════════════════════════════════════════
+   GAME ENGINE
+═══════════════════════════════════════════ */
+const Game = {
+  state: null,
+  chatInt: null,
+  aiInt: null,
+  timerInt: null,
+  CHAT_LINES: [
+    ['TigerClaw','🤣 nice hand...'],['SakuraMaster','中中中 coming 👀'],
+    ['NorthWind42','gg last round'],['TigerClaw','one more!'],
+    ['SakuraMaster','riichi declared ⚡'],['NorthWind42','too close 😅'],
+    ['TigerClaw','PONG! haha'],['SakuraMaster','good game everyone'],
+  ],
+  chatIdx:0,
+
+  init(opts={}){
+    const deck=makeDeck();
+    const mode=opts.mode||'quickmatch';
+    const rs=STATE.settings.ruleset;
+    const stake=STATE.settings.stake;
+    const diff=STATE.settings.difficulty;
+    const buyin=stake==='free'?0:STATE.stakes.find(s=>s.id===stake)?.min||0;
+    
+    if(buyin>0&&STATE.player.chips<buyin){
+      Toast.show('❌ Insufficient chips for this stake!');
+      Nav.go('wallet');return;
+    }
+    if(buyin>0) Economy.deductChips(buyin,'Game wager');
+    
+    this.state = {
+      mode, ruleset:rs, stake, buyin, diff,
+      deck, deckIdx:52,
+      hands:[deck.slice(0,13),deck.slice(13,26),deck.slice(26,39),deck.slice(39,52)],
+      drawn:deck[52],
+      discards:[[],[],[],[]],
+      melds:[[],[],[],[]],
+      pot: buyin*4,
+      round:1, seat:0, // player is seat 0
+      turn:0, // whose turn (0=player)
+      riichiDeclared:false,
+      gameOver:false,
+      callPending:null,
+      timerVal:5.5,
+    };
+    this.state.deckIdx=53;
+    
+    this.render();
+    this.renderOpponents();
+    this.showCallTimer(false);
+    this.renderHand();
+    this.renderDiscard();
+    this.updateButtons();
+    this.updatePot();
+    this.clearChat();
+    this.startChat();
+    
+    // If AI starts first, let player go first
+    document.getElementById('result-overlay').classList.remove('show');
+  },
+
+  render(){
+    const s=this.state;
+    document.getElementById('g-round').textContent = (s.ruleset==='riichi'?'東':'東')+' ROUND '+s.round;
+    document.getElementById('g-wind').textContent = '東 R'+s.round;
+    document.getElementById('g-ruleset-lbl').textContent = s.ruleset.toUpperCase();
+  },
+
+  renderOpponents(){
+    const area=document.getElementById('opp-area');
+    area.innerHTML='';
+    for(let i=1;i<=3;i++){
+      const div=document.createElement('div');
+      div.className='opanel'+(i===1?' aturn':'');
+      div.id='opp'+i;
+      const h=this.state.hands[i];
+      div.innerHTML=`<div class="oname">${AI.names[i-1]}</div><div class="ometa">ELO ${AI.elos[i-1]}</div><div class="otiles" id="opp${i}-tiles">${'<div class="otile"></div>'.repeat(h.length)}</div>`;
+      area.appendChild(div);
+    }
+  },
+
+  renderHand(){
+    const s=this.state;
+    const con=document.getElementById('player-hand');
+    con.innerHTML='';
+    s.hands[0].forEach((t,i)=>{
+      const el=document.createElement('div');
+      el.className='mjtile htile'+(s.selected===i?' sel':'');
+      el.style.color=TCOL[t.s];
+      el.textContent=t.c;
+      el.addEventListener('click',()=>this.selectTile(i));
+      con.appendChild(el);
+    });
+    // gap
+    const g=document.createElement('div');g.style.cssText='width:6px;flex-shrink:0';con.appendChild(g);
+    // drawn tile
+    if(s.drawn){
+      const el=document.createElement('div');
+      el.className='mjtile htile drw'+(s.selected===13?' sel':'');
+      el.style.color=TCOL[s.drawn.s];el.textContent=s.drawn.c;
+      el.addEventListener('click',()=>this.selectTile(13));
+      con.appendChild(el);
+    }
+    // tenpai/riichi indicators
+    const tp=document.getElementById('tenpai-indicator');
+    const ri=document.getElementById('riichi-indicator');
+    ri.style.display=s.riichiDeclared?'flex':'none';
+    const hand14=[...s.hands[0]];if(s.drawn)hand14.push(s.drawn);
+    tp.style.display=(!s.riichiDeclared&&isTenpai(s.hands[0]))?'flex':'none';
+  },
+
+  renderDiscard(){
+    const grid=document.getElementById('dp-grid');
+    grid.innerHTML='';
+    const pool=this.state.discards.flat().slice(-18);
+    for(let i=0;i<18;i++){
+      const el=document.createElement('div');
+      el.className='dtile'+(i>=pool.length?' empty':'')+(i===pool.length-1?' last':'');
+      if(i<pool.length){el.style.color=TCOL[pool[i].s];el.textContent=pool[i].c;}
+      grid.appendChild(el);
+    }
+  },
+
+  updatePot(){
+    const p=this.state.pot;
+    document.getElementById('g-pot').textContent='POT: '+(p>0?p.toLocaleString():'0');
+    document.getElementById('g-pot2').textContent='● '+(p>0?p.toLocaleString():'0');
+  },
+
+  updateButtons(){
+    const s=this.state;
+    if(s.gameOver){
+      ['btn-discard','btn-pong','btn-riichi','btn-skip','btn-ron'].forEach(id=>document.getElementById(id).classList.add('off'));
+      return;
+    }
+    const isPlayerTurn=(s.turn===0);
+    const bd=document.getElementById('btn-discard');
+    const bp=document.getElementById('btn-pong');
+    const br=document.getElementById('btn-riichi');
+    const bs=document.getElementById('btn-skip');
+    const bron=document.getElementById('btn-ron');
+    
+    bd.classList.toggle('off',!isPlayerTurn||s.riichiDeclared);
+    bs.classList.toggle('off',!isPlayerTurn);
+    
+    // Pong available if last discard matches 2 tiles in hand
+    const lastDiscard=this.lastDiscard();
+    const pongAvail=lastDiscard&&!isPlayerTurn&&this.countInHand(s.hands[0],lastDiscard)>=2;
+    bp.classList.toggle('off',!pongAvail);
+    
+    // Riichi: tenpai + not yet declared + enough chips
+    const hand14=[...s.hands[0]];if(s.drawn)hand14.push(s.drawn);
+    const tenpaiNow=isTenpai(s.hands[0]);
+    br.classList.toggle('off',!isPlayerTurn||s.riichiDeclared||!tenpaiNow||STATE.player.chips<1000);
+    
+    // Ron
+    const ronAvail=lastDiscard&&!isPlayerTurn&&canWin([...s.hands[0],lastDiscard]);
+    bron.classList.toggle('off',!ronAvail);
+    if(ronAvail) bron.classList.remove('off');
+    
+    // Tsumo check
+    if(isPlayerTurn&&s.drawn&&canWin([...s.hands[0],s.drawn])){
+      bron.classList.remove('off');
+      bron.textContent='TSUMO';
+      bron.className='ab tsumo';
+      bron.onclick=()=>this.declareTsumo();
+    } else {
+      bron.textContent='RON!';
+      bron.className='ab ron'+(ronAvail?'':' off');
+      bron.onclick=()=>this.declareRon();
+    }
+  },
+
+  lastDiscard(){
+    // find the very last discarded tile (from any opponent)
+    for(let i=3;i>=1;i--){
+      const d=this.state.discards[i];
+      if(d.length>0) return d[d.length-1];
+    }
+    return null;
+  },
+
+  countInHand(hand,tile){
+    return hand.filter(t=>t.s===tile.s&&t.c===tile.c).length;
+  },
+
+  selectTile(idx){
+    if(this.state.turn!==0||this.state.riichiDeclared) return;
+    this.state.selected=this.state.selected===idx?-1:idx;
+    this.renderHand();
+  },
+
+  discard(){
+    const s=this.state;
+    if(s.turn!==0||s.gameOver) return;
+    if(s.selected===-1){Toast.show('Tap a tile to select it first');return;}
+    
+    let discarded;
+    if(s.selected===13){
+      discarded=s.drawn; s.drawn=null;
+    } else {
+      discarded=s.hands[0][s.selected];
+      if(s.drawn) s.hands[0][s.selected]=s.drawn; else s.hands[0].splice(s.selected,1);
+      s.drawn=null;
+    }
+    s.discards[0].push(discarded);
+    s.selected=-1;
+    this.renderHand();
+    this.renderDiscard();
+    this.updatePot();
+    this.checkAICallOnDiscard(discarded, 0);
+  },
+
+  checkAICallOnDiscard(tile, fromSeat){
+    // check if any AI wants to Ron or Pong on this tile
+    const s=this.state;
+    for(let ai=1;ai<=3;ai++){
+      if(AI.shouldRon(s.hands[ai],tile,s.diff)){
+        this.endGame('loss', ai, tile);
+        return;
+      }
+    }
+    // Check pong
+    for(let ai=1;ai<=3;ai++){
+      if(AI.shouldPong(s.hands[ai],tile)&&Math.random()>0.6){
+        // AI ponged
+        const pongTiles=s.hands[ai].filter(t=>t.s===tile.s&&t.c===tile.c).slice(0,2);
+        s.melds[ai].push([pongTiles[0],pongTiles[1],tile]);
+        s.hands[ai]=s.hands[ai].filter(t=>!(t.s===tile.s&&t.c===tile.c)).slice(2);
+        Toast.show(`${AI.names[ai-1]} PONG! ▪▪▪`);
+        this.renderOpponentTiles(ai);
+        setTimeout(()=>this.aiTurn(ai),1000);
+        return;
+      }
+    }
+    // next AI turn
+    setTimeout(()=>this.aiTurn(1),800+Math.random()*600);
+  },
+
+  aiTurn(ai){
+    const s=this.state;
+    if(s.gameOver) return;
+    s.turn=ai;
+    this.highlightTurn(ai);
+    this.showCallTimer(true,`${AI.names[ai-1]} thinking`);
+    
+    setTimeout(()=>{
+      if(s.gameOver) return;
+      // AI draws
+      if(s.deckIdx<s.deck.length){
+        const drawn=s.deck[s.deckIdx++];
+        s.hands[ai].push(drawn);
+        // Check tsumo
+        if(canWin(s.hands[ai])){
+          if(Math.random()>0.85){
+            this.endGame('loss',ai,null,'tsumo');return;
+          }
+        }
+        // Discard
+        const discardIdx=AI.think(s.hands[ai],null,s.diff);
+        const discarded=s.hands[ai].splice(discardIdx,1)[0];
+        s.discards[ai].push(discarded);
+        this.renderOpponentTiles(ai);
+        this.renderDiscard();
+        this.updatePot();
+        // Check if player can Ron/Pong
+        const playerRon=canWin([...s.hands[0],discarded]);
+        const playerPong=this.countInHand(s.hands[0],discarded)>=2;
+        if(playerRon||playerPong){
+          this.showCallTimer(true,'RON / PONG / CHI');
+          s.callPending=discarded;
+          s.turn=-1; // waiting for player action
+          this.updateButtons();
+          setTimeout(()=>{
+            if(s.callPending){s.callPending=null;this.nextPlayerTurn();}
+          },5500);
+        } else {
+          this.nextPlayerTurn();
+        }
+      } else {
+        this.endGame('draw');
+      }
+    }, 800+Math.random()*800);
+  },
+
+  nextPlayerTurn(){
+    const s=this.state;
+    if(s.gameOver) return;
+    s.turn=0; s.callPending=null;
+    this.highlightTurn(0);
+    this.showCallTimer(false);
+    if(s.deckIdx<s.deck.length){
+      s.drawn=s.deck[s.deckIdx++];
+      this.renderHand();
+      this.updateButtons();
+    } else {
+      this.endGame('draw');
+    }
+  },
+
+  highlightTurn(seat){
+    for(let i=1;i<=3;i++){
+      const el=document.getElementById('opp'+i);
+      if(el) el.classList.toggle('aturn',i===seat);
+    }
+  },
+
+  showCallTimer(active,label=''){
+    const lbl=document.getElementById('ct-action');
+    const tm=document.getElementById('ct-time');
+    const bar=document.getElementById('ct-bar');
+    clearInterval(this.timerInt);
+    if(!active){
+      lbl.textContent='YOUR TURN'; tm.textContent='';bar.style.width='0%';bar.style.background='var(--border)';
+      return;
+    }
+    lbl.textContent=label||'RON / PONG / CHI';
+    this.state.timerVal=5.5;
+    bar.style.background='var(--red)';bar.style.width='100%';
+    this.timerInt=setInterval(()=>{
+      this.state.timerVal=Math.max(0,this.state.timerVal-.1);
+      const pct=(this.state.timerVal/5.5)*100;
+      bar.style.width=pct+'%';
+      tm.textContent=this.state.timerVal.toFixed(1)+'s';
+      if(this.state.timerVal<=0) clearInterval(this.timerInt);
+    },100);
+  },
+
+  renderOpponentTiles(specific){
+    const seats=specific?[specific]:[1,2,3];
+    for(const i of seats){
+      const con=document.getElementById('opp'+i+'-tiles');
+      if(!con) continue;
+      const h=this.state.hands[i];
+      con.innerHTML='<div class="otile"></div>'.repeat(h.length);
+      // show melded
+      for(const meld of this.state.melds[i]){
+        meld.forEach(()=>{const d=document.createElement('div');d.className='otile melded';con.appendChild(d);});
+      }
+    }
+  },
+
+  declarePong(){
+    const s=this.state;
+    const lastD=s.callPending||this.lastDiscard();
+    if(!lastD) return;
+    if(this.countInHand(s.hands[0],lastD)<2){Toast.show('Need 2 matching tiles to PONG');return;}
+    let removed=0;
+    s.hands[0]=s.hands[0].filter(t=>{if(removed<2&&t.s===lastD.s&&t.c===lastD.c){removed++;return false;}return true;});
+    s.melds[0].push([{...lastD},{...lastD},{...lastD}]);
+    s.callPending=null;
+    Toast.show('PONG declared! ▪▪▪');
+    this.renderHand();
+    this.updateButtons();
+    clearInterval(this.timerInt);
+  },
+
+  declareRiichi(){
+    const s=this.state;
+    if(s.riichiDeclared||STATE.player.chips<1000) return;
+    Economy.deductChips(1000,'Riichi declaration');
+    s.riichiDeclared=true;
+    s.pot+=1000;
+    this.updatePot();
+    Toast.show('⚑ RIICHI declared! +1,000 chips to pot');
+    this.renderHand();
+    this.updateButtons();
+  },
+
+  declareRon(){
+    const s=this.state;
+    const lastD=s.callPending||this.lastDiscard();
+    if(!lastD||!canWin([...s.hands[0],lastD])){Toast.show('No valid Ron — check your tiles');return;}
+    this.endGame('win',0,lastD,'ron');
+  },
+
+  declareTsumo(){
+    const s=this.state;
+    const hand14=[...s.hands[0],s.drawn];
+    if(!canWin(hand14)){Toast.show('No valid Tsumo');return;}
+    this.endGame('win',0,s.drawn,'tsumo');
+  },
+
+  skip(){
+    const s=this.state;
+    s.callPending=null;
+    clearInterval(this.timerInt);
+    this.nextPlayerTurn();
+  },
+
+  endGame(result, winner=0, winTile=null, method='ron'){
+    const s=this.state;
+    if(s.gameOver) return;
+    s.gameOver=true;
+    clearInterval(this.chatInt);clearInterval(this.timerInt);
+    
+    const ov=document.getElementById('result-overlay');
+    const gl=document.getElementById('result-glow');
+    const rt=document.getElementById('res-title');
+    const ra=document.getElementById('res-amt');
+    const rh=document.getElementById('res-hand');
+    
+    if(result==='win'){
+      const winHand=[...s.hands[0]];if(winTile)winHand.push(winTile);
+      const {yaku,han}=calcYaku(winHand,s.riichiDeclared,method==='tsumo');
+      const winnings=hanToScore(han,s.stake)+s.pot;
+      Economy.addChips(winnings,'Game win: '+yaku[0]);
+      Economy.addXP(han*50+100);
+      Economy.addWin();
+      STATE.player.totalWinnings+=winnings;
+      
+      rt.textContent=method==='tsumo'?'TSUMO!':'RON!';
+      rt.style.color='var(--gold)';
+      ra.textContent='+'+winnings.toLocaleString()+' ●';
+      ra.style.color='var(--green)';
+      rh.textContent=yaku.join(' · ');
+      gl.className='win-glow';
+    } else if(result==='loss'){
+      const loser=winner>0?'a'+winner:'';
+      const penalty=s.buyin>0?Math.floor(hanToScore(2,s.stake)*0.5):0;
+      if(penalty>0) Economy.deductChips(penalty,'Game loss penalty');
+      Economy.addXP(20);
+      STATE.player.games++;
+      
+      rt.textContent=winner>0?AI.names[winner-1]+' WINS':'DRAW';
+      rt.style.color='var(--red)';
+      ra.textContent=penalty>0?'-'+penalty.toLocaleString()+' ●':'±0 ●';
+      ra.style.color='var(--red)';
+      rh.textContent=winner>0?`${method==='tsumo'?'Tsumo':'Ron'} by ${AI.names[winner-1]}`:'No winner — deck exhausted';
+      gl.className='loss-glow';
+    } else {
+      rt.textContent='DRAW';rt.style.color='var(--text-secondary)';
+      ra.textContent='±0 ●';ra.style.color='var(--text-muted)';
+      rh.textContent='Deck exhausted — no winner';
+      gl.className='loss-glow';
+    }
+    ov.classList.add('show');
+    UI.syncBalances();
+    Achievements.check();
+  },
+
+  newGame(){
+    document.getElementById('result-overlay').classList.remove('show');
+    this.init({mode:this.state?.mode||'practice'});
+  },
+
+  clearChat(){clearInterval(this.chatInt);},
+  startChat(){
+    this.chatInt=setInterval(()=>{
+      const [player,msg]=this.CHAT_LINES[this.chatIdx%this.CHAT_LINES.length];
+      document.getElementById('chat-line').innerHTML=`<span>${player}:</span> ${msg}`;
+      this.chatIdx++;
+    },3500+Math.random()*1500);
+  },
+};
+
+/* ═══════════════════════════════════════════
+   ECONOMY
+═══════════════════════════════════════════ */
+const Economy = {
+  addChips(amt, desc){
+    STATE.player.chips+=amt;
+    STATE.transactions.unshift({type:'w',icon:'💰',desc,time:this.now(),amt});
+    UI.syncBalances();
+    Toast.show(`+${amt.toLocaleString()} chips!`);
+  },
+  deductChips(amt, desc){
+    STATE.player.chips=Math.max(0,STATE.player.chips-amt);
+    STATE.transactions.unshift({type:'l',icon:'🎴',desc,time:this.now(),amt:-amt});
+    UI.syncBalances();
+  },
+  addXP(amt){
+    STATE.player.xp+=amt;
+    if(STATE.player.xp>=STATE.player.xpNext){
+      STATE.player.level++;STATE.player.xp=0;STATE.player.xpNext=STATE.player.level*250;
+      Toast.show(`🎉 Level Up! Now LVL ${STATE.player.level}`);
+    }
+  },
+  addWin(){
+    STATE.player.wins++;STATE.player.games++;
+    STATE.player.elo+=Math.floor(Math.random()*20)+5;
+    if(STATE.player.elo>2000){STATE.player.vip='diamond';}
+    else if(STATE.player.elo>1700){STATE.player.vip='gold';}
+    STATE.player.seasonRank=Math.max(1,STATE.player.seasonRank-Math.floor(Math.random()*5));
+  },
+  claimDailyBonus(){
+    if(STATE.player.dailyClaimed){Toast.show('Already claimed today!');return;}
+    const amt=STATE.player.streak*200+300;
+    STATE.player.dailyClaimed=true;
+    STATE.player.streak++;
+    this.addChips(amt,'Daily Login Bonus — Day '+STATE.player.streak);
+    STATE.player.bonusActive=true;
+    document.getElementById('claim-btn').textContent='CLAIMED';
+    document.getElementById('claim-btn').disabled=true;
+    UI.syncBalances();
+  },
+  buyBundle(idx){
+    const b=STATE.bundles[idx];
+    const total=b.chips+(b.bonus||0);
+    STATE.player.chips+=total;
+    STATE.transactions.unshift({type:'p',icon:'💳',desc:`Chip Purchase — ${(b.chips/1000).toFixed(0)}K Bundle`,time:this.now(),amt:0,fiat:b.price});
+    UI.syncBalances();
+    Toast.show(`💳 ${total.toLocaleString()} chips added!`);
+    closeModal('modal-deposit');
+  },
+  buyItem(id){
+    const item=STATE.shopItems.find(x=>x.id===id);
+    if(!item) return;
+    if(STATE.player.inventory.has(id)){Toast.show('✅ Already owned!');return;}
+    if(item.fiat){Toast.show(`💳 Redirecting to Stripe for ${item.fiat}`);return;}
+    if(item.gemCost>0){
+      if(STATE.player.gems<item.gemCost){Toast.show(`❌ Need ${item.gemCost} Gems`);return;}
+      STATE.player.gems-=item.gemCost;
+      STATE.transactions.unshift({type:'p',icon:'💎',desc:`Purchased: ${item.name}`,time:this.now(),amt:0,gems:-item.gemCost});
+    } else {
+      if(STATE.player.chips<item.chipCost){Toast.show(`❌ Need ${item.chipCost.toLocaleString()} Chips`);return;}
+      this.deductChips(item.chipCost,`Purchased: ${item.name}`);
+    }
+    STATE.player.inventory.add(id);
+    Toast.show(`✅ ${item.name} purchased!`);
+    UI.syncBalances();
+    UI.renderShop();
+  },
+  registerTournament(id){
+    const t=STATE.tournaments.find(x=>x.id===id);
+    if(!t) return;
+    if(t.registered){Toast.show('Already registered!');return;}
+    if(t.req&&STATE.player.elo<t.req){Toast.show(`❌ ELO ${t.req}+ required`);return;}
+    if(t.buyin>0){
+      if(STATE.player.chips<t.buyin){Toast.show(`❌ Need ${t.buyin.toLocaleString()} chips`);return;}
+      this.deductChips(t.buyin,`Tournament entry: ${t.name}`);
+    }
+    t.registered=true;
+    Toast.show(`✅ Registered for ${t.name.replace(/[^\w ]/g,'').trim()}!`);
+    UI.syncBalances();
+    UI.renderTournaments();
+  },
+  createClub(){
+    if(STATE.player.chips<5000){Toast.show('❌ Creating a club costs 5,000 chips');return;}
+    this.deductChips(5000,'Club creation fee');
+    Toast.show('🏰 Club created! Invite members with your link');
+    UI.syncBalances();
+  },
+  joinClub(id){
+    const c=STATE.clubs.find(x=>x.id===id);
+    if(!c) return;
+    if(c.joined){Toast.show('Already a member!');return;}
+    if(c.invite){Toast.show('📋 Invite request sent!');return;}
+    c.joined=true;
+    STATE.player.joinedClubs.add(id);
+    Toast.show(`✅ Joined ${c.name}!`);
+    UI.renderClubs();
+  },
+  now(){
+    const d=new Date();
+    return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+  },
+};
+
+/* ═══════════════════════════════════════════
+   ACHIEVEMENTS
+═══════════════════════════════════════════ */
+const Achievements = {
+  check(){
+    const p=STATE.player;
+    STATE.achievements.forEach(a=>{
+      if(a.done) return;
+      if(a.id==='whale'&&p.totalWinnings>=50000){a.done=true;a.progress='';Toast.show('🏆 Achievement: Whale unlocked!');}
+      if(a.id==='diamond'&&p.elo>=2000){a.done=true;a.progress='';Toast.show('💎 Achievement: Diamond Player!');}
+      if(a.id==='tourney'&&p.wins>=1){a.done=true;a.progress='';Toast.show('🏆 Achievement: Tournament Champion!');}
+      // Update progress
+      if(a.id==='diamond'&&!a.done) a.progress=p.elo+'/2000';
+      if(a.id==='whale'&&!a.done) a.progress=Math.min(p.totalWinnings,50000).toLocaleString()+'/50000';
+    });
+    UI.renderAchievements();
+  }
+};
+
+/* ═══════════════════════════════════════════
+   UI RENDERING
+═══════════════════════════════════════════ */
+const UI = {
+  syncBalances(){
+    const p=STATE.player;
+    const c=p.chips.toLocaleString(); const g=p.gems.toLocaleString();
+    document.querySelectorAll('.sync-chips').forEach(el=>el.textContent=c);
+    document.querySelectorAll('.sync-gems').forEach(el=>el.textContent=g);
+    ['lb-chips','lb-gems'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.textContent=id.includes('chips')?c:g;
+    });
+    // Wallet screen
+    const wc=document.getElementById('w-chips-big');if(wc)wc.textContent=c;
+    const wg=document.getElementById('w-gems-big');if(wg)wg.textContent=g;
+    const wu=document.getElementById('w-usd');if(wu)wu.textContent=(p.chips/1000).toFixed(2);
+    // Profile + lobby
+    this.renderPlayerCard();
+    this.renderProfileHero();
+    this.renderRanks();
+  },
+  renderPlayerCard(){
+    const p=STATE.player;
+    const av=document.getElementById('lb-avatar');if(av)av.textContent=p.avatar;
+    const nm=document.getElementById('lb-name');if(nm)nm.textContent=p.name;
+    const ti=document.getElementById('lb-tier');if(ti){ti.textContent=this.tierLabel(p.vip);ti.className='tier-badge '+this.tierClass(p.vip);}
+    const el=document.getElementById('lb-elo');if(el)el.textContent='ELO '+p.elo.toLocaleString();
+    const st=document.getElementById('lb-streak');if(st)st.textContent='🔥 '+p.streak+' streak';
+    const lv=document.getElementById('lb-level');if(lv)lv.textContent='LVL '+p.level;
+    const sd=document.getElementById('streak-day');if(sd)sd.textContent=p.streak;
+    const ba=document.getElementById('bonus-amt');if(ba)ba.textContent=(p.streak*200+300).toLocaleString();
+    const cb=document.getElementById('claim-btn');if(cb){cb.disabled=p.dailyClaimed;cb.textContent=p.dailyClaimed?'CLAIMED':'CLAIM';}
+    // quick match stake label
+    const qm=document.getElementById('qm-stake-lbl');if(qm){const s=STATE.stakes.find(x=>x.id===STATE.settings.stake);qm.textContent=(s?.label||'Micro')+' stake';}
+  },
+  renderProfileHero(){
+    const p=STATE.player;
+    const el=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
+    el('prof-avatar',p.avatar);el('prof-name',p.name);
+    el('prof-sub',this.tierLabel(p.vip).toUpperCase()+' TIER · ELO '+p.elo.toLocaleString()+' · LVL '+p.level);
+    const tb=document.getElementById('prof-tier-badge');if(tb){tb.textContent=this.tierLabel(p.vip);tb.className='tier-badge '+this.tierClass(p.vip);}
+    const wr=p.games>0?((p.wins/p.games)*100).toFixed(1)+'%':'0%';
+    el('prof-games',p.games);el('prof-wr',wr);
+    el('prof-winnings',p.totalWinnings.toLocaleString()+' ●');
+    el('prof-rank','#'+p.seasonRank);
+  },
+  renderRanks(){
+    const p=STATE.player;
+    const tier=this.eloTier(p.elo);
+    const el=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
+    el('r-icon',tier.ico);el('r-tier',tier.name);
+    el('r-elo',p.elo.toLocaleString());
+    el('r-prog-lbl',tier.name+' → '+tier.next);
+    el('r-prog-vals',p.elo.toLocaleString()+' / '+tier.nextElo);
+    const pf=document.getElementById('r-prog-fill');
+    if(pf){const pct=Math.min(100,((p.elo-tier.minElo)/(tier.nextElo-tier.minElo))*100);pf.style.width=pct+'%';}
+    const wr=p.games>0?((p.wins/p.games)*100).toFixed(1)+'%':'0%';
+    el('r-wr',wr);el('r-games',p.games);el('r-rank','#'+p.seasonRank);
+  },
+  eloTier(elo){
+    if(elo<800)  return {ico:'⚪',name:'BEGINNER',next:'Bronze',minElo:0,nextElo:800};
+    if(elo<1200) return {ico:'🥉',name:'BRONZE',next:'Silver',minElo:800,nextElo:1200};
+    if(elo<1600) return {ico:'🥈',name:'SILVER',next:'Gold',minElo:1200,nextElo:1600};
+    if(elo<2000) return {ico:'🥇',name:'GOLD',next:'Platinum',minElo:1600,nextElo:2000};
+    if(elo<2400) return {ico:'🔷',name:'PLATINUM',next:'Diamond',minElo:2000,nextElo:2400};
+    return {ico:'💎',name:'DIAMOND',next:'Master',minElo:2400,nextElo:2800};
+  },
+  tierLabel(vip){const m={bronze:'Bronze VIP',silver:'Silver VIP',gold:'Gold VIP',platinum:'Platinum VIP',diamond:'Diamond VIP'};return m[vip]||'Bronze VIP';},
+  tierClass(vip){const m={bronze:'tb-s',silver:'tb-s',gold:'tb-g',platinum:'tb-p',diamond:'tb-d'};return m[vip]||'tb-s';},
+
+  renderPills(containerId, items, current, onChange){
+    const con=document.getElementById(containerId);if(!con)return;
+    con.innerHTML='';
+    items.forEach(item=>{
+      const p=document.createElement('span');
+      p.className='pill '+(item.id===current?'on':'off');
+      p.textContent=item.label;
+      p.onclick=()=>{onChange(item.id);this.renderPills(containerId,items,item.id,onChange);};
+      con.appendChild(p);
+    });
+  },
+
+  renderStakeGrid(){
+    const grid=document.getElementById('stake-grid');if(!grid)return;
+    grid.innerHTML='';
+    STATE.stakes.forEach(s=>{
+      const d=document.createElement('div');
+      d.className='scell'+(STATE.settings.stake===s.id?' sa':'');
+      d.innerHTML=`<div class="sname">${s.label}</div><div class="srange">${s.min===0?'FREE':s.min.toLocaleString()+(s.max?'–'+s.max.toLocaleString():'+')}</div><div class="stag">${s.tier}</div>`;
+      d.onclick=()=>{
+        if(s.id==='vip'&&STATE.player.vip!=='diamond'&&STATE.player.vip!=='platinum'){Toast.show('👑 VIP tables require Platinum+ membership');return;}
+        STATE.settings.stake=s.id;
+        this.renderStakeGrid();
+        const qm=document.getElementById('qm-stake-lbl');if(qm)qm.textContent=s.label+' stake';
+        Toast.show(s.id==='free'?'Practice mode — No wager':`${s.label} stake selected`);
+      };
+      grid.appendChild(d);
+    });
+  },
+
+  renderTournaments(){
+    const con=document.getElementById('tournament-list');if(!con)return;
+    con.innerHTML='';
+    STATE.tournaments.forEach(t=>{
+      const typeMap={d:'DAILY',w:'WEEKLY',s:'SEASON',sp:'SPECIAL'};
+      const clsMap={d:'tt-d',w:'tt-w',s:'tt-s',sp:'tt-sp'};
+      const buyinLabel=t.buyin>0?t.buyin.toLocaleString()+' ●':t.id==='season-3'?'FREE':'Invite';
+      const regLabel=t.registered?'REGISTERED':t.req&&STATE.player.elo<t.req?'NEED '+t.req+' ELO':'REGISTER';
+      const regClass=t.registered?'treg gn':t.id==='season-3'?'treg gn':'treg';
+      const div=document.createElement('div');
+      div.className='tcard';
+      div.innerHTML=`
+        <div class="tcard-hdr"><div class="tname">${t.name}</div><span class="ttype ${clsMap[t.type]}">${typeMap[t.type]}</span></div>
+        <div class="tcard-body">
+          <div class="tstat"><div class="tsv g">${t.prize}</div><div class="tsl">Prize Pool</div></div>
+          <div class="tstat"><div class="tsv gn">${t.players}</div><div class="tsl">Players</div></div>
+          <div class="tstat"><div class="tsv g">${buyinLabel}</div><div class="tsl">Buy-In</div></div>
+        </div>
+        <div class="tcard-foot">
+          <div class="ttime">${t.live?'<span class="livebadge" style="font-size:8px"><span class="ldot"></span>LIVE</span>':''} ${t.time}</div>
+          <button class="${regClass}" ${t.registered?'disabled':''} onclick="Economy.registerTournament('${t.id}')">${regLabel}</button>
+        </div>`;
+      con.appendChild(div);
+    });
+  },
+
+  renderWalletBundles(){
+    const con=document.getElementById('wallet-bundles');if(!con)return;con.innerHTML='';
+    const con2=document.getElementById('dep-bundles');if(con2)con2.innerHTML='';
+    STATE.bundles.forEach((b,i)=>{
+      const html=`<div class="bndl${b.best?' best':''}"><div><div class="bchips">${(b.chips).toLocaleString()} ●</div>${b.bonus?`<div class="bbonus">+${b.bonus.toLocaleString()} bonus${b.best?' 🔥':''}</div>`:''}</div><button class="bprice" onclick="Economy.buyBundle(${i})">${b.price}</button></div>`;
+      if(con) con.insertAdjacentHTML('beforeend',html);
+      if(con2) con2.insertAdjacentHTML('beforeend',html);
+    });
+  },
+
+  renderTransactions(containerId, limit){
+    const con=document.getElementById(containerId);if(!con)return;
+    con.innerHTML='';
+    const txs=limit?STATE.transactions.slice(0,limit):STATE.transactions;
+    txs.forEach(t=>{
+      const amt=t.fiat?`<span class="tx-amt" style="color:var(--blue)">${t.fiat}</span>`
+        :t.gld?`<span class="tx-amt gld">+${t.amt.toLocaleString()} ●</span>`
+        :t.amt>0?`<span class="tx-amt pos">+${t.amt.toLocaleString()} ●</span>`
+        :t.amt<0?`<span class="tx-amt neg">${t.amt.toLocaleString()} ●</span>`
+        :`<span class="tx-amt" style="color:var(--purple)">${t.gems||0} 💎</span>`;
+      const icoClass=t.type==='w'?'w':t.type==='l'?'l':t.type==='b'?'b':'p';
+      con.insertAdjacentHTML('beforeend',`<div class="tx-row"><div class="tx-l"><div class="tx-ico ${icoClass}">${t.icon}</div><div><div class="tx-desc">${t.desc}</div><div class="tx-time">${t.time}</div></div></div>${amt}</div>`);
+    });
+  },
+
+  renderShop(){
+    const con=document.getElementById('shop-grid');if(!con)return;con.innerHTML='';
+    const rarMap={'c':'rc','r':'rr','e':'re','l':'rl'};
+    const rarLbl={'c':'COMMON','r':'RARE','e':'EPIC','l':'LEGENDARY'};
+    const filter=STATE.shopFilter;
+    STATE.shopItems.filter(it=>filter==='all'||it.cat===filter).forEach(item=>{
+      const owned=STATE.player.inventory.has(item.id);
+      const priceHtml=item.fiat
+        ?`<span style="font-size:10px;font-weight:700;color:var(--text-secondary)">${item.fiat}</span>`
+        :item.gemCost>0?`<div class="bdot p" style="width:8px;height:8px"></div><span class="spval p">${item.gemCost} 💎</span>`
+        :`<div class="bdot g" style="width:8px;height:8px"></div><span class="spval g">${item.chipCost.toLocaleString()} ●</span>`;
+      const d=document.createElement('div');d.className='sitem';
+      d.innerHTML=`<div class="sitem-prev">${item.ico}<span class="rarity ${rarMap[item.rarity]}">${rarLbl[item.rarity]}</span></div><div class="sitem-body"><div class="siname">${item.name}</div><div class="sisub">${item.sub}</div><div class="siprice">${priceHtml}<button class="sbuy${owned?' owned':''}" onclick="Economy.buyItem('${item.id}')">${owned?'OWNED':'BUY'}</button></div></div>`;
+      con.appendChild(d);
+    });
+  },
+
+  renderShopFilters(){
+    const con=document.getElementById('shop-filters');if(!con)return;con.innerHTML='';
+    const filters=[{id:'all',label:'All'},{id:'tiles',label:'🀄 Tiles'},{id:'tables',label:'🎰 Tables'},{id:'avatars',label:'👤 Avatars'},{id:'emotes',label:'😄 Emotes'},{id:'boosts',label:'⚡ Boosts'},{id:'vip',label:'👑 VIP'}];
+    filters.forEach(f=>{
+      const p=document.createElement('span');
+      p.className='pill '+(STATE.shopFilter===f.id?'on':'off');
+      p.style.flexShrink='0';p.textContent=f.label;
+      p.onclick=()=>{STATE.shopFilter=f.id;this.renderShopFilters();this.renderShop();};
+      con.appendChild(p);
+    });
+  },
+
+  renderLeaderboard(){
+    const con=document.getElementById('leaderboard');if(!con)return;con.innerHTML='';
+    const rkColor=[,'gold-num','silver-num','bronze-num'];
+    const data=[...STATE.leaderboard];
+    // Insert player at their rank
+    const playerEntry={rank:STATE.player.seasonRank,av:STATE.player.avatar,name:STATE.player.name+' (You)',meta:UI.eloTier(STATE.player.elo).name+' · 🔥 '+STATE.player.streak+' streak',elo:STATE.player.elo,isMe:true};
+    // Show top entries + player
+    data.forEach(e=>{
+      const rcls=e.rank<=3?(rkColor[e.rank]||'other-num'):'other-num';
+      const rkSymbol=e.rank===1?'🥇':e.rank===2?'🥈':e.rank===3?'🥉':e.rank;
+      const row=document.createElement('div');row.className='lbrow';
+      row.innerHTML=`<div class="lbrk" style="color:${e.rank===1?'var(--gold)':e.rank===2?'#94A3B8':e.rank===3?'#CD7F32':'var(--text-muted)'}">${rkSymbol}</div><div class="lbav">${e.av}</div><div class="lbinfo"><div class="lbname">${e.name}</div><div class="lbmeta">${e.meta}</div></div><div class="lbelo">${e.elo.toLocaleString()}</div>`;
+      con.appendChild(row);
+    });
+    // Player row
+    const pr=document.createElement('div');
+    pr.className='lbrow';pr.style.cssText='background:rgba(240,165,0,.05);border-radius:6px;margin:0 -12px;padding:10px 12px;border:none';
+    pr.innerHTML=`<div class="lbrk" style="color:var(--gold)">#${playerEntry.rank}</div><div class="lbav" style="border-color:var(--gold)">${playerEntry.av}</div><div class="lbinfo"><div class="lbname" style="color:var(--gold)">${playerEntry.name}</div><div class="lbmeta">${playerEntry.meta}</div></div><div class="lbelo">${playerEntry.elo.toLocaleString()}</div>`;
+    con.appendChild(pr);
+  },
+
+  renderLeaderboardFilters(){
+    this.renderPills('lb-filters',[
+      {id:'global',label:'Global'},{id:'friends',label:'Friends'},{id:'riichi',label:'Riichi'},{id:'hk',label:'HK'},{id:'season',label:'Season'}
+    ],STATE.lbFilter,id=>{STATE.lbFilter=id;this.renderLeaderboard();});
+  },
+
+  renderClubs(){
+    const con=document.getElementById('clubs-list');if(!con)return;con.innerHTML='';
+    STATE.clubs.forEach(c=>{
+      const div=document.createElement('div');div.className='clubrow';
+      div.innerHTML=`<div style="font-size:22px">${c.ico}</div><div style="flex:1"><div class="crname">${c.name}</div><div class="crsub">${c.sub}</div></div><button class="cjoin" ${c.joined?'disabled':''} onclick="Economy.joinClub('${c.id}')">${c.joined?'MEMBER':c.invite?'REQUEST':'JOIN'}</button>`;
+      con.appendChild(div);
+    });
+  },
+
+  renderAchievements(){
+    const con=document.getElementById('achievements');if(!con)return;con.innerHTML='';
+    STATE.achievements.forEach(a=>{
+      const div=document.createElement('div');div.className='achcard';
+      div.innerHTML=`<div class="ach-ico">${a.ico}</div><div style="flex:1"><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div><span class="achbadge ${a.done?'ab-done':'ab-lock'}">${a.done?'DONE':a.progress||'LOCKED'}</span>`;
+      con.appendChild(div);
+    });
+  },
+};
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+const SCREEN_IDS = {
+  splash:'screen-splash',lobby:'screen-lobby',game:'screen-game',
+  events:'screen-events',wallet:'screen-wallet',shop:'screen-shop',
+  ranks:'screen-ranks',clubs:'screen-clubs',profile:'screen-profile'
+};
+let currentScreen='splash';
+
+const Nav = {
+  go(name, opts={}){
+    if(!SCREEN_IDS[name]) return;
+    const prev=document.getElementById(SCREEN_IDS[currentScreen]);
+    const next=document.getElementById(SCREEN_IDS[name]);
+    prev.classList.remove('active');
+    next.classList.add('active');
+    const scr=next.querySelector('.scr');if(scr)scr.scrollTop=0;
+    currentScreen=name;
+    if(name==='game') Game.init(opts);
+    this.refreshScreen(name);
+  },
+  refreshScreen(name){
+    UI.syncBalances();
+    if(name==='wallet'){UI.renderTransactions('tx-recent',5);UI.renderWalletBundles();}
+    if(name==='events'){UI.renderTournaments();}
+    if(name==='shop'){UI.renderShopFilters();UI.renderShop();}
+    if(name==='ranks'){UI.renderLeaderboardFilters();UI.renderLeaderboard();}
+    if(name==='clubs'){UI.renderClubs();}
+    if(name==='profile'){UI.renderAchievements();}
+    if(name==='lobby'){UI.renderStakeGrid();}
+  }
+};
+
+/* ═══════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════ */
+function openModal(id){
+  if(id==='modal-history') UI.renderTransactions('tx-history-full');
+  if(id==='modal-coach') renderCoach();
+  if(id==='modal-settings') renderSettings();
+  if(id==='modal-room') renderRoom();
+  if(id==='modal-deposit') UI.renderWalletBundles();
+  document.getElementById(id).classList.add('show');
+}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function openCoach(){
+  renderCoach();
+  openModal('modal-coach');
+}
+function renderCoach(){
+  const con=document.getElementById('coach-content');if(!con)return;
+  const s=Game.state;
+  if(!s||s.gameOver){con.innerHTML='<div style="color:var(--text-secondary);text-align:center;padding:20px">Start a game to get AI advice.</div>';return;}
+  const hand=[...s.hands[0]];const drawn=s.drawn;
+  const best=drawn?bestDiscard(hand,drawn):null;
+  const hint=best!==null?[...hand,drawn][best]:null;
+  const tp=isTenpai(hand);
+  con.innerHTML=`
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">ANALYSIS</div>
+      <div style="background:var(--bg-navy);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:12px;line-height:1.6;color:var(--text-primary)">
+        ${tp?'⚡ <b style="color:var(--gold)">You are TENPAI</b> — one tile away from winning!<br>':'🎯 Working towards tenpai...<br>'}
+        ${hint?`💡 Best discard: <b style="color:var(--gold);font-size:14px">${hint.c}</b> (${hint.s})<br>`:''}
+        ${s.riichiDeclared?'⚑ <b style="color:var(--purple)">Riichi active</b> — wait for your tile<br>':''}
+        🤖 Difficulty: <b>${s.diff}</b> · Stake: <b>${s.stake.toUpperCase()}</b>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">TIPS FOR ${s.ruleset.toUpperCase()}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${getTips(s.ruleset).map(t=>`<div style="background:var(--bg-navy);border:1px solid var(--border);border-radius:5px;padding:8px 10px;font-size:11px;color:var(--text-secondary)">${t}</div>`).join('')}
+    </div>`;
+}
+function getTips(rs){
+  const tips={
+    riichi:['🀄 Riichi: Declare when tenpai to earn a guaranteed Yaku','⚡ Ippatsu: Win the first round after Riichi for bonus Han','🔒 Once Riichi declared, you cannot change your discards'],
+    hk:['🀄 HK rules: No Riichi — focus on high-value fan combinations','💰 Self-draw gives you a bonus — aim for Tsumo','🏆 Honor tiles (dragons/winds) are worth extra fan'],
+    official:['📋 Chinese Official: Points system — aim for 8+ points to win','🀄 Many special hands are worth large bonuses','⚖️ Avoid discarding into opponent\'s declared sets'],
+    american:['🇺🇸 American rules: Cards count — build your card each round','💡 One-chance tiles are dangerous — play defensively','🏆 NMJL card changes yearly — know your winning hands'],
+  };
+  return tips[rs]||tips.riichi;
+}
+function renderSettings(){
+  const con=document.getElementById('settings-content');if(!con)return;
+  const p=STATE.player;const s=STATE.settings;
+  con.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">ACCOUNT</div>
+        <div style="background:var(--bg-navy);border-radius:6px;padding:12px;display:flex;align-items:center;gap:10px">
+          <div style="font-size:28px">${p.avatar}</div>
+          <div><div style="font-weight:700">${p.name}</div><div style="font-size:10px;color:var(--text-muted)">Level ${p.level} · ELO ${p.elo}</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">AVATAR</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${'🐉🦁🌸⚡🎌🌙🔥💎🐲🎯'.split('').map(a=>`<div onclick="STATE.player.avatar='${a}';UI.syncBalances();renderSettings();Toast.show('Avatar updated!');" style="width:40px;height:40px;border-radius:50%;background:var(--bg-navy);border:2px solid ${p.avatar===a?'var(--gold)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer">${a}</div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">DEFAULT DIFFICULTY</div>
+        <div style="display:flex;gap:6px">
+          ${['easy','medium','hard'].map(d=>`<button onclick="STATE.settings.difficulty='${d}';renderSettings();Toast.show('Difficulty: ${d}');" style="flex:1;padding:8px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;background:${s.difficulty===d?'var(--gold)':'var(--bg-navy)'};color:${s.difficulty===d?'#000':'var(--text-secondary)'};border:1px solid ${s.difficulty===d?'var(--gold)':'var(--border)'}">${d}</button>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border)">
+        <span style="font-size:12px;font-weight:600">Sound Effects</span>
+        <div onclick="STATE.settings.sound=!STATE.settings.sound;renderSettings();" style="width:44px;height:24px;border-radius:12px;background:${s.sound?'var(--green)':'var(--border)'};position:relative;cursor:pointer;transition:background 200ms">
+          <div style="position:absolute;top:2px;left:${s.sound?'20px':'2px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left 200ms"></div>
+        </div>
+      </div>
+    </div>`;
+}
+function renderRoom(){
+  if(!STATE.roomCode) STATE.roomCode='MJ-'+Math.floor(1000+Math.random()*9000);
+  const con=document.getElementById('room-content');if(!con)return;
+  con.innerHTML=`
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">YOUR ROOM CODE</div>
+      <div style="font-size:32px;font-weight:700;font-family:monospace;color:var(--gold);letter-spacing:4px;background:var(--bg-navy);border:1px solid var(--border);border-radius:8px;padding:14px">${STATE.roomCode}</div>
+      <div style="font-size:10px;color:var(--text-muted);margin-top:6px">Share this code with friends</div>
+    </div>
+    <button class="bg full" style="margin-bottom:8px" onclick="Toast.show('🔗 Link copied: mahjong.casino/room/${STATE.roomCode}');closeModal('modal-room')">COPY ROOM LINK</button>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="bgg full" onclick="Nav.go('game',{mode:'multiplayer'});closeModal('modal-room')">START WITH AI FILL</button>
+    </div>
+    <div style="background:var(--bg-navy);border:1px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">JOIN EXISTING ROOM</div>
+      <div style="display:flex;gap:8px">
+        <input id="room-input" placeholder="Enter room code" style="flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:14px;font-family:monospace;letter-spacing:2px" maxlength="7">
+        <button class="bg" style="height:38px;padding:0 14px" onclick="joinRoom()">JOIN</button>
+      </div>
+    </div>`;
+}
+function joinRoom(){
+  const code=document.getElementById('room-input')?.value.trim().toUpperCase();
+  if(!code||code.length<4){Toast.show('Enter a valid room code');return;}
+  closeModal('modal-room');
+  Nav.go('game',{mode:'multiplayer',room:code});
+  Toast.show('🌐 Joining room '+code+'...');
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+const Toast = {
+  t:null,
+  show(msg,dur=2200){
+    const el=document.getElementById('toast');
+    el.textContent=msg;el.classList.add('show');
+    clearTimeout(this.t);
+    this.t=setTimeout(()=>el.classList.remove('show'),dur);
+  }
+};
+// Global shorthand
+function Toast_show(m){Toast.show(m);}
+
+/* ═══════════════════════════════════════════
+   ONLINE COUNTER
+═══════════════════════════════════════════ */
+setInterval(()=>{
+  STATE.onlineCount+=Math.floor(Math.random()*21)-10;
+  STATE.onlineCount=Math.max(1100,Math.min(1600,STATE.onlineCount));
+  const el=document.getElementById('online-count');
+  if(el)el.textContent=STATE.onlineCount.toLocaleString()+' online now';
+},30000);
+
+/* ═══════════════════════════════════════════
+   MISC
+═══════════════════════════════════════════ */
+function shareProfile(){
+  Toast.show('🔗 Profile link copied: mahjong.casino/p/'+STATE.player.name.toLowerCase().replace(/_/g,'-'));
+}
+function promptPromo(){
+  const code=prompt('Enter your promo code:');
+  if(!code)return;
+  if(code.toUpperCase()==='MAHJONG2026'){Economy.addChips(5000,'Promo code: MAHJONG2026');}
+  else if(code.toUpperCase()==='MACAUNOIR'){STATE.player.gems+=100;Toast.show('💎 +100 Gems added!');UI.syncBalances();}
+  else{Toast.show('❌ Invalid promo code');}
+}
+
+/* ═══════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  // Splash rulesets / stakes pills
+  UI.renderPills('splash-ruleset',STATE.ruleSets,STATE.settings.ruleset,id=>{STATE.settings.ruleset=id;});
+  UI.renderPills('splash-stakes',STATE.stakes.map(s=>({id:s.id,label:s.label})),STATE.settings.stake,id=>{STATE.settings.stake=id;});
+  UI.renderPills('lobby-ruleset',STATE.ruleSets,STATE.settings.ruleset,id=>{STATE.settings.ruleset=id;});
+
+  // Splash entry animation
+  const hero=document.getElementById('spl-hero');
+  if(hero){hero.style.opacity='0';setTimeout(()=>{hero.style.transition='opacity 700ms ease';hero.style.opacity='1';},120);}
+
+  UI.syncBalances();
+  UI.renderStakeGrid();
+
+  // Check daily bonus
+  const today=new Date().toDateString();
+  if(STATE.player.lastLogin===today) STATE.player.dailyClaimed=true;
+  STATE.player.lastLogin=today;
+});
+</script>
+</body>
+</html>
