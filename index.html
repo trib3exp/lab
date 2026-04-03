@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TRIB3 LAB</title>
+</head>
+<body>
+
+<h1>🚀 TRIB3 LAB PROJECTS</h1>
+<div id="projects"></div>
+
+<script>
+fetch("https://api.github.com/users/trib3exp/repos")
+  .then(response => response.json())
+  .then(data => {
+    const container = document.getElementById("projects");
+
+    data.forEach(repo => {
+      if (repo.name !== "lab") {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <h3>${repo.name}</h3>
+          <a href="${repo.html_url}" target="_blank">View Code</a>
+          <br><br>
+        `;
+        container.appendChild(div);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
