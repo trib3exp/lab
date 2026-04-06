@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeCare — Healthcare That Comes to You</title>
+<meta name="description" content="Homecare, medical transport, supplies, and staffing — delivered with compassion and clinical excellence. WeCare brings the healthcare ecosystem to your door.">
+<meta property="og:title" content="WeCare — Healthcare That Comes to You">
+<meta property="og:description" content="Compassionate homecare, medical transport, supplies, and staffing. Care built around you.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://wecare.health/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════ */
+:root{
+  --forest:    #0B2D20;
+  --forest-mid:#14442F;
+  --forest-lt: #1D5C3F;
+  --mint:      #00E5A0;
+  --mint-dim:  #00C488;
+  --mint-pale: #E6FFF6;
+  --cream:     #FAF7F2;
+  --cream-dk:  #F0EBE1;
+  --sand:      #E8DFD0;
+  --warm-white:#FEFCF9;
+  --char:      #111410;
+  --stone:     #6B7068;
+  --stone-lt:  #9B9E97;
+  --line:      #E2E5DE;
+  --red:       #E8433A;
+  --gold:      #D4A843;
+  --ff-d:'Fraunces',Georgia,serif;
+  --ff-u:'Syne',sans-serif;
+  --ff-b:'Instrument Sans',sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --r-sm:6px; --r-md:12px; --r-lg:20px; --r-xl:28px; --r-pill:9999px;
+}
+
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--ff-b);background:var(--warm-white);color:var(--char);line-height:1.6;overflow-x:hidden;min-width:320px}
+img{display:block;max-width:100%;height:auto}
+ul,ol{list-style:none}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;border:none;background:none;cursor:pointer}
+input,textarea,select{font-family:inherit;font-size:1rem}
+h1,h2,h3,h4{font-family:var(--ff-d);line-height:1.1;letter-spacing:-.02em}
+
+/* ── SKIP LINK ── */
+.skip{position:absolute;left:-9999px;top:0;z-index:9999;padding:8px 16px;background:var(--mint);color:var(--forest);font-weight:700;border-radius:0 0 8px 8px}
+.skip:focus{left:12px}
+
+/* ── LAYOUT ── */
+.container{width:100%;max-width:1180px;margin:0 auto;padding:0 20px}
+@media(min-width:640px){.container{padding:0 32px}}
+@media(min-width:1024px){.container{padding:0 40px}}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 24px;border-radius:var(--r-pill);border:2px solid transparent;
+  font-family:var(--ff-u);font-weight:600;font-size:.875rem;letter-spacing:.02em;
+  cursor:pointer;white-space:nowrap;transition:all .25s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.btn-lg{padding:16px 32px;font-size:.95rem}
+.btn-sm{padding:9px 18px;font-size:.8rem}
+.btn-full{width:100%;justify-content:center}
+.btn-forest{background:var(--forest);color:var(--warm-white)}
+.btn-forest:hover{background:var(--forest-lt);transform:translateY(-1px);box-shadow:0 8px 24px rgba(11,45,32,.28)}
+.btn-mint{background:var(--mint);color:var(--forest)}
+.btn-mint:hover{background:var(--mint-dim);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,229,160,.32)}
+.btn-outline{background:transparent;border-color:var(--forest);color:var(--forest)}
+.btn-outline:hover{background:var(--forest);color:var(--warm-white)}
+.btn-ghost{background:transparent;border-color:rgba(255,255,255,.35);color:var(--warm-white)}
+.btn-ghost:hover{border-color:var(--warm-white);background:rgba(255,255,255,.08)}
+
+/* ── TAGS ── */
+.tag{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:var(--r-pill);font-family:var(--ff-u);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.tag-mint{background:var(--mint-pale);color:var(--forest-lt)}
+.tag-forest{background:var(--forest);color:var(--mint)}
+.tag-sand{background:var(--sand);color:var(--char)}
+.tag-dot::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* ── SECTION HEADS ── */
+.eyebrow{display:block;font-family:var(--ff-u);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);margin-bottom:10px}
+.eyebrow-mint{color:var(--mint)}
+.section-title{font-size:clamp(1.75rem,3.5vw,2.75rem);color:var(--char);margin-bottom:14px}
+.section-title em{font-style:italic;color:var(--forest-lt)}
+.section-sub{font-size:1rem;color:var(--stone);line-height:1.75;max-width:520px}
+
+/* ── REVEAL ANIMATIONS ── */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+.d4{transition-delay:.32s}.d5{transition-delay:.40s}.d6{transition-delay:.48s}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+#hdr{
+  position:fixed;inset:0 0 auto 0;z-index:900;height:64px;
+  display:flex;align-items:center;
+  background:rgba(254,252,249,.92);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s,box-shadow .3s;
+}
+#hdr.stuck{border-color:var(--line);box-shadow:0 1px 16px rgba(0,0,0,.07)}
+.hdr-in{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;max-width:1180px;margin:0 auto;padding:0 20px;gap:16px;
+}
+@media(min-width:640px){.hdr-in{padding:0 32px}}
+@media(min-width:1024px){.hdr-in{padding:0 40px}}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0;text-decoration:none}
+.logo-ico{
+  width:34px;height:34px;border-radius:9px;
+  background:var(--forest);position:relative;overflow:hidden;flex-shrink:0;
+}
+.logo-ico::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 55% 40%,rgba(0,229,160,.25),transparent 70%)}
+.logo-ico::after{
+  content:'+';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-u);font-size:1.1rem;font-weight:800;
+  color:var(--mint);letter-spacing:0;
+  display:flex;align-items:center;justify-content:center;
+  padding-bottom:1px;
+}
+.logo-word{font-family:var(--ff-u);font-size:1.1rem;font-weight:800;color:var(--forest)}
+.logo-word span{color:var(--forest-lt)}
+
+/* Desktop nav */
+.desk-nav{display:none;align-items:center;gap:2px;flex:1;padding:0 12px}
+@media(min-width:1024px){.desk-nav{display:flex}}
+.nav-a{font-family:var(--ff-u);font-size:.82rem;font-weight:500;color:var(--stone);padding:7px 12px;border-radius:var(--r-pill);transition:color .18s,background .18s;white-space:nowrap}
+.nav-a:hover,.nav-a.active{color:var(--forest);background:var(--cream)}
+
+/* Header right */
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.hdr-cta{display:none}
+@media(min-width:480px){.hdr-cta{display:inline-flex}}
+
+/* Burger */
+.burger{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;
+  width:40px;height:40px;border-radius:var(--r-md);flex-shrink:0;
+  transition:background .18s;
+}
+@media(min-width:1024px){.burger{display:none}}
+.burger:hover{background:var(--cream)}
+.bar{width:20px;height:2px;background:var(--char);border-radius:2px;transition:transform .28s var(--ease),opacity .28s}
+.burger.open .bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.burger.open .bar:nth-child(2){opacity:0}
+.burger.open .bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* Mobile drawer */
+#mob{
+  display:none;position:fixed;top:64px;inset:64px 0 0 0;
+  background:var(--warm-white);z-index:850;padding:24px 20px 40px;
+  overflow-y:auto;flex-direction:column;gap:4px;
+}
+#mob.open{display:flex;animation:slideIn .28s var(--ease)}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.mob-a{
+  font-family:var(--ff-u);font-size:1.2rem;font-weight:700;
+  color:var(--char);padding:15px 4px;
+  border-bottom:1px solid var(--line);display:block;
+  transition:color .18s;
+}
+.mob-a:hover{color:var(--forest-lt)}
+.mob-btns{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+#hero{
+  min-height:100svh;padding-top:64px;
+  display:flex;align-items:center;
+  background:var(--forest);position:relative;overflow:hidden;
+}
+.hero-noise{position:absolute;inset:0;opacity:.4;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")}
+.hero-orb{position:absolute;border-radius:50%;pointer-events:none}
+.orb1{width:min(600px,120vw);height:min(600px,120vw);top:-120px;right:-80px;background:radial-gradient(circle,rgba(0,229,160,.16) 0%,transparent 65%)}
+.orb2{width:min(400px,80vw);height:min(400px,80vw);bottom:-80px;left:-100px;background:radial-gradient(circle,rgba(0,229,160,.08) 0%,transparent 65%)}
+
+.hero-in{
+  position:relative;z-index:1;display:grid;
+  grid-template-columns:1fr;gap:48px;
+  padding:60px 0 80px;align-items:center;width:100%;
+}
+@media(min-width:1024px){
+  .hero-in{grid-template-columns:1fr 1fr;gap:64px;padding:100px 0}
+}
+
+/* Hero text */
+.hero-kick{display:flex;align-items:center;gap:9px;margin-bottom:24px}
+.kick-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--mint);flex-shrink:0;
+  box-shadow:0 0 0 3px rgba(0,229,160,.2);
+  animation:pdot 2.5s ease-in-out infinite;
+}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 3px rgba(0,229,160,.2)}50%{box-shadow:0 0 0 7px rgba(0,229,160,.08)}}
+.kick-txt{font-family:var(--ff-u);font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+.hero-h1{
+  font-size:clamp(2.4rem,6vw,4.8rem);
+  color:var(--warm-white);font-weight:400;line-height:1.05;
+  margin-bottom:20px;
+}
+.hero-h1 strong{font-weight:600;display:block}
+.hero-h1 em{font-style:italic;color:var(--mint);display:block}
+
+.hero-p{
+  font-size:clamp(.95rem,2vw,1.1rem);
+  color:rgba(255,255,255,.62);line-height:1.75;
+  max-width:480px;margin-bottom:36px;
+}
+
+.hero-btns{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:52px}
+
+.hero-proof{
+  display:flex;flex-wrap:wrap;gap:28px;
+  padding-top:28px;border-top:1px solid rgba(255,255,255,.1);
+}
+.pf-n{font-family:var(--ff-d);font-size:1.8rem;font-weight:400;color:var(--warm-white);display:block;line-height:1;margin-bottom:3px}
+.pf-l{font-family:var(--ff-u);font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38)}
+
+/* Hero UI cards */
+.hero-ui{display:flex;flex-direction:column;gap:12px}
+.ui-card{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r-lg);padding:16px 18px;
+  backdrop-filter:blur(8px);
+  animation:flt 7s ease-in-out infinite;
+}
+.ui-card:nth-child(2){animation-delay:.5s}
+.ui-card:nth-child(3){animation-delay:1s}
+.ui-card:nth-child(4){animation-delay:1.5s}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.ui-ico{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+}
+.ic-h{background:rgba(0,229,160,.14)}
+.ic-v{background:rgba(212,168,67,.13)}
+.ic-b{background:rgba(232,67,58,.1)}
+.ic-s{background:rgba(100,150,255,.1)}
+.ui-body{flex:1;min-width:0}
+.ui-title{font-family:var(--ff-u);font-size:.82rem;font-weight:600;color:var(--warm-white);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-sub{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-badge{font-family:var(--ff-u);font-size:.6rem;font-weight:700;padding:3px 9px;border-radius:var(--r-pill);flex-shrink:0}
+.b-live{background:rgba(0,229,160,.18);color:var(--mint)}
+.b-eta{background:rgba(212,168,67,.18);color:var(--gold)}
+.b-done{background:rgba(255,255,255,.08);color:rgba(255,255,255,.35)}
+
+/* ══════════════════════════════════════════
+   TRUST BAR
+══════════════════════════════════════════ */
+#trust{background:var(--cream-dk);border-bottom:1px solid var(--sand);overflow:hidden}
+.trust-track{
+  display:flex;align-items:stretch;
+  overflow-x:auto;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-overflow-scrolling:touch;
+}
+.trust-track::-webkit-scrollbar{display:none}
+.trust-item{
+  display:flex;align-items:center;gap:9px;
+  padding:16px 24px;flex-shrink:0;
+  border-right:1px solid var(--sand);
+  scroll-snap-align:start;
+}
+.trust-item:last-child{border-right:none}
+.t-ico{
+  width:28px;height:28px;border-radius:7px;background:var(--forest);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.t-ico svg{width:14px;height:14px;fill:var(--mint)}
+.t-txt{font-family:var(--ff-u);font-size:.72rem;font-weight:600;color:var(--char);white-space:nowrap}
+
+/* ══════════════════════════════════════════
+   SERVICES
+══════════════════════════════════════════ */
+#services{padding:96px 0;background:var(--warm-white)}
+.svc-head{margin-bottom:56px}
+.svc-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:640px){.svc-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.svc-grid{grid-template-columns:1fr 1fr 1fr}}
+
+/* Feature card spans full width */
+.svc-feat{
+  grid-column:1/-1;
+  background:var(--forest);border-radius:var(--r-xl);padding:40px;
+  display:grid;grid-template-columns:1fr;gap:32px;
+  position:relative;overflow:hidden;
+}
+@media(min-width:900px){
+  .svc-feat{grid-template-columns:1.2fr .9fr;align-items:center;gap:48px}
+}
+.svc-feat::before{
+  content:'';position:absolute;top:-100px;right:-60px;
+  width:min(480px,80vw);height:min(480px,80vw);border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,160,.1) 0%,transparent 65%);
+  pointer-events:none;
+}
+.sf-tag{margin-bottom:14px}
+.sf-ghost{
+  font-family:var(--ff-d);font-size:clamp(4rem,8vw,7rem);
+  color:rgba(255,255,255,.06);font-weight:400;line-height:1;
+  position:absolute;top:20px;right:28px;pointer-events:none;
+  user-select:none;
+}
+.sf-title{font-size:clamp(1.6rem,2.5vw,2.2rem);color:var(--warm-white);margin-bottom:14px}
+.sf-desc{font-size:.9rem;color:rgba(255,255,255,.58);line-height:1.8;max-width:500px;margin-bottom:28px}
+.sf-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px}
+.sf-li{display:flex;align-items:flex-start;gap:8px;font-size:.82rem;color:rgba(255,255,255,.52)}
+.sf-li::before{content:'';flex-shrink:0;margin-top:7px;width:5px;height:5px;border-radius:50%;background:var(--mint)}
+
+/* Right side UI mock inside feature card */
+.sf-mock{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r-lg);padding:24px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.sf-mock-row{background:rgba(255,255,255,.05);border-radius:10px;padding:14px}
+.sf-mock-label{font-family:var(--ff-u);font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px}
+.sf-mock-val{font-family:var(--ff-u);font-size:.88rem;font-weight:600;color:var(--warm-white)}
+.sf-mock-sub{font-size:.73rem;color:rgba(255,255,255,.38);margin-top:3px}
+.sf-team{display:flex;gap:6px;align-items:center;margin-top:10px}
+.sf-av{width:30px;height:30px;border-radius:50%;background:var(--forest-lt);display:flex;align-items:center;justify-content:center;font-family:var(--ff-u);font-size:.6rem;font-weight:700;color:var(--mint);border:1.5px solid rgba(255,255,255,.1)}
+.sf-more{font-size:.72rem;color:rgba(255,255,255,.35)}
+
+/* Standard service card */
+.svc-card{
+  background:var(--cream);border:1px solid var(--sand);border-radius:var(--r-xl);
+  padding:32px;display:flex;flex-direction:column;
+  transition:transform .28s var(--ease),box-shadow .28s,border-color .28s;
+}
+.svc-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.08);border-color:var(--forest)}
+.svc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.svc-ico{width:52px;height:52px;border-radius:14px;background:var(--forest);display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.svc-n{font-family:var(--ff-d);font-size:2.8rem;color:var(--sand);font-weight:400;line-height:1}
+.svc-title{font-size:1.25rem;color:var(--char);margin:12px 0}
+.svc-desc{font-size:.875rem;color:var(--stone);line-height:1.75;flex:1;margin-bottom:22px}
+.svc-lnk{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--ff-u);font-size:.75rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--forest-lt);
+  transition:gap .2s;margin-top:auto;
+}
+.svc-lnk:hover{gap:12px}
+
+/* ══════════════════════════════════════════
+   ABOUT
+══════════════════════════════════════════ */
+#about{padding:96px 0;background:var(--cream);position:relative;overflow:hidden}
+#about::before{
+  content:'';position:absolute;top:-200px;left:-160px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,160,.05),transparent 65%);
+  pointer-events:none;
+}
+.about-in{display:grid;grid-template-columns:1fr;gap:48px;align-items:start}
+@media(min-width:1024px){.about-in{grid-template-columns:1fr 1fr;gap:72px}}
+
+.about-quote{
+  font-family:var(--ff-d);font-size:clamp(1.4rem,2.8vw,2.2rem);
+  color:var(--forest);font-weight:400;font-style:italic;
+  line-height:1.35;margin:12px 0 24px;
+}
+.about-quote strong{font-style:normal;font-weight:600;color:var(--char)}
+.about-p{font-size:.9rem;color:var(--stone);line-height:1.8;margin-bottom:10px}
+.about-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+
+.mission-card{
+  border-radius:var(--r-lg);padding:28px;margin-bottom:12px;
+}
+.mc-green{background:var(--forest);color:var(--warm-white)}
+.mc-mid{background:var(--forest-lt);color:var(--warm-white)}
+.mc-label{font-family:var(--ff-u);font-size:.63rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mint);margin-bottom:10px}
+.mc-text{font-size:.875rem;line-height:1.8;color:rgba(255,255,255,.65)}
+
+.pillar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.pc{background:var(--warm-white);border:1px solid var(--sand);border-radius:var(--r-lg);padding:20px}
+.pc-ico{font-size:1.3rem;margin-bottom:10px}
+.pc-title{font-family:var(--ff-u);font-size:.8rem;font-weight:700;color:var(--char);margin-bottom:5px}
+.pc-text{font-size:.78rem;color:var(--stone);line-height:1.55}
+
+/* ══════════════════════════════════════════
+   HOW IT WORKS
+══════════════════════════════════════════ */
+#how{padding:96px 0;background:var(--warm-white)}
+.how-in{display:grid;grid-template-columns:1fr;gap:48px;align-items:start}
+@media(min-width:1024px){.how-in{grid-template-columns:1fr 1fr;gap:72px}}
+
+/* Sticky only on large screens */
+@media(min-width:1024px){.how-sticky{position:sticky;top:80px}}
+
+.how-steps{display:flex;flex-direction:column}
+.how-step{
+  display:flex;gap:20px;padding:28px 0;
+  border-bottom:1px solid var(--line);cursor:pointer;
+  transition:opacity .25s;
+}
+.how-step:first-child{padding-top:0}
+.how-step:last-child{border-bottom:none;padding-bottom:0}
+.how-step-num{
+  font-family:var(--ff-d);font-size:2.2rem;font-weight:400;
+  color:var(--sand);line-height:1;flex-shrink:0;width:44px;
+  transition:color .25s;
+}
+.how-step.active .how-step-num{color:var(--forest)}
+.how-step-title{font-family:var(--ff-u);font-size:.92rem;font-weight:700;color:var(--stone-lt);margin-bottom:0;transition:color .25s}
+.how-step.active .how-step-title{color:var(--char)}
+.how-step-desc{
+  font-size:.875rem;color:var(--stone-lt);line-height:1.7;
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .38s var(--ease),opacity .38s,margin-top .38s;
+}
+.how-step.active .how-step-desc{max-height:160px;opacity:1;margin-top:8px}
+
+.how-panels{position:relative}
+.how-panel{
+  display:none;background:var(--forest);border-radius:var(--r-xl);
+  padding:36px;color:var(--warm-white);
+  animation:panIn .35s var(--ease) both;
+}
+@keyframes panIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.how-panel.active{display:block}
+.hp-ico{font-size:2.2rem;margin-bottom:18px;display:block}
+.hp-title{font-size:1.4rem;color:var(--warm-white);margin-bottom:10px}
+.hp-text{font-size:.875rem;color:rgba(255,255,255,.58);line-height:1.8;margin-bottom:22px}
+.hp-stats{background:rgba(255,255,255,.06);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:12px}
+.hp-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hp-key{font-family:var(--ff-u);font-size:.72rem;color:rgba(255,255,255,.38)}
+.hp-val{font-family:var(--ff-u);font-size:.72rem;font-weight:700;color:var(--mint);text-align:right}
+
+/* ══════════════════════════════════════════
+   WHO WE SERVE
+══════════════════════════════════════════ */
+#serve{padding:96px 0;background:var(--forest);position:relative;overflow:hidden}
+.serve-bg{
+  position:absolute;bottom:-40px;left:-10px;
+  font-family:var(--ff-d);font-size:clamp(6rem,12vw,12rem);
+  color:rgba(255,255,255,.025);font-weight:400;line-height:1;
+  pointer-events:none;white-space:nowrap;
+}
+.serve-head{margin-bottom:52px}
+.serve-head .section-title{color:var(--warm-white)}
+.serve-head .section-sub{color:rgba(255,255,255,.48)}
+.serve-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:640px){.serve-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.serve-grid{grid-template-columns:repeat(3,1fr)}}
+.serve-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-xl);padding:28px;
+  display:flex;flex-direction:column;gap:12px;
+  transition:background .25s,border-color .25s,transform .25s var(--ease);
+}
+.serve-card:hover{background:rgba(255,255,255,.09);border-color:rgba(0,229,160,.28);transform:translateY(-2px)}
+.serve-top{display:flex;align-items:flex-start;justify-content:space-between}
+.sc-ico{font-size:1.8rem}
+.sc-arr{
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.14);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;color:rgba(255,255,255,.3);
+  transition:border-color .2s,color .2s,background .2s;
+}
+.serve-card:hover .sc-arr{border-color:var(--mint);color:var(--mint);background:rgba(0,229,160,.1)}
+.sc-title{font-family:var(--ff-u);font-size:1rem;font-weight:700;color:var(--warm-white)}
+.sc-desc{font-size:.825rem;color:rgba(255,255,255,.46);line-height:1.7}
+.sc-cta{font-family:var(--ff-u);font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mint)}
+
+/* ══════════════════════════════════════════
+   VALUE PROP
+══════════════════════════════════════════ */
+#value{padding:96px 0;background:var(--cream)}
+.value-in{display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
+@media(min-width:1024px){.value-in{grid-template-columns:1fr 1fr;gap:72px}}
+.value-stmt{font-family:var(--ff-d);font-size:clamp(1.7rem,3vw,2.8rem);color:var(--char);line-height:1.15;margin-bottom:16px}
+.value-stmt em{font-style:italic;color:var(--forest-lt)}
+.value-p{font-size:.9rem;color:var(--stone);line-height:1.8;margin-bottom:28px}
+
+.vp-rows{display:flex;flex-direction:column}
+.vp-row{display:flex;gap:18px;align-items:flex-start;padding:22px 0;border-bottom:1px solid var(--sand)}
+.vp-row:last-child{border-bottom:none}
+.vp-num{font-family:var(--ff-d);font-size:1.8rem;color:var(--sand);font-weight:400;line-height:1;flex-shrink:0;width:40px;text-align:right}
+.vp-title{font-family:var(--ff-u);font-size:.875rem;font-weight:700;color:var(--char);margin-bottom:4px}
+.vp-text{font-size:.825rem;color:var(--stone);line-height:1.65}
+
+.value-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:40px}
+.vm{background:var(--forest);border-radius:var(--r-lg);padding:22px 16px;text-align:center}
+.vm-n{font-family:var(--ff-d);font-size:2rem;color:var(--mint);display:block;line-height:1;margin-bottom:5px;font-weight:400}
+.vm-l{font-family:var(--ff-u);font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+
+/* ══════════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════════ */
+#testi{padding:96px 0;background:var(--warm-white)}
+.testi-head{margin-bottom:48px}
+.testi-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:640px){.testi-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.testi-grid{grid-template-columns:1fr 1fr 1fr}}
+.t-card{
+  background:var(--cream);border:1px solid var(--sand);
+  border-radius:var(--r-xl);padding:32px;position:relative;
+  transition:transform .28s var(--ease),box-shadow .28s;
+}
+.t-card:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.07)}
+.t-mark{
+  position:absolute;top:20px;right:24px;
+  font-family:var(--ff-d);font-size:5rem;color:var(--sand);
+  line-height:1;font-weight:400;pointer-events:none;
+}
+.t-dark{background:var(--forest);border-color:var(--forest)}
+.t-dark .t-mark{color:rgba(0,229,160,.12)}
+.t-dark .t-quote{color:rgba(255,255,255,.82)}
+.t-dark .t-name{color:var(--warm-white)}
+.t-dark .t-role{color:rgba(255,255,255,.38)}
+.t-dark .t-star{color:var(--mint)}
+.t-stars{display:flex;gap:3px;margin-bottom:16px}
+.t-star{color:var(--gold);font-size:.95rem}
+.t-quote{
+  font-family:var(--ff-d);font-size:1rem;color:var(--char);
+  font-style:italic;font-weight:300;line-height:1.7;
+  margin-bottom:24px;position:relative;
+}
+.t-author{display:flex;align-items:center;gap:12px}
+.t-av{
+  width:40px;height:40px;border-radius:50%;background:var(--forest);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-u);font-size:.8rem;font-weight:700;
+  color:var(--mint);flex-shrink:0;
+}
+.t-name{font-family:var(--ff-u);font-size:.82rem;font-weight:700;color:var(--char)}
+.t-role{font-size:.72rem;color:var(--stone-lt);margin-top:2px}
+
+/* ══════════════════════════════════════════
+   FAQ
+══════════════════════════════════════════ */
+#faq{padding:96px 0;background:var(--cream)}
+.faq-in{display:grid;grid-template-columns:1fr;gap:48px}
+@media(min-width:1024px){.faq-in{grid-template-columns:.85fr 1.15fr;gap:72px}}
+.faq-lft .section-sub{margin-bottom:28px}
+
+.faq-list{display:flex;flex-direction:column}
+.faq-item{border-bottom:1px solid var(--sand)}
+.faq-btn{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:22px 0;font-family:var(--ff-u);font-size:.9rem;font-weight:600;
+  color:var(--char);text-align:left;cursor:pointer;
+  transition:color .18s;
+}
+.faq-btn:hover{color:var(--forest-lt)}
+.faq-btn[aria-expanded="true"]{color:var(--forest)}
+.faq-btn:focus-visible{outline:2px solid var(--mint);outline-offset:2px;border-radius:4px}
+.faq-ico{
+  width:26px;height:26px;border-radius:50%;border:2px solid var(--line);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:border-color .25s,background .25s;
+}
+.faq-line{position:relative;width:9px;height:2px;background:var(--stone);border-radius:1px;transition:background .18s}
+.faq-line::before{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(90deg);
+  width:9px;height:2px;background:inherit;border-radius:1px;
+  transition:transform .28s var(--ease),opacity .28s;
+}
+.faq-btn[aria-expanded="true"] .faq-ico{border-color:var(--forest);background:var(--forest)}
+.faq-btn[aria-expanded="true"] .faq-line{background:var(--mint)}
+.faq-btn[aria-expanded="true"] .faq-line::before{transform:translate(-50%,-50%) rotate(0);opacity:0}
+.faq-ans{
+  font-size:.875rem;color:var(--stone);line-height:1.8;
+  max-height:0;overflow:hidden;
+  transition:max-height .38s var(--ease),padding-bottom .38s;
+}
+.faq-ans.open{max-height:280px;padding-bottom:22px}
+.faq-ans a{color:var(--forest-lt);text-decoration:underline;text-underline-offset:3px}
+
+/* ══════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════ */
+#contact{padding:96px 0;background:var(--warm-white)}
+.contact-in{display:grid;grid-template-columns:1fr;gap:48px}
+@media(min-width:1024px){.contact-in{grid-template-columns:1fr 1.35fr;gap:72px}}
+
+.c-promise{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--mint-pale);border:1px solid rgba(0,229,160,.28);
+  border-radius:var(--r-lg);padding:18px 20px;margin-top:24px;
+}
+.c-p-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.c-p-text{font-size:.825rem;color:var(--forest);line-height:1.65}
+.c-p-text strong{font-weight:700;display:block;margin-bottom:3px}
+.c-info{display:flex;flex-direction:column;gap:14px;margin-top:28px}
+.c-row{display:flex;align-items:center;gap:12px}
+.c-ico{
+  width:38px;height:38px;border-radius:9px;background:var(--cream-dk);
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;
+}
+.c-label{font-family:var(--ff-u);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--stone-lt)}
+.c-val{font-size:.875rem;font-weight:500;color:var(--char);margin-top:1px}
+.c-val a:hover{color:var(--forest-lt);text-decoration:underline}
+
+/* Form wrapper */
+.form-wrap{
+  background:var(--cream);border:1px solid var(--sand);
+  border-radius:var(--r-xl);padding:32px;
+}
+@media(min-width:480px){.form-wrap{padding:40px}}
+.form-head{font-family:var(--ff-u);font-size:.95rem;font-weight:700;color:var(--char);margin-bottom:24px}
+.f-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px}
+@media(min-width:480px){.f-row{grid-template-columns:1fr 1fr}}
+.f-grp{display:flex;flex-direction:column;gap:5px}
+.f-lbl{font-family:var(--ff-u);font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--stone)}
+.f-lbl span{color:var(--red)}
+.f-in,.f-sel,.f-ta{
+  width:100%;background:var(--warm-white);border:1.5px solid var(--line);
+  border-radius:var(--r-md);padding:12px 14px;color:var(--char);font-size:.9rem;
+  transition:border-color .18s,box-shadow .18s;
+}
+.f-in:focus,.f-sel:focus,.f-ta:focus{
+  outline:none;border-color:var(--forest);
+  box-shadow:0 0 0 3px rgba(11,45,32,.07);
+}
+.f-in.err,.f-sel.err,.f-ta.err{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(232,67,58,.08)!important}
+.f-sel{
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7068' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;
+  padding-right:34px;cursor:pointer;
+}
+.f-ta{resize:vertical;min-height:100px;line-height:1.6}
+.f-err{font-size:.72rem;color:var(--red);min-height:14px;line-height:1.4}
+.f-honey{display:none!important;visibility:hidden!important}
+.f-note{font-size:.72rem;color:var(--stone-lt);text-align:center;margin-top:12px;line-height:1.5}
+.f-ok{
+  display:none;background:rgba(0,229,160,.1);
+  border:1px solid rgba(0,229,160,.28);
+  border-radius:var(--r-md);padding:14px 18px;
+  font-family:var(--ff-u);font-size:.82rem;font-weight:600;
+  color:var(--forest);text-align:center;margin-top:14px;
+}
+.f-ok.show{display:block;animation:fadeIn .3s var(--ease)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+/* Button loading state */
+.btn-txt{display:inline}
+.btn-spin{display:none}
+.submitting .btn-txt{display:none}
+.submitting .btn-spin{display:inline}
+.submitting{opacity:.75;cursor:not-allowed}
+
+/* ══════════════════════════════════════════
+   FINAL CTA
+══════════════════════════════════════════ */
+#cta-final{
+  padding:96px 0;background:var(--forest);
+  position:relative;overflow:hidden;
+}
+.cta-ring{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(0,229,160,.09);
+  top:50%;left:50%;pointer-events:none;
+}
+.cr1{width:min(600px,130vw);height:min(600px,130vw);transform:translate(-50%,-50%)}
+.cr2{width:min(900px,190vw);height:min(900px,190vw);transform:translate(-50%,-50%)}
+.cta-content{position:relative;text-align:center;max-width:660px;margin:0 auto;z-index:1}
+.cta-tag{display:flex;justify-content:center;margin-bottom:20px}
+.cta-h2{font-size:clamp(1.9rem,4.5vw,3.6rem);color:var(--warm-white);margin-bottom:16px;line-height:1.1}
+.cta-h2 em{color:var(--mint);font-style:italic}
+.cta-p{font-size:.95rem;color:rgba(255,255,255,.52);line-height:1.75;margin-bottom:36px}
+.cta-btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+#footer{background:var(--char);padding:64px 0 0}
+.ft-top{
+  display:grid;grid-template-columns:1fr;gap:40px;
+  padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.07);
+}
+@media(min-width:768px){.ft-top{grid-template-columns:1fr 2fr}}
+.ft-brand p{font-size:.825rem;color:rgba(255,255,255,.38);line-height:1.75;margin-top:14px;max-width:260px}
+.ft-socials{display:flex;gap:8px;margin-top:18px}
+.ft-s{
+  width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-u);font-size:.6rem;font-weight:800;
+  color:rgba(255,255,255,.35);transition:background .18s,color .18s;
+}
+.ft-s:hover{background:var(--forest-lt);color:var(--mint)}
+.ft-nav-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(min-width:480px){.ft-nav-cols{grid-template-columns:repeat(3,1fr)}}
+.fc h4{font-family:var(--ff-u);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:14px}
+.fc ul{display:flex;flex-direction:column;gap:10px}
+.fc a{font-size:.825rem;color:rgba(255,255,255,.46);transition:color .18s}
+.fc a:hover{color:var(--warm-white)}
+.ft-bot{padding:18px 0}
+.ft-bot-in{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.ft-copy{font-size:.72rem;color:rgba(255,255,255,.22)}
+.ft-legal{display:flex;gap:14px}
+.ft-legal a{font-size:.72rem;color:rgba(255,255,255,.22);transition:color .18s}
+.ft-legal a:hover{color:rgba(255,255,255,.6)}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">Skip to content</a>
+
+<!-- HEADER -->
+<header id="hdr" role="banner">
+  <div class="hdr-in">
+    <a href="#hero" class="logo" aria-label="WeCare — home">
+      <div class="logo-ico" aria-hidden="true"></div>
+      <span class="logo-word">We<span>Care</span></span>
+    </a>
+
+    <nav class="desk-nav" id="desk-nav" aria-label="Main navigation">
+      <a href="#services" class="nav-a">Services</a>
+      <a href="#about" class="nav-a">About</a>
+      <a href="#how" class="nav-a">How It Works</a>
+      <a href="#serve" class="nav-a">Who We Serve</a>
+      <a href="#faq" class="nav-a">FAQ</a>
+      <a href="#contact" class="nav-a">Contact</a>
+    </nav>
+
+    <div class="hdr-right">
+      <a href="#contact" class="btn btn-forest btn-sm hdr-cta">Request Care</a>
+      <button class="burger" id="burger" aria-expanded="false" aria-controls="mob" aria-label="Open menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE NAV -->
+<nav id="mob" aria-label="Mobile navigation" hidden>
+  <a href="#services" class="mob-a">Services</a>
+  <a href="#about" class="mob-a">About</a>
+  <a href="#how" class="mob-a">How It Works</a>
+  <a href="#serve" class="mob-a">Who We Serve</a>
+  <a href="#faq" class="mob-a">FAQ</a>
+  <a href="#contact" class="mob-a">Contact</a>
+  <div class="mob-btns">
+    <a href="#contact" class="btn btn-mint btn-lg">Request Care Today</a>
+    <a href="tel:+18009322273" class="btn btn-outline btn-lg">1-800-WE-CARE</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ── HERO ── -->
+<section id="hero" aria-labelledby="h-h1">
+  <div class="hero-noise" aria-hidden="true"></div>
+  <div class="hero-orb orb1" aria-hidden="true"></div>
+  <div class="hero-orb orb2" aria-hidden="true"></div>
+  <div class="container hero-in">
+
+    <div class="rv">
+      <div class="hero-kick" aria-hidden="true">
+        <span class="kick-dot"></span>
+        <span class="kick-txt">Now accepting new patients</span>
+      </div>
+      <h1 id="h-h1" class="hero-h1">
+        <strong>Healthcare</strong>
+        <em>that comes to you.</em>
+      </h1>
+      <p class="hero-p">WeCare delivers homecare, medical transport, supplies, and staffing with clinical excellence and genuine compassion — one provider, one call, everything handled.</p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn btn-mint btn-lg">Request Care Today</a>
+        <a href="#services" class="btn btn-ghost btn-lg">Explore Services</a>
+      </div>
+      <div class="hero-proof" role="list" aria-label="Key statistics">
+        <div class="rv d1" role="listitem">
+          <span class="pf-n">5,000+</span>
+          <span class="pf-l">Patients Served</span>
+        </div>
+        <div class="rv d2" role="listitem">
+          <span class="pf-n">98%</span>
+          <span class="pf-l">Satisfaction Rate</span>
+        </div>
+        <div class="rv d3" role="listitem">
+          <span class="pf-n">24/7</span>
+          <span class="pf-l">On-Call Support</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rv d2" aria-hidden="true">
+      <div class="hero-ui">
+        <div class="ui-card"><div class="ui-ico ic-h">🏠</div><div class="ui-body"><div class="ui-title">Homecare Active</div><div class="ui-sub">Margaret T., 78 · Skilled nurse · Mon–Fri</div></div><span class="ui-badge b-live">Live</span></div>
+        <div class="ui-card"><div class="ui-ico ic-v">🚐</div><div class="ui-body"><div class="ui-title">Transport En Route</div><div class="ui-sub">Driver 4 min away · St. Luke's Cardiology</div></div><span class="ui-badge b-eta">ETA 4m</span></div>
+        <div class="ui-card"><div class="ui-ico ic-b">📦</div><div class="ui-body"><div class="ui-title">Supplies Delivered</div><div class="ui-sub">Order #4421 · Wound care kit · Signed</div></div><span class="ui-badge b-done">Done</span></div>
+        <div class="ui-card"><div class="ui-ico ic-s">👩‍⚕️</div><div class="ui-body"><div class="ui-title">Staff Placed</div><div class="ui-sub">RN Coverage · Sunrise Care · 3 shifts</div></div><span class="ui-badge b-live">Active</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── TRUST BAR ── -->
+<div id="trust" role="list" aria-label="Trust credentials">
+  <div class="trust-track">
+    <div class="trust-item" role="listitem"><div class="t-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1l1.8 3.6L14 5.2l-3 2.9.7 4.1L8 10.3l-3.7 1.9.7-4.1L2 5.2l4.2-.6z"/></svg></div><span class="t-txt">Licensed &amp; Accredited</span></div>
+    <div class="trust-item" role="listitem"><div class="t-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zm3.7 5.7l-4 4c-.2.2-.5.3-.7.3s-.5-.1-.7-.3l-2-2c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l1.3 1.3 3.3-3.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4z"/></svg></div><span class="t-txt">HIPAA Compliant</span></div>
+    <div class="trust-item" role="listitem"><div class="t-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1a4 4 0 100 8A4 4 0 008 1zm0 9c-3.3 0-6 1.3-6 3v1h12v-1c0-1.7-2.7-3-6-3z"/></svg></div><span class="t-txt">Background-Checked Staff</span></div>
+    <div class="trust-item" role="listitem"><div class="t-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M13 2H3C2.4 2 2 2.4 2 3v10c0 .6.4 1 1 1h10c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1zM7 11L4 8l1.4-1.4L7 8.2l3.6-3.6L12 6l-5 5z"/></svg></div><span class="t-txt">Insurance Accepted</span></div>
+    <div class="trust-item" role="listitem"><div class="t-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1C4 1 1 4 1 8s3 7 7 7 7-3 7-7-3-7-7-7zm1 10H7V7h2v4zm0-6H7V3h2v2z"/></svg></div><span class="t-txt">24/7 On-Call Support</span></div>
+    <div class="trust-item" role="listitem"><div class="t-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M13 2l-8 8-3-3-1 1 4 4 9-9z"/></svg></div><span class="t-txt">Same-Day Response</span></div>
+  </div>
+</div>
+
+<!-- ── SERVICES ── -->
+<section id="services" aria-labelledby="svc-h2">
+  <div class="container">
+    <div class="svc-head rv">
+      <span class="eyebrow">What We Offer</span>
+      <h2 id="svc-h2" class="section-title">Four services. <em>One team.</em></h2>
+      <p class="section-sub">Homecare, transport, supplies, and staffing — seamlessly coordinated under one roof so you never have to repeat yourself.</p>
+    </div>
+    <div class="svc-grid">
+
+      <!-- Feature: Homecare -->
+      <article class="svc-feat rv" aria-labelledby="sf-title">
+        <div class="sf-ghost" aria-hidden="true">01</div>
+        <div class="sf-left">
+          <div class="tag tag-mint sf-tag">Homecare</div>
+          <h3 id="sf-title" class="sf-title">Live at home, with expert care beside you.</h3>
+          <p class="sf-desc">Skilled nurses, personal care aides, and therapists who come directly to you — delivering clinical precision alongside genuine warmth.</p>
+          <ul class="sf-list">
+            <li class="sf-li">Skilled nursing &amp; wound care</li>
+            <li class="sf-li">Physical &amp; occupational therapy</li>
+            <li class="sf-li">Personal care &amp; ADL support</li>
+            <li class="sf-li">Medication management</li>
+            <li class="sf-li">Companionship &amp; safety monitoring</li>
+            <li class="sf-li">24/7 nurse on-call line</li>
+          </ul>
+          <a href="#contact" class="btn btn-mint">Request Homecare</a>
+        </div>
+        <div class="sf-mock" aria-hidden="true">
+          <div class="sf-mock-row">
+            <div class="sf-mock-label">Next Scheduled Visit</div>
+            <div class="sf-mock-val">Tomorrow, 9:00 AM</div>
+            <div class="sf-mock-sub">Nurse Sarah K. · Skilled nursing assessment</div>
+          </div>
+          <div class="sf-mock-row">
+            <div class="sf-mock-label">Your Care Team</div>
+            <div class="sf-team">
+              <div class="sf-av">SK</div>
+              <div class="sf-av">JM</div>
+              <div class="sf-av">PT</div>
+              <span class="sf-more">+ Care Coordinator</span>
+            </div>
+          </div>
+          <div class="sf-mock-row">
+            <div class="sf-mock-label">Care Plan Status</div>
+            <div class="sf-mock-val" style="color:var(--mint)">Active · Week 3 of 8</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Medical Transport -->
+      <article class="svc-card rv d1" aria-labelledby="sv2-t">
+        <div class="svc-top"><div class="svc-ico">🚐</div><span class="svc-n" aria-hidden="true">02</span></div>
+        <div class="tag tag-sand" style="margin-bottom:10px">Medical Transport</div>
+        <h3 id="sv2-t" class="svc-title">Never miss an appointment.</h3>
+        <p class="svc-desc">Safe, on-time, door-to-door transport. Wheelchair and stretcher capable. Driven by trained, vetted staff who understand medical needs.</p>
+        <a href="#contact" class="svc-lnk">Book Transport <span aria-hidden="true">→</span></a>
+      </article>
+
+      <!-- Medical Supplies -->
+      <article class="svc-card rv d2" aria-labelledby="sv3-t">
+        <div class="svc-top"><div class="svc-ico">📦</div><span class="svc-n" aria-hidden="true">03</span></div>
+        <div class="tag tag-sand" style="margin-bottom:10px">Medical Supplies</div>
+        <h3 id="sv3-t" class="svc-title">Essentials delivered before you run out.</h3>
+        <p class="svc-desc">From mobility aids to wound care kits, we deliver essential medical equipment directly to your home. Scheduled, reliable, insurance-coordinated.</p>
+        <a href="#contact" class="svc-lnk">Order Supplies <span aria-hidden="true">→</span></a>
+      </article>
+
+      <!-- Staffing -->
+      <article class="svc-card rv d3" aria-labelledby="sv4-t">
+        <div class="svc-top"><div class="svc-ico">👩‍⚕️</div><span class="svc-n" aria-hidden="true">04</span></div>
+        <div class="tag tag-sand" style="margin-bottom:10px">Healthcare Staffing</div>
+        <h3 id="sv4-t" class="svc-title">Vetted professionals, fast.</h3>
+        <p class="svc-desc">Background-checked, credentialed RNs, CNAs, and therapists ready for per diem or contract placement. Fill gaps before they become crises.</p>
+        <a href="#contact" class="svc-lnk">Find Staff <span aria-hidden="true">→</span></a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about" aria-labelledby="ab-h2">
+  <div class="container">
+    <div class="about-in">
+      <div class="rv">
+        <span class="eyebrow">Who We Are</span>
+        <blockquote class="about-quote">
+          "We believe every person deserves high-quality care — <strong>wherever they are, whatever their circumstance.</strong>"
+        </blockquote>
+        <p class="about-p">WeCare is a technology-enabled healthcare ecosystem built around a simple idea: care should come to you. We combine precision coordination tools with a deeply human team who treat every patient like family.</p>
+        <p class="about-p">We work side-by-side with patients, families, physicians, insurers, and community organizations — making healthcare seamless, inclusive, and genuinely compassionate.</p>
+        <div class="about-btns">
+          <a href="#contact" class="btn btn-forest">Partner With Us</a>
+          <a href="#how" class="btn btn-outline">How It Works</a>
+        </div>
+      </div>
+      <div class="rv d2">
+        <div class="mission-card mc-green">
+          <div class="mc-label">Our Mission</div>
+          <p class="mc-text">To redefine care with universal compassion and excellence — bringing high-quality healthcare to every individual, everywhere, transcending boundaries and inspiring a new era of healing.</p>
+        </div>
+        <div class="mission-card mc-mid">
+          <div class="mc-label">Our Vision</div>
+          <p class="mc-text">A future where care is universally accessible and profoundly innovative. We break down barriers through cutting-edge technology and strategic collaboration, creating a seamless, empowering experience for all.</p>
+        </div>
+        <div class="pillar-grid">
+          <div class="pc"><div class="pc-ico">💙</div><div class="pc-title">Compassion First</div><p class="pc-text">Every decision centers on dignity and comfort.</p></div>
+          <div class="pc"><div class="pc-ico">⚡</div><div class="pc-title">Tech-Enabled</div><p class="pc-text">Smarter, faster, more reliable care delivery.</p></div>
+          <div class="pc"><div class="pc-ico">🌐</div><div class="pc-title">Universal Access</div><p class="pc-text">Quality care regardless of geography or income.</p></div>
+          <div class="pc"><div class="pc-ico">🤝</div><div class="pc-title">Transparent</div><p class="pc-text">Trust built through honesty at every touchpoint.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how" aria-labelledby="how-h2">
+  <div class="container">
+    <div class="how-in">
+      <div class="how-sticky">
+        <div class="rv">
+          <span class="eyebrow">The Process</span>
+          <h2 id="how-h2" class="section-title">Simple steps.<br><em>Seamless care.</em></h2>
+          <p class="section-sub" style="margin-bottom:40px">We handle the complexity so you can focus on what matters — healing, comfort, and connection.</p>
+        </div>
+        <ol class="how-steps rv d1" aria-label="Steps to get care">
+          <li class="how-step active" data-panel="hp0">
+            <span class="how-step-num" aria-hidden="true">01</span>
+            <div><div class="how-step-title">Reach Out</div><div class="how-step-desc">Call, fill out our form, or request care online. A WeCare specialist responds within hours — no hold music, no runaround.</div></div>
+          </li>
+          <li class="how-step" data-panel="hp1">
+            <span class="how-step-num" aria-hidden="true">02</span>
+            <div><div class="how-step-title">Build Your Care Plan</div><div class="how-step-desc">We assess your needs, coordinate with your physicians, verify insurance, and design a personalized plan. Zero paperwork for you.</div></div>
+          </li>
+          <li class="how-step" data-panel="hp2">
+            <span class="how-step-num" aria-hidden="true">03</span>
+            <div><div class="how-step-title">Care Begins</div><div class="how-step-desc">Your caregiver arrives on schedule. Transport is booked. Supplies are delivered. Seamless from day one — exactly as promised.</div></div>
+          </li>
+          <li class="how-step" data-panel="hp3">
+            <span class="how-step-num" aria-hidden="true">04</span>
+            <div><div class="how-step-title">Ongoing Support</div><div class="how-step-desc">We monitor, adjust, and improve. Our team is available 24/7 — for questions, changes, or just the reassurance everything is on track.</div></div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="how-panels rv d2">
+        <div class="how-panel active" id="hp0" role="region" aria-label="Step 1: Reach Out">
+          <span class="hp-ico">📞</span>
+          <h3 class="hp-title">One call. Everything starts.</h3>
+          <p class="hp-text">Reach out through any channel — phone, form, or online. Our care specialists are trained to listen deeply and respond with clarity.</p>
+          <div class="hp-stats">
+            <div class="hp-row"><span class="hp-key">Avg. Response Time</span><span class="hp-val">Under 2 hours</span></div>
+            <div class="hp-row"><span class="hp-key">Channels Available</span><span class="hp-val">Phone · Form · Chat</span></div>
+            <div class="hp-row"><span class="hp-key">Urgent Care Line</span><span class="hp-val">Available 24/7</span></div>
+          </div>
+        </div>
+        <div class="how-panel" id="hp1" role="region" aria-label="Step 2: Care Plan">
+          <span class="hp-ico">📋</span>
+          <h3 class="hp-title">A plan built around you.</h3>
+          <p class="hp-text">We coordinate directly with your doctors, verify insurance, and craft a care plan that fits your life — not just your diagnosis.</p>
+          <div class="hp-stats">
+            <div class="hp-row"><span class="hp-key">Plan Turnaround</span><span class="hp-val">24–48 hours</span></div>
+            <div class="hp-row"><span class="hp-key">Insurance Handling</span><span class="hp-val">Fully managed by us</span></div>
+            <div class="hp-row"><span class="hp-key">Physician Coordination</span><span class="hp-val">Direct fax &amp; portal</span></div>
+          </div>
+        </div>
+        <div class="how-panel" id="hp2" role="region" aria-label="Step 3: Care Begins">
+          <span class="hp-ico">✅</span>
+          <h3 class="hp-title">Care delivered. Promise kept.</h3>
+          <p class="hp-text">Your care team is matched, scheduled, and briefed before they arrive. Every first visit includes a coordinator check-in.</p>
+          <div class="hp-stats">
+            <div class="hp-row"><span class="hp-key">Typical Start Date</span><span class="hp-val">Often within 48 hrs</span></div>
+            <div class="hp-row"><span class="hp-key">Caregiver Match</span><span class="hp-val">Skills + personality fit</span></div>
+            <div class="hp-row"><span class="hp-key">First Visit Check-in</span><span class="hp-val">Coordinator on-call</span></div>
+          </div>
+        </div>
+        <div class="how-panel" id="hp3" role="region" aria-label="Step 4: Ongoing Support">
+          <span class="hp-ico">🔄</span>
+          <h3 class="hp-title">We don't disappear after day one.</h3>
+          <p class="hp-text">Regular check-ins, plan adjustments, and 24/7 support ensure your care evolves as your needs do.</p>
+          <div class="hp-stats">
+            <div class="hp-row"><span class="hp-key">Weekly Check-ins</span><span class="hp-val">Coordinator + family</span></div>
+            <div class="hp-row"><span class="hp-key">Plan Adjustments</span><span class="hp-val">Anytime, no wait</span></div>
+            <div class="hp-row"><span class="hp-key">Emergency Line</span><span class="hp-val">24/7 nurse on-call</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHO WE SERVE ── -->
+<section id="serve" aria-labelledby="srv-h2">
+  <div class="container" style="position:relative">
+    <div class="serve-bg" aria-hidden="true">WeCare</div>
+    <div class="serve-head rv">
+      <span class="eyebrow eyebrow-mint">Our Ecosystem</span>
+      <h2 id="srv-h2" class="section-title">Built for every <em>stakeholder.</em></h2>
+      <p class="section-sub">WeCare connects patients, providers, and partners inside one coordinated ecosystem — where every party gets exactly what they need.</p>
+    </div>
+    <div class="serve-grid">
+      <div class="serve-card rv"><div class="serve-top"><div class="sc-ico">👨‍👩‍👧</div><div class="sc-arr" aria-hidden="true">→</div></div><div class="sc-title">Patients &amp; Families</div><p class="sc-desc">Compassionate care at home. We handle logistics so you can focus on healing.</p><a href="#contact" class="sc-cta">Request Care →</a></div>
+      <div class="serve-card rv d1"><div class="serve-top"><div class="sc-ico">🩺</div><div class="sc-arr" aria-hidden="true">→</div></div><div class="sc-title">Healthcare Providers</div><p class="sc-desc">Trusted discharge and post-acute care. We coordinate directly with your clinical team.</p><a href="#contact" class="sc-cta">Refer a Patient →</a></div>
+      <div class="serve-card rv d2"><div class="serve-top"><div class="sc-ico">🏦</div><div class="sc-arr" aria-hidden="true">→</div></div><div class="sc-title">Insurance Companies</div><p class="sc-desc">Cost-effective, outcomes-focused home care that reduces readmissions and improves satisfaction.</p><a href="#contact" class="sc-cta">Partner With Us →</a></div>
+      <div class="serve-card rv d3"><div class="serve-top"><div class="sc-ico">🌱</div><div class="sc-arr" aria-hidden="true">→</div></div><div class="sc-title">Community Organizations</div><p class="sc-desc">We work alongside nonprofits and advocacy groups to extend quality care to vulnerable populations.</p><a href="#contact" class="sc-cta">Collaborate →</a></div>
+      <div class="serve-card rv d4"><div class="serve-top"><div class="sc-ico">💻</div><div class="sc-arr" aria-hidden="true">→</div></div><div class="sc-title">Technology Partners</div><p class="sc-desc">Join our platform ecosystem. We integrate with health-tech innovators to enhance care at scale.</p><a href="#contact" class="sc-cta">Build Together →</a></div>
+      <div class="serve-card rv d5"><div class="serve-top"><div class="sc-ico">📈</div><div class="sc-arr" aria-hidden="true">→</div></div><div class="sc-title">Investors</div><p class="sc-desc">Back a purpose-driven, technology-enabled healthcare company built to scale with a mission that matters.</p><a href="#contact" class="sc-cta">Learn More →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VALUE PROP ── -->
+<section id="value" aria-labelledby="val-h2">
+  <div class="container">
+    <div class="value-in">
+      <div class="rv">
+        <span class="eyebrow">Why WeCare</span>
+        <h2 id="val-h2" class="value-stmt">We don't just provide care. <em>We redefine it.</em></h2>
+        <p class="value-p">Most healthcare companies do one thing. WeCare does four — and coordinates all of them so you never repeat yourself, navigate the system alone, or wonder if someone dropped the ball.</p>
+        <a href="#contact" class="btn btn-forest">Get Started</a>
+        <div class="value-metrics">
+          <div class="vm rv d1"><span class="vm-n">4</span><span class="vm-l">Core Services</span></div>
+          <div class="vm rv d2"><span class="vm-n">1</span><span class="vm-l">Coordinated System</span></div>
+          <div class="vm rv d3"><span class="vm-n">∞</span><span class="vm-l">Care Delivered</span></div>
+        </div>
+      </div>
+      <div class="vp-rows rv d2">
+        <div class="vp-row"><span class="vp-num" aria-hidden="true">01</span><div><div class="vp-title">One provider. Four services.</div><p class="vp-text">Homecare, transport, supplies, and staffing — all coordinated under one roof. No handoffs. No gaps. No explanations twice.</p></div></div>
+        <div class="vp-row"><span class="vp-num" aria-hidden="true">02</span><div><div class="vp-title">Technology meets humanity</div><p class="vp-text">Our platform makes scheduling, tracking, and communication effortless — while preserving the human warmth that defines great care.</p></div></div>
+        <div class="vp-row"><span class="vp-num" aria-hidden="true">03</span><div><div class="vp-title">Insurance coordination — handled</div><p class="vp-text">We navigate authorizations, billing, and benefit verification on your behalf. You focus on healing. We handle the paperwork.</p></div></div>
+        <div class="vp-row"><span class="vp-num" aria-hidden="true">04</span><div><div class="vp-title">Clinically rigorous. Genuinely compassionate.</div><p class="vp-text">Every WeCare professional meets the highest clinical standards — and brings warmth and patience to every interaction.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="testi" aria-labelledby="tes-h2">
+  <div class="container">
+    <div class="testi-head rv">
+      <span class="eyebrow">Real Stories</span>
+      <h2 id="tes-h2" class="section-title">Patients &amp; partners <em>speak for us.</em></h2>
+    </div>
+    <div class="testi-grid">
+      <blockquote class="t-card t-dark rv">
+        <div class="t-mark" aria-hidden="true">"</div>
+        <div class="t-stars" aria-label="5 out of 5 stars"><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span></div>
+        <p class="t-quote">WeCare changed everything for our family. Mom stays in her home safely — and we actually sleep at night knowing she's in good hands. The caregiver they matched with her feels like family now.</p>
+        <footer class="t-author"><div class="t-av" aria-hidden="true">SM</div><div><div class="t-name">Sandra M.</div><div class="t-role">Daughter of a WeCare homecare patient</div></div></footer>
+      </blockquote>
+      <blockquote class="t-card rv d1">
+        <div class="t-mark" aria-hidden="true">"</div>
+        <div class="t-stars" aria-label="5 out of 5 stars"><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span></div>
+        <p class="t-quote">As a discharge coordinator, I need partners I can trust completely. WeCare responds fast, communicates clearly, and their patients arrive to appointments on time. That's rare — and invaluable.</p>
+        <footer class="t-author"><div class="t-av" aria-hidden="true">JT</div><div><div class="t-name">Dr. James T.</div><div class="t-role">Hospital Discharge Coordinator</div></div></footer>
+      </blockquote>
+      <blockquote class="t-card rv d2">
+        <div class="t-mark" aria-hidden="true">"</div>
+        <div class="t-stars" aria-label="5 out of 5 stars"><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span><span class="t-star" aria-hidden="true">★</span></div>
+        <p class="t-quote">We integrated WeCare into our network for home-based services. Their tech infrastructure is solid, compliance is airtight, and their team is genuinely easy to work with. Highly recommended.</p>
+        <footer class="t-author"><div class="t-av" aria-hidden="true">PK</div><div><div class="t-name">Priya K.</div><div class="t-role">VP, Managed Care Operations</div></div></footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq" aria-labelledby="faq-h2">
+  <div class="container">
+    <div class="faq-in">
+      <div class="faq-lft rv">
+        <span class="eyebrow">Common Questions</span>
+        <h2 id="faq-h2" class="section-title">Questions, <em>answered.</em></h2>
+        <p class="section-sub">Can't find what you need? Call us at <a href="tel:+18009322273" style="color:var(--forest-lt);font-weight:600">1-800-WE-CARE</a> or send a message below.</p>
+        <a href="#contact" class="btn btn-forest" style="margin-top:28px;display:inline-flex">Ask a Question</a>
+      </div>
+      <div class="rv d1">
+        <ul class="faq-list" role="list">
+          <li class="faq-item" role="listitem">
+            <button class="faq-btn" aria-expanded="false" aria-controls="fa1">How quickly can care begin after I contact WeCare?<span class="faq-ico" aria-hidden="true"><span class="faq-line"></span></span></button>
+            <div id="fa1" class="faq-ans" role="region">In most cases, care can begin within 24–48 hours. Our intake team works quickly to assess your needs, verify coverage, and coordinate a plan. For urgent situations, same-day arrangements may be possible — call us directly.</div>
+          </li>
+          <li class="faq-item" role="listitem">
+            <button class="faq-btn" aria-expanded="false" aria-controls="fa2">Does WeCare accept Medicare, Medicaid, or private insurance?<span class="faq-ico" aria-hidden="true"><span class="faq-line"></span></span></button>
+            <div id="fa2" class="faq-ans" role="region">Yes. We work with most major insurers, including Medicare and Medicaid, as well as private plans. Our team handles verification and authorization on your behalf so you focus on care, not paperwork.</div>
+          </li>
+          <li class="faq-item" role="listitem">
+            <button class="faq-btn" aria-expanded="false" aria-controls="fa3">Are WeCare caregivers background-checked and credentialed?<span class="faq-ico" aria-hidden="true"><span class="faq-line"></span></span></button>
+            <div id="fa3" class="faq-ans" role="region">Absolutely. Every WeCare caregiver undergoes comprehensive background checks, reference verification, and credential review before placement. Our clinical team provides ongoing training and quality oversight.</div>
+          </li>
+          <li class="faq-item" role="listitem">
+            <button class="faq-btn" aria-expanded="false" aria-controls="fa4">Can I combine multiple WeCare services?<span class="faq-ico" aria-hidden="true"><span class="faq-line"></span></span></button>
+            <div id="fa4" class="faq-ans" role="region">Yes — that's one of our biggest advantages. A patient might receive daily homecare, scheduled transport, and regular supply deliveries, all managed through a single care coordinator and one coordinated plan.</div>
+          </li>
+          <li class="faq-item" role="listitem">
+            <button class="faq-btn" aria-expanded="false" aria-controls="fa5">What areas does WeCare serve?<span class="faq-ico" aria-hidden="true"><span class="faq-line"></span></span></button>
+            <div id="fa5" class="faq-ans" role="region">WeCare is expanding rapidly. Please contact us to confirm service availability in your area. We're committed to growing our coverage and will notify you as soon as we launch near you.</div>
+          </li>
+          <li class="faq-item" role="listitem">
+            <button class="faq-btn" aria-expanded="false" aria-controls="fa6">How do organizations or investors partner with WeCare?<span class="faq-ico" aria-hidden="true"><span class="faq-line"></span></span></button>
+            <div id="fa6" class="faq-ans" role="region">We welcome partnerships with providers, insurers, community organizations, tech companies, and investors. Select "Partnership Inquiry" in our contact form — a member of our leadership team follows up within one business day.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact" aria-labelledby="con-h2">
+  <div class="container">
+    <div class="contact-in">
+      <div class="rv">
+        <span class="eyebrow">Get in Touch</span>
+        <h2 id="con-h2" class="section-title">Let's start with <em>a conversation.</em></h2>
+        <p class="section-sub">Whether you need care for a loved one, want to refer patients, or are exploring a partnership — a real human responds within one business day.</p>
+        <div class="c-promise">
+          <div class="c-p-ico">🛡️</div>
+          <div class="c-p-text"><strong>Your privacy is protected</strong>Fully HIPAA compliant. Your information is never shared or used for anything other than fulfilling your care request.</div>
+        </div>
+        <div class="c-info">
+          <div class="c-row"><div class="c-ico">📞</div><div><div class="c-label">Call Us</div><div class="c-val"><a href="tel:+18009322273">1-800-WE-CARE</a></div></div></div>
+          <div class="c-row"><div class="c-ico">✉️</div><div><div class="c-label">Email Us</div><div class="c-val"><a href="mailto:care@wecare.health">care@wecare.health</a></div></div></div>
+          <div class="c-row"><div class="c-ico">🕐</div><div><div class="c-label">Urgent Care Line</div><div class="c-val">Available 24/7</div></div></div>
+        </div>
+      </div>
+
+      <div class="rv d2">
+        <div class="form-wrap">
+          <div class="form-head">Send us a message</div>
+          <form id="cf" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate aria-label="Contact WeCare form">
+            <input type="hidden" name="form-name" value="contact">
+            <p class="f-honey" aria-hidden="true"><label>Skip this: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+            <div class="f-row">
+              <div class="f-grp">
+                <label class="f-lbl" for="f-name">Full Name <span aria-hidden="true">*</span></label>
+                <input class="f-in" type="text" id="f-name" name="name" autocomplete="name" required placeholder="Jane Smith" aria-describedby="f-name-err">
+                <span class="f-err" id="f-name-err" role="alert" aria-live="polite"></span>
+              </div>
+              <div class="f-grp">
+                <label class="f-lbl" for="f-email">Email <span aria-hidden="true">*</span></label>
+                <input class="f-in" type="email" id="f-email" name="email" autocomplete="email" required placeholder="jane@email.com" aria-describedby="f-email-err">
+                <span class="f-err" id="f-email-err" role="alert" aria-live="polite"></span>
+              </div>
+            </div>
+            <div class="f-row">
+              <div class="f-grp">
+                <label class="f-lbl" for="f-phone">Phone</label>
+                <input class="f-in" type="tel" id="f-phone" name="phone" autocomplete="tel" placeholder="(555) 000-0000">
+              </div>
+              <div class="f-grp">
+                <label class="f-lbl" for="f-service">Service Needed <span aria-hidden="true">*</span></label>
+                <select class="f-sel" id="f-service" name="service" required aria-describedby="f-svc-err">
+                  <option value="" disabled selected>Select a service…</option>
+                  <option value="homecare">Homecare</option>
+                  <option value="transport">Medical Transport</option>
+                  <option value="supplies">Medical Supplies</option>
+                  <option value="staffing">Healthcare Staffing</option>
+                  <option value="partnership">Partnership Inquiry</option>
+                  <option value="investment">Investment Inquiry</option>
+                  <option value="other">Other</option>
+                </select>
+                <span class="f-err" id="f-svc-err" role="alert" aria-live="polite"></span>
+              </div>
+            </div>
+            <div class="f-grp" style="margin-bottom:14px">
+              <label class="f-lbl" for="f-msg">Message <span aria-hidden="true">*</span></label>
+              <textarea class="f-ta" id="f-msg" name="message" required placeholder="Tell us about your situation and what you need…" aria-describedby="f-msg-err"></textarea>
+              <span class="f-err" id="f-msg-err" role="alert" aria-live="polite"></span>
+            </div>
+            <button type="submit" id="f-sub" class="btn btn-forest btn-full btn-lg">
+              <span class="btn-txt">Send My Request</span>
+              <span class="btn-spin" aria-hidden="true">Sending…</span>
+            </button>
+            <p class="f-note">HIPAA compliant · Never shared · Typically respond same day</p>
+            <div class="f-ok" id="f-ok" role="alert" aria-live="assertive">✓ Received! We'll be in touch shortly.</div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ── -->
+<section id="cta-final" aria-labelledby="cta-h2">
+  <div class="cta-ring cr1" aria-hidden="true"></div>
+  <div class="cta-ring cr2" aria-hidden="true"></div>
+  <div class="container">
+    <div class="cta-content rv">
+      <div class="cta-tag"><span class="tag tag-forest tag-dot">Ready to get started</span></div>
+      <h2 id="cta-h2" class="cta-h2">Care the way it <em>should be.</em></h2>
+      <p class="cta-p">Join thousands of patients, families, and providers who trust WeCare to deliver compassionate, expert care — every single day.</p>
+      <div class="cta-btns">
+        <a href="#contact" class="btn btn-mint btn-lg">Request Care Today</a>
+        <a href="tel:+18009322273" class="btn btn-ghost btn-lg">Call 1-800-WE-CARE</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer id="footer" aria-label="Site footer">
+  <div class="container">
+    <div class="ft-top">
+      <div class="ft-brand">
+        <a href="#hero" class="logo" aria-label="WeCare — home">
+          <div class="logo-ico" style="background:var(--forest-lt)" aria-hidden="true"></div>
+          <span class="logo-word" style="color:var(--warm-white)">We<span style="color:var(--mint)">Care</span></span>
+        </a>
+        <p>Redefining care with universal compassion and excellence — bringing the healthcare ecosystem to every patient, everywhere.</p>
+        <div class="ft-socials">
+          <a href="#" class="ft-s" aria-label="Facebook">FB</a>
+          <a href="#" class="ft-s" aria-label="LinkedIn">LI</a>
+          <a href="#" class="ft-s" aria-label="Instagram">IG</a>
+          <a href="#" class="ft-s" aria-label="X / Twitter">𝕏</a>
+        </div>
+      </div>
+      <nav class="ft-nav-cols" aria-label="Footer links">
+        <div class="fc">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="#services">Homecare</a></li>
+            <li><a href="#services">Medical Transport</a></li>
+            <li><a href="#services">Medical Supplies</a></li>
+            <li><a href="#services">Healthcare Staffing</a></li>
+          </ul>
+        </div>
+        <div class="fc">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#serve">Who We Serve</a></li>
+            <li><a href="#testi">Patient Stories</a></li>
+            <li><a href="#contact">Careers</a></li>
+          </ul>
+        </div>
+        <div class="fc">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="tel:+18009322273">1-800-WE-CARE</a></li>
+            <li><a href="mailto:care@wecare.health">care@wecare.health</a></li>
+            <li><a href="#contact">Request Care</a></li>
+            <li><a href="#contact">Partner With Us</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <div class="container">
+      <div class="ft-bot-in">
+        <span class="ft-copy">© 2026 WeCare Health, Inc. All rights reserved.</span>
+        <div class="ft-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms</a>
+          <a href="#">HIPAA Notice</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+
+/* ── STICKY HEADER ── */
+var hdr = document.getElementById('hdr');
+function onScroll(){ hdr.classList.toggle('stuck', window.scrollY > 6); }
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+/* ── MOBILE NAV ── */
+var burger = document.getElementById('burger');
+var mob    = document.getElementById('mob');
+var isOpen = false;
+
+function openMob(){
+  isOpen = true;
+  mob.hidden = false;
+  mob.classList.add('open');
+  burger.classList.add('open');
+  burger.setAttribute('aria-expanded','true');
+  document.body.style.overflow = 'hidden';
+}
+function closeMob(){
+  isOpen = false;
+  mob.classList.remove('open');
+  burger.classList.remove('open');
+  burger.setAttribute('aria-expanded','false');
+  document.body.style.overflow = '';
+  // hide after animation
+  setTimeout(function(){ if(!isOpen) mob.hidden = true; }, 300);
+}
+
+burger.addEventListener('click', function(){ isOpen ? closeMob() : openMob(); });
+
+mob.querySelectorAll('.mob-a, .mob-btns .btn').forEach(function(el){
+  el.addEventListener('click', closeMob);
+});
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && isOpen){ closeMob(); burger.focus(); }
+});
+
+document.addEventListener('click', function(e){
+  if(isOpen && !mob.contains(e.target) && !burger.contains(e.target)) closeMob();
+});
+
+/* ── SMOOTH SCROLL (offset for fixed header) ── */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    var id = this.getAttribute('href');
+    if(id === '#' || id === '#hero') return;
+    var tgt = document.querySelector(id);
+    if(!tgt) return;
+    e.preventDefault();
+    var offset = hdr.offsetHeight + 8;
+    var top = tgt.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({top: top, behavior: 'smooth'});
+    // accessibility focus
+    tgt.setAttribute('tabindex','-1');
+    setTimeout(function(){ tgt.focus({preventScroll:true}); }, 400);
+    tgt.addEventListener('blur', function(){ tgt.removeAttribute('tabindex'); }, {once:true});
+  });
+});
+
+/* ── SCROLL REVEAL ── */
+var revEls = document.querySelectorAll('.rv');
+if('IntersectionObserver' in window){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold: 0.07, rootMargin: '0px 0px -24px 0px'});
+  revEls.forEach(function(el){ io.observe(el); });
+} else {
+  revEls.forEach(function(el){ el.classList.add('in'); });
+}
+
+/* ── SCROLL SPY (desktop nav active state) ── */
+var secs  = document.querySelectorAll('section[id], div[id="trust"]');
+var navAs = document.querySelectorAll('.nav-a');
+if('IntersectionObserver' in window && navAs.length){
+  var spy = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        navAs.forEach(function(a){
+          var active = a.getAttribute('href') === '#' + e.target.id;
+          a.classList.toggle('active', active);
+        });
+      }
+    });
+  }, {threshold: 0.4});
+  secs.forEach(function(s){ spy.observe(s); });
+}
+
+/* ── HOW IT WORKS STEPPER ── */
+var steps  = document.querySelectorAll('.how-step');
+var panels = document.querySelectorAll('.how-panel');
+
+function activateStep(idx){
+  steps.forEach(function(s,i){
+    s.classList.toggle('active', i === idx);
+    s.setAttribute('aria-selected', i === idx);
+  });
+  panels.forEach(function(p,i){
+    p.classList.toggle('active', i === idx);
+  });
+}
+
+steps.forEach(function(s, idx){
+  s.setAttribute('role','button');
+  s.setAttribute('tabindex','0');
+  s.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+  s.addEventListener('click', function(){ activateStep(idx); });
+  s.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); activateStep(idx); }
+    if(e.key === 'ArrowDown' && idx < steps.length - 1){ e.preventDefault(); steps[idx+1].focus(); activateStep(idx+1); }
+    if(e.key === 'ArrowUp' && idx > 0){ e.preventDefault(); steps[idx-1].focus(); activateStep(idx-1); }
+  });
+});
+
+/* ── FAQ ACCORDION ── */
+document.querySelectorAll('.faq-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var panelId = btn.getAttribute('aria-controls');
+    var panel   = document.getElementById(panelId);
+    var wasOpen = btn.getAttribute('aria-expanded') === 'true';
+
+    // Close all
+    document.querySelectorAll('.faq-btn').forEach(function(b){
+      b.setAttribute('aria-expanded','false');
+      var p = document.getElementById(b.getAttribute('aria-controls'));
+      if(p) p.classList.remove('open');
+    });
+
+    // Open clicked if was closed
+    if(!wasOpen && panel){
+      btn.setAttribute('aria-expanded','true');
+      panel.classList.add('open');
+    }
+  });
+
+  btn.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btn.click(); }
+  });
+});
+
+/* ── FORM VALIDATION & SUBMISSION ── */
+var form = document.getElementById('cf');
+var fsub = document.getElementById('f-sub');
+var fok  = document.getElementById('f-ok');
+
+var rules = {
+  'f-name':    function(v){ return !v.trim() ? 'Please enter your full name.' : v.trim().length < 2 ? 'At least 2 characters required.' : ''; },
+  'f-email':   function(v){ return !v.trim() ? 'Please enter your email address.' : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? 'Please enter a valid email address.' : ''; },
+  'f-service': function(v){ return !v ? 'Please select a service.' : ''; },
+  'f-msg':     function(v){ return !v.trim() ? 'Please enter a message.' : v.trim().length < 10 ? 'Please provide a bit more detail.' : ''; }
+};
+
+var errIds = {
+  'f-name':'f-name-err', 'f-email':'f-email-err',
+  'f-service':'f-svc-err', 'f-msg':'f-msg-err'
+};
+
+function setErr(id, msg){
+  var field = document.getElementById(id);
+  var errEl = document.getElementById(errIds[id]);
+  if(field){
+    field.classList.toggle('err', !!msg);
+    field.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  }
+  if(errEl) errEl.textContent = msg || '';
+}
+
+function validateField(id){
+  var el = document.getElementById(id);
+  if(!el || !rules[id]) return true;
+  var msg = rules[id](el.value);
+  setErr(id, msg);
+  return !msg;
+}
+
+// Live validation
+Object.keys(rules).forEach(function(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('blur', function(){ validateField(id); });
+  el.addEventListener('input', function(){
+    if(el.classList.contains('err')) validateField(id);
+  });
+  el.addEventListener('change', function(){ validateField(id); });
+});
+
+if(form){
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var fields = Object.keys(rules);
+    var allValid = fields.map(validateField).every(Boolean);
+    if(!allValid){
+      var first = form.querySelector('.err');
+      if(first) first.focus();
+      return;
+    }
+
+    // Submit state
+    fsub.classList.add('submitting');
+    fsub.disabled = true;
+
+    var fd = new FormData(form);
+    var body = new URLSearchParams(fd).toString();
+
+    fetch('/', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body: body
+    })
+    .then(function(res){
+      if(res.ok){
+        form.reset();
+        fok.classList.add('show');
+        fok.scrollIntoView({behavior:'smooth', block:'nearest'});
+      } else {
+        throw new Error('Server error');
+      }
+    })
+    .catch(function(){
+      // Mailto fallback
+      var n  = (document.getElementById('f-name')  || {}).value  || '';
+      var em = (document.getElementById('f-email') || {}).value  || '';
+      var sv = (document.getElementById('f-service')|| {}).value || '';
+      var mg = (document.getElementById('f-msg')   || {}).value  || '';
+      var mailBody = encodeURIComponent(
+        'Name: ' + n + '\nEmail: ' + em + '\nService: ' + sv + '\n\n' + mg
+      );
+      window.location.href = 'mailto:care@wecare.health?subject=WeCare%20Care%20Request&body=' + mailBody;
+    })
+    .finally(function(){
+      fsub.classList.remove('submitting');
+      fsub.disabled = false;
+    });
+  });
+}
+
+})();
+</script>
+</body>
+</html>
