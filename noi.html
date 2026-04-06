@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="NOI — Pioneering sustainable luxury experiential hospitality. Eco-conscious, technology-infused stay & play properties across Vietnam, Mexico, and Texas."/>
+<title>NOI — Sustainable Luxury Resorts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════════ */
+:root{
+  /* Brand palette */
+  --deep:      #004c6d;
+  --teal:      #52c8e0;        /* vibrant — great contrast on dark */
+  --teal-mid:  #3eb1c8;        /* borders, subtle accents */
+  --gold:      #e2ae2c;        /* primary CTA, numbers */
+  --gold-dim:  rgba(226,174,44,.14);
+  --gold-bdr:  rgba(226,174,44,.35);
+
+  /* Text hierarchy — dark backgrounds */
+  --t1:  #f5f0e8;   /* headings, primary — near-white cream */
+  --t2:  #ddd8cf;   /* subheadings, strong body */
+  --t3:  #b8b2aa;   /* body text — warm grey, clearly readable */
+  --t4:  #887f76;   /* captions, labels — intentionally softer */
+
+  /* Surface palette */
+  --bg:    #0a1a24;
+  --bg2:   #071820;   /* alt sections — slightly darker */
+  --card:  #0d2535;   /* card backgrounds */
+  --card2: #102d40;   /* card hover / active */
+
+  /* Borders */
+  --bdr:   rgba(82,200,224,.18);
+  --bdr2:  rgba(82,200,224,.32);
+  --bdr-g: rgba(226,174,44,.32);
+
+  /* Spacing */
+  --px:  clamp(20px,5vw,80px);
+  --py:  clamp(60px,9vw,120px);
+
+  /* Layout */
+  --nav-h: 70px;
+  --tr: .32s cubic-bezier(.4,0,.2,1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════ */
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);color:var(--t2);
+  font-family:'Montserrat',sans-serif;font-weight:300;
+  line-height:1.65;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+a{color:inherit}
+button{cursor:pointer;font-family:inherit;background:none;border:none}
+img{display:block;max-width:100%}
+
+/* Skip link */
+.skip{
+  position:fixed;top:-90px;left:16px;z-index:9999;
+  padding:10px 20px;background:var(--gold);color:var(--bg);
+  font-size:13px;font-weight:600;text-decoration:none;
+  transition:top .2s;
+}
+.skip:focus{top:14px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--deep);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--teal-mid)}
+
+/* ═══════════════════════════════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════════════════════════════ */
+#prog{
+  position:fixed;top:0;left:0;z-index:500;
+  height:2px;width:0%;
+  background:linear-gradient(90deg,var(--teal),var(--gold));
+  transition:width .08s linear;pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--px);
+  transition:background var(--tr),backdrop-filter var(--tr),box-shadow var(--tr);
+}
+.nav.solid{
+  background:rgba(7,24,32,.97);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 1px 0 var(--bdr);
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(22px,2.8vw,30px);font-weight:300;letter-spacing:.46em;
+  text-decoration:none;color:var(--t1);z-index:301;flex-shrink:0;
+  transition:color var(--tr);
+}
+.logo:hover{color:var(--teal)}
+
+.nav-links{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;gap:clamp(18px,2.8vw,46px);list-style:none;
+}
+.nav-links a{
+  text-decoration:none;color:var(--t2);
+  font-size:clamp(9px,1vw,11px);letter-spacing:.22em;text-transform:uppercase;
+  padding:5px 0;position:relative;transition:color var(--tr);
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;
+  height:1px;background:var(--gold);
+  transform:scaleX(0);transform-origin:left;transition:transform var(--tr);
+}
+.nav-links a:hover,.nav-links a.act{color:var(--t1)}
+.nav-links a:hover::after,.nav-links a.act::after{transform:scaleX(1)}
+
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-cta{
+  font-size:clamp(9px,1vw,11px);letter-spacing:.22em;text-transform:uppercase;
+  padding:9px 22px;border:1px solid var(--gold);color:var(--gold);
+  text-decoration:none;white-space:nowrap;
+  transition:background var(--tr),color var(--tr);
+}
+.nav-cta:hover{background:var(--gold);color:var(--bg)}
+
+/* Hamburger */
+.ham{
+  display:none;flex-direction:column;justify-content:center;
+  gap:5px;width:44px;height:44px;padding:10px;z-index:301;
+}
+.ham span{
+  display:block;height:1px;background:var(--t1);
+  transition:transform var(--tr),opacity var(--tr);
+  transform-origin:left center;
+}
+.ham.open span:nth-child(1){transform:rotate(45deg)}
+.ham.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.ham.open span:nth-child(3){transform:rotate(-45deg)}
+
+/* Mobile drawer */
+.drawer{
+  position:fixed;inset:0;z-index:290;
+  background:rgba(7,24,32,.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;
+  transform:translateX(100%);
+  transition:transform .44s cubic-bezier(.77,0,.18,1);
+}
+.drawer.open{transform:none}
+.drawer a{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,8vw,56px);font-weight:300;
+  text-decoration:none;color:var(--t1);padding:6px 0;
+  transition:color var(--tr);
+}
+.drawer a:hover{color:var(--teal)}
+.drawer .d-cta{
+  margin-top:22px;padding:13px 46px;
+  background:var(--gold);color:var(--bg);
+  font-family:'Montserrat',sans-serif;
+  font-size:clamp(9px,1vw,11px);letter-spacing:.22em;text-transform:uppercase;font-weight:600;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════ */
+.hero{
+  position:relative;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:calc(var(--nav-h) + clamp(20px,5vw,60px)) var(--px) clamp(40px,6vw,70px);
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 70% at 75% 35%,rgba(82,200,224,.13) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 60% at 15% 85%,rgba(0,76,109,.45) 0%,transparent 65%),
+    linear-gradient(158deg,#0a1a24 0%,#0d2535 55%,#071820 100%);
+}
+.ring{
+  position:absolute;border-radius:50%;pointer-events:none;
+  border:1px solid rgba(82,200,224,.11);
+  animation:rpulse 9s ease-in-out infinite;
+}
+.ring:nth-child(1){width:min(580px,90vw);height:min(580px,90vw);top:-70px;right:-80px}
+.ring:nth-child(2){width:min(880px,130vw);height:min(880px,130vw);top:-190px;right:-210px;animation-delay:2.5s}
+.ring:nth-child(3){width:min(1180px,170vw);height:min(1180px,170vw);top:-310px;right:-330px;animation-delay:5s}
+@keyframes rpulse{0%,100%{opacity:.44;transform:scale(1)}50%{opacity:.1;transform:scale(1.05)}}
+.pts{position:absolute;inset:0;pointer-events:none}
+.pt{position:absolute;border-radius:50%;background:var(--teal);animation:flt linear infinite}
+@keyframes flt{0%{transform:translateY(110vh);opacity:0}8%{opacity:.25}92%{opacity:.25}100%{transform:translateY(-15vh) translateX(28px);opacity:0}}
+
+/* Hero content */
+.hero-inner{position:relative;z-index:2;max-width:800px}
+.eyebrow{
+  font-size:clamp(9px,1vw,11px);letter-spacing:.4em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:18px;font-weight:500;
+  opacity:0;animation:fup .8s .2s forwards;
+}
+.hero-h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(60px,9vw,132px);font-weight:300;line-height:.88;
+  letter-spacing:-.02em;color:var(--t1);
+  opacity:0;animation:fup .9s .38s forwards;
+}
+.hero-h1 em{font-style:italic;color:var(--teal)}
+.hero-h1 span{display:block}
+.hero-sub{
+  max-width:500px;margin-top:26px;
+  font-size:clamp(13px,1.4vw,15px);line-height:1.9;color:var(--t2);
+  opacity:0;animation:fup .9s .56s forwards;
+}
+.hero-btns{
+  display:flex;flex-wrap:wrap;gap:13px;margin-top:36px;
+  opacity:0;animation:fup .9s .74s forwards;
+}
+
+/* Hero stats bar */
+.hero-stats{
+  position:relative;z-index:2;
+  display:flex;flex-wrap:wrap;gap:2px;
+  margin-top:clamp(32px,5vw,56px);
+  border-top:1px solid rgba(82,200,224,.28);
+  padding-top:clamp(18px,3vw,28px);
+  opacity:0;animation:fin 1s 1s forwards;
+}
+.hstat{
+  flex:1;min-width:clamp(110px,18vw,145px);
+  padding:clamp(14px,2vw,20px) clamp(14px,2vw,22px);
+  background:rgba(0,76,109,.22);border:1px solid rgba(82,200,224,.22);
+  transition:background var(--tr),transform var(--tr);
+}
+.hstat:hover{background:rgba(0,76,109,.4);transform:translateY(-2px)}
+.hstat .v{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(24px,3.2vw,38px);font-weight:300;color:var(--gold);line-height:1;
+}
+.hstat .l{font-size:clamp(8px,.9vw,10px);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-top:5px}
+
+/* Scroll indicator */
+.scroll-ind{
+  position:absolute;bottom:clamp(18px,3vw,34px);right:var(--px);z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--t4);
+  opacity:0;animation:fin 1s 1.3s forwards;
+}
+.sline{width:1px;height:50px;background:linear-gradient(to bottom,var(--t4),transparent);animation:sdn 2.2s ease-in-out infinite}
+@keyframes sdn{0%{transform:scaleY(0);transform-origin:top;opacity:1}48%{transform:scaleY(1);transform-origin:top}50%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom;opacity:0}}
+@keyframes fup{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:clamp(9px,1vw,11px);letter-spacing:.22em;text-transform:uppercase;
+  font-weight:500;text-decoration:none;white-space:nowrap;
+  padding:clamp(12px,1.5vw,15px) clamp(24px,3vw,38px);
+  min-height:48px;
+  transition:transform var(--tr),box-shadow var(--tr),background var(--tr),color var(--tr),border-color var(--tr);
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-gold{background:var(--gold);color:var(--bg)}
+.btn-gold:hover{box-shadow:0 14px 36px rgba(226,174,44,.3)}
+.btn-ghost{border:1px solid rgba(221,216,207,.35);color:var(--t1)}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+.btn-teal{border:1px solid var(--teal);color:var(--teal)}
+.btn-teal:hover{background:var(--teal);color:var(--bg)}
+
+/* ═══════════════════════════════════════════════════════
+   MARQUEE
+═══════════════════════════════════════════════════════ */
+.mq{overflow:hidden;padding:15px 0;background:rgba(0,76,109,.18);border-top:1px solid rgba(82,200,224,.2);border-bottom:1px solid rgba(82,200,224,.2)}
+.mq-t{display:flex;gap:68px;white-space:nowrap;animation:mqa 34s linear infinite;width:max-content}
+.mq:hover .mq-t{animation-play-state:paused}
+.mq-t span{font-size:clamp(9px,1vw,10px);letter-spacing:.35em;text-transform:uppercase;color:var(--teal)}
+.mq-t .sep{color:var(--gold)}
+@keyframes mqa{to{transform:translateX(-50%)}}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION BASE
+═══════════════════════════════════════════════════════ */
+.sec{padding:var(--py) var(--px)}
+.sec-alt{background:var(--bg2)}
+
+/* Typography components */
+.lbl{display:block;font-size:clamp(9px,1vw,10px);letter-spacing:.44em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;font-weight:500}
+.h2{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5.5vw,70px);font-weight:300;line-height:1.05;letter-spacing:-.01em;color:var(--t1)}
+.h2 em{font-style:italic;color:var(--teal)}
+.rule{width:52px;height:1px;margin:24px 0;background:linear-gradient(to right,var(--gold),transparent)}
+.rule.c{margin:24px auto;background:linear-gradient(to right,transparent,var(--gold),transparent);width:90px}
+.body-txt{font-size:clamp(13px,1.4vw,15px);line-height:1.95;color:var(--t2);font-weight:300}
+
+/* ═══════════════════════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════════════════════ */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .85s ease,transform .85s ease}
+.rv.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.22s}.d3{transition-delay:.34s}.d4{transition-delay:.46s}
+
+/* ═══════════════════════════════════════════════════════
+   PILLARS
+═══════════════════════════════════════════════════════ */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:2px;margin-top:52px}
+.pillar{
+  padding:clamp(28px,4vw,52px) clamp(22px,3vw,38px);
+  background:var(--card);border:1px solid var(--bdr);
+  position:relative;overflow:hidden;
+  transition:background var(--tr),border-color var(--tr),transform var(--tr);
+}
+.pillar::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(82,200,224,.05) 0%,transparent 60%);
+  opacity:0;transition:opacity var(--tr);
+}
+.pillar:hover{background:var(--card2);border-color:var(--bdr2);transform:translateY(-3px)}
+.pillar:hover::after{opacity:1}
+.p-icon{
+  width:46px;height:46px;margin-bottom:24px;
+  border:1px solid var(--gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--gold);background:rgba(226,174,44,.08);
+}
+.pillar h3{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.8vw,30px);font-weight:400;margin-bottom:12px;color:var(--t1)}
+.pillar p{font-size:clamp(12px,1.3vw,14px);line-height:1.82;color:var(--t3)}
+
+/* ═══════════════════════════════════════════════════════
+   ABOUT
+═══════════════════════════════════════════════════════ */
+.about-g{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,7vw,100px);align-items:center}
+/* Content panel gives text a darker card backdrop for extra pop */
+.about-copy{
+  padding:clamp(30px,4vw,52px);
+  background:rgba(13,37,53,.65);
+  border:1px solid rgba(82,200,224,.13);
+  border-left:3px solid var(--gold);
+}
+.ab-vis{position:relative;height:clamp(300px,42vw,540px)}
+.ab-main{
+  position:absolute;inset:0 clamp(20px,4vw,55px) clamp(20px,4vw,55px) 0;
+  border:1px solid var(--bdr);
+  background:
+    linear-gradient(135deg,rgba(0,76,109,.55),rgba(82,200,224,.12)),
+    repeating-linear-gradient(45deg,transparent 0 22px,rgba(82,200,224,.03) 22px 23px);
+  display:flex;align-items:flex-end;padding:clamp(14px,2vw,26px);
+}
+.ab-accent{
+  position:absolute;bottom:0;right:0;
+  width:clamp(130px,18vw,195px);height:clamp(95px,13vw,140px);
+  border:1px solid var(--bdr-g);background:rgba(226,174,44,.1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+}
+.ab-num{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:300;color:var(--gold);line-height:1}
+.ab-lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--t2);text-align:center;line-height:1.45}
+.tag{display:inline-block;padding:5px 14px;border:1px solid rgba(82,200,224,.45);font-size:clamp(9px,1vw,10px);letter-spacing:.26em;text-transform:uppercase;color:var(--teal);font-weight:500}
+.stats-row{display:flex;flex-wrap:wrap;gap:clamp(18px,3.5vw,44px);margin-top:36px;padding-top:36px;border-top:1px solid rgba(226,174,44,.28)}
+.si .v{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,42px);font-weight:300;color:var(--teal);line-height:1}
+.si .l{font-size:clamp(8px,.9vw,10px);letter-spacing:.18em;text-transform:uppercase;color:var(--t2);margin-top:6px;font-weight:400}
+
+/* ═══════════════════════════════════════════════════════
+   LOCATIONS — TABBED
+═══════════════════════════════════════════════════════ */
+.loc-tabs{
+  display:flex;gap:2px;margin:44px 0 0;
+  border-bottom:1px solid rgba(82,200,224,.22);overflow-x:auto;
+}
+.loc-tab{
+  padding:13px clamp(14px,2.5vw,30px);
+  font-size:clamp(9px,1vw,11px);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--t3);cursor:pointer;
+  border:none;border-bottom:2px solid transparent;margin-bottom:-1px;
+  white-space:nowrap;background:none;min-height:48px;
+  transition:color var(--tr),border-color var(--tr);
+}
+.loc-tab:hover{color:var(--t1)}
+.loc-tab.act{color:var(--gold);border-bottom-color:var(--gold);font-weight:500}
+.loc-panels{margin-top:2px}
+.loc-panel{display:none}
+.loc-panel.act{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.loc-vis{min-height:clamp(260px,38vw,460px);position:relative;overflow:hidden}
+.loc-fill{position:absolute;inset:0;transition:transform .7s ease}
+.loc-vis:hover .loc-fill{transform:scale(1.05)}
+/* Location backgrounds */
+.vn{background:linear-gradient(160deg,rgba(0,76,109,.85),rgba(82,200,224,.25)),repeating-linear-gradient(120deg,transparent 0 32px,rgba(255,255,255,.025) 32px 33px)}
+.mx{background:linear-gradient(200deg,rgba(0,60,40,.85),rgba(82,200,224,.2)),repeating-linear-gradient(80deg,transparent 0 26px,rgba(255,255,255,.025) 26px 27px)}
+.tx{background:linear-gradient(140deg,rgba(60,40,10,.85),rgba(226,174,44,.22)),repeating-linear-gradient(60deg,transparent 0 38px,rgba(255,255,255,.025) 38px 39px)}
+.loc-region{position:absolute;top:22px;left:22px;font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:var(--teal);font-weight:500}
+.loc-name{position:absolute;bottom:22px;left:22px;font-family:'Cormorant Garamond',serif;font-size:clamp(36px,6vw,78px);font-weight:300;line-height:1;color:var(--t1);text-shadow:0 4px 32px rgba(0,0,0,.6)}
+.loc-body{
+  padding:clamp(26px,4vw,50px);
+  background:rgba(10,26,36,.98);border:1px solid rgba(82,200,224,.16);
+  display:flex;flex-direction:column;gap:18px;
+}
+.loc-body h3{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,34px);font-weight:400;color:var(--t1)}
+.loc-body p{font-size:clamp(12px,1.3vw,14px);color:var(--t3);line-height:1.82}
+.loc-feats{display:flex;flex-direction:column;gap:10px}
+.loc-feat{display:flex;gap:12px;font-size:clamp(12px,1.3vw,14px);color:var(--t2);line-height:1.5}
+.loc-feat::before{content:'◦';color:var(--gold);flex-shrink:0;margin-top:1px;font-size:16px}
+.sbadge{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 14px;border:1px solid var(--bdr-g);background:rgba(226,174,44,.1);
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+  align-self:flex-start;font-weight:500;
+}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.22}}
+
+/* ═══════════════════════════════════════════════════════
+   EXPERIENCES
+═══════════════════════════════════════════════════════ */
+.exp-g{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,90px);align-items:start}
+.exp-list{display:flex;flex-direction:column;gap:2px;margin-top:40px}
+.exp-item{
+  display:flex;gap:clamp(12px,2vw,24px);align-items:flex-start;
+  padding:clamp(18px,2.5vw,28px);
+  border:1px solid rgba(82,200,224,.18);
+  background:var(--card);
+  cursor:pointer;
+  transition:border-color var(--tr),background var(--tr),transform var(--tr);
+}
+.exp-item:hover,.exp-item.act{border-color:rgba(82,200,224,.52);background:rgba(0,76,109,.36);transform:translateX(4px)}
+.exp-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(28px,4vw,42px);font-weight:300;
+  color:rgba(82,200,224,.28);line-height:1;min-width:44px;flex-shrink:0;
+  transition:color var(--tr);
+}
+.exp-item.act .exp-n{color:var(--teal)}
+.exp-item h4{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.5vw,26px);font-weight:400;margin-bottom:6px;color:var(--t1)}
+.exp-item p{font-size:clamp(12px,1.3vw,14px);color:var(--t2);line-height:1.78;font-weight:300}
+.exp-side{margin-top:40px;display:flex;flex-direction:column;gap:2px}
+.exp-q{
+  padding:clamp(26px,3.5vw,48px);
+  border:1px solid var(--bdr-g);
+  background:linear-gradient(135deg,rgba(226,174,44,.12),rgba(226,174,44,.04));
+  position:relative;overflow:hidden;
+}
+.exp-q::before{content:'"';position:absolute;top:8px;right:18px;font-family:'Cormorant Garamond',serif;font-size:160px;color:rgba(226,174,44,.09);line-height:1;pointer-events:none}
+.exp-q blockquote{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,22px);font-style:italic;font-weight:300;line-height:1.62;position:relative;z-index:1;color:var(--t1)}
+.exp-q cite{display:block;margin-top:18px;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-style:normal;font-weight:500}
+.tech-box{padding:clamp(22px,3vw,40px);border:1px solid rgba(82,200,224,.16);background:rgba(7,24,32,.92)}
+.tech-lbl{font-size:clamp(9px,1vw,10px);letter-spacing:.4em;text-transform:uppercase;color:var(--teal);margin-bottom:18px;display:block;font-weight:500}
+.tech-items{display:flex;flex-direction:column;gap:10px}
+.tech-i{display:flex;gap:12px;font-size:clamp(12px,1.3vw,14px);color:var(--t2)}
+.tech-i::before{content:'◦';color:var(--gold);flex-shrink:0;font-size:16px;line-height:1.4}
+
+/* ═══════════════════════════════════════════════════════
+   INVEST
+═══════════════════════════════════════════════════════ */
+.inv-wrap{text-align:center}
+.inv-cards{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:2px;max-width:880px;margin:52px auto 0;
+}
+.inv-card{
+  padding:clamp(28px,4vw,52px) clamp(18px,3vw,36px);
+  border:1px solid rgba(82,200,224,.18);background:var(--card);
+  transition:border-color var(--tr),background var(--tr),transform var(--tr);
+}
+.inv-card:hover{border-color:var(--bdr-g);background:var(--card2);transform:translateY(-4px)}
+.inv-card h4{font-size:clamp(9px,1vw,10px);letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;font-weight:500}
+.inv-card .v{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,52px);font-weight:300;color:var(--gold);line-height:1}
+.inv-card .u{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--t3);margin-top:7px}
+.inv-cta{margin-top:52px;display:flex;flex-wrap:wrap;gap:13px;justify-content:center}
+
+/* ═══════════════════════════════════════════════════════
+   ROADMAP
+═══════════════════════════════════════════════════════ */
+.road-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:2px;margin-top:52px}
+.road-c{
+  padding:clamp(28px,4vw,52px) clamp(22px,3vw,38px);
+  background:var(--card);border:1px solid rgba(82,200,224,.15);
+  transition:background var(--tr),border-color var(--tr);
+}
+.road-c:hover{background:var(--card2);border-color:rgba(82,200,224,.32)}
+.road-ph{font-size:10px;letter-spacing:.44em;text-transform:uppercase;color:var(--teal);margin-bottom:6px;font-weight:500}
+.road-yr{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5.5vw,64px);font-weight:300;color:rgba(226,174,44,.16);line-height:1;margin-bottom:20px}
+.road-items{display:flex;flex-direction:column;gap:11px}
+.road-i{display:flex;gap:12px;font-size:clamp(12px,1.3vw,14px);color:var(--t2);line-height:1.55}
+.road-i::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:8px}
+
+/* ═══════════════════════════════════════════════════════
+   CONTACT
+═══════════════════════════════════════════════════════ */
+.cnt-g{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,90px);align-items:start}
+.cnt-info{display:flex;flex-direction:column;gap:28px}
+.cnt-det{display:flex;gap:15px;align-items:flex-start}
+.cnt-ico{
+  width:40px;height:40px;flex-shrink:0;
+  border:1px solid rgba(82,200,224,.32);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--teal);background:rgba(82,200,224,.07);
+}
+.cnt-det h5{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin-bottom:4px;font-weight:500}
+.cnt-det p,.cnt-det a{font-size:clamp(12px,1.3vw,14px);color:var(--t2);text-decoration:none}
+.cnt-det a:hover{color:var(--gold);transition:color var(--tr)}
+/* Form */
+.cform{display:flex;flex-direction:column;gap:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--teal);font-weight:500}
+.fg input,.fg select,.fg textarea{
+  background:rgba(13,37,53,.92);
+  border:1px solid rgba(82,200,224,.22);
+  color:var(--t1);
+  font-family:'Montserrat',sans-serif;font-size:clamp(12px,1.3vw,14px);font-weight:300;
+  padding:13px 16px;outline:none;
+  appearance:none;-webkit-appearance:none;border-radius:0;
+  transition:border-color var(--tr),background var(--tr);
+}
+.fg select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2352c8e0' stroke-width='1.2' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;
+}
+.fg select option{background:#0d2535;color:var(--t1)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--teal);background:rgba(0,76,109,.22)}
+.fg input.err,.fg select.err,.fg textarea.err{border-color:#e07070!important}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--t4)}
+.fg textarea{resize:vertical;min-height:108px}
+.form-msg{font-size:11px;color:#e07070;margin-top:4px;display:none}
+.form-msg.show{display:block}
+.form-ok{
+  display:none;padding:16px 22px;margin-top:4px;
+  border:1px solid rgba(82,200,224,.45);background:rgba(0,76,109,.24);
+  font-size:clamp(12px,1.3vw,14px);color:var(--teal);text-align:center;
+}
+.form-ok.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+footer{
+  padding:clamp(50px,7vw,90px) var(--px) clamp(24px,3vw,38px);
+  border-top:1px solid rgba(82,200,224,.18);background:rgba(7,24,32,.98);
+}
+.ft-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr;
+  gap:clamp(28px,5vw,76px);
+  padding-bottom:clamp(30px,4vw,52px);
+  border-bottom:1px solid rgba(221,216,207,.07);
+}
+.ft-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(26px,3.5vw,38px);font-weight:300;letter-spacing:.36em;
+  text-decoration:none;color:var(--t1);display:inline-block;margin-bottom:14px;
+  transition:color var(--tr);
+}
+.ft-logo:hover{color:var(--teal)}
+.ft-brand p{font-size:clamp(12px,1.3vw,14px);color:var(--t3);line-height:1.8;max-width:330px}
+.ft-col h4{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--teal);margin-bottom:18px;font-weight:500}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.ft-col ul a{color:var(--t3);text-decoration:none;font-size:clamp(12px,1.3vw,14px);transition:color var(--tr)}
+.ft-col ul a:hover{color:var(--gold)}
+.ft-bot{
+  display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
+  gap:11px;padding-top:clamp(18px,2.5vw,28px);
+}
+.ft-bot span{font-size:11px;color:var(--t4);letter-spacing:.05em}
+.ft-tag{color:var(--teal)!important;letter-spacing:.22em!important;text-transform:uppercase}
+.soc{display:flex;gap:12px}
+.soc a{
+  width:36px;height:36px;border:1px solid rgba(82,200,224,.2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t3);font-size:13px;text-decoration:none;
+  transition:border-color var(--tr),color var(--tr),background var(--tr);
+}
+.soc a:hover{border-color:var(--teal);color:var(--teal);background:rgba(82,200,224,.08)}
+
+/* ═══════════════════════════════════════════════════════
+   BACK TO TOP
+═══════════════════════════════════════════════════════ */
+#btt{
+  position:fixed;bottom:24px;right:22px;z-index:200;
+  width:44px;height:44px;border:1px solid rgba(82,200,224,.22);
+  background:rgba(10,26,36,.92);color:var(--teal);font-size:17px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity var(--tr),border-color var(--tr),transform var(--tr),background var(--tr);
+}
+#btt.show{opacity:1;pointer-events:auto}
+#btt:hover{border-color:var(--teal);transform:translateY(-3px);background:rgba(82,200,224,.12)}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  .nav-links,.nav-cta{display:none}
+  .ham{display:flex}
+  .about-g{grid-template-columns:1fr}
+  .ab-vis{display:none}
+  .loc-panel.act{grid-template-columns:1fr}
+  .exp-g{grid-template-columns:1fr}
+  .cnt-g{grid-template-columns:1fr}
+  .ft-grid{grid-template-columns:1fr 1fr}
+  .ft-brand{grid-column:1/-1}
+}
+@media(max-width:560px){
+  .hero-stats .hstat{min-width:calc(50% - 1px)}
+  .form-row{grid-template-columns:1fr}
+  .ft-grid{grid-template-columns:1fr}
+  .ft-bot{flex-direction:column;align-items:flex-start}
+  .inv-cta{flex-direction:column}
+  .inv-cta .btn{width:100%;justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to main content</a>
+<div id="prog" role="progressbar" aria-label="Page scroll progress" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav" id="nav" aria-label="Main navigation">
+  <a class="logo" href="#" aria-label="NOI — Return to top">NOI</a>
+  <ul class="nav-links">
+    <li><a href="#about"       data-s="about">About</a></li>
+    <li><a href="#locations"   data-s="locations">Locations</a></li>
+    <li><a href="#experiences" data-s="experiences">Experiences</a></li>
+    <li><a href="#invest"      data-s="invest">Invest</a></li>
+    <li><a href="#contact"     data-s="contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="nav-cta" href="#invest">Invest with NOI</a>
+    <button class="ham" id="ham" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="drawer">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ MOBILE DRAWER ═══ -->
+<nav class="drawer" id="drawer" aria-label="Mobile navigation">
+  <a href="#about"       class="dl">About</a>
+  <a href="#locations"   class="dl">Locations</a>
+  <a href="#experiences" class="dl">Experiences</a>
+  <a href="#invest"      class="dl">Invest</a>
+  <a href="#contact"     class="dl">Contact</a>
+  <a href="#invest"      class="dl d-cta">Invest with NOI</a>
+</nav>
+
+<main id="main">
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" aria-label="Hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+  </div>
+  <div class="pts" id="pts" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <p class="eyebrow">Pioneering Experiential Hospitality</p>
+    <h1 class="hero-h1">
+      <span>Where</span>
+      <span><em>Luxury</em> Meets</span>
+      <span>Nature</span>
+    </h1>
+    <p class="hero-sub">NOI is a collection of sustainable, technology-infused stay&nbsp;&amp;&nbsp;play properties — designed for the conscious traveler seeking unforgettable connection with the world's most extraordinary landscapes.</p>
+    <div class="hero-btns">
+      <a class="btn btn-gold" href="#invest">Invest with NOI</a>
+      <a class="btn btn-ghost" href="#about">Discover More</a>
+    </div>
+  </div>
+
+  <div class="hero-stats" role="list" aria-label="Key statistics">
+    <div class="hstat" role="listitem"><div class="v">$250K</div><div class="l">Min. Investment</div></div>
+    <div class="hstat" role="listitem"><div class="v">6.5%</div><div class="l">Luxury Travel CAGR</div></div>
+    <div class="hstat" role="listitem"><div class="v">$1.79T</div><div class="l">Sustainable Tourism '27</div></div>
+    <div class="hstat" role="listitem"><div class="v">9.3%</div><div class="l">Eco Tourism CAGR</div></div>
+    <div class="hstat" role="listitem"><div class="v">76%</div><div class="l">Prefer Experiences</div></div>
+  </div>
+
+  <div class="scroll-ind" aria-hidden="true">
+    <span>Scroll</span><div class="sline"></div>
+  </div>
+</section>
+
+<!-- ═══ MARQUEE ═══ -->
+<div class="mq" aria-hidden="true">
+  <div class="mq-t">
+    <span>Bespoke Luxury</span><span class="sep">✦</span>
+    <span>Eco-Sustainability</span><span class="sep">✦</span>
+    <span>Smart Technologies</span><span class="sep">✦</span>
+    <span>Local Experiences</span><span class="sep">✦</span>
+    <span>Vietnam · Mexico · Texas</span><span class="sep">✦</span>
+    <span>Farm-to-Table Dining</span><span class="sep">✦</span>
+    <span>Spa by Bliss</span><span class="sep">✦</span>
+    <span>Community-Focused</span><span class="sep">✦</span>
+    <span>Bespoke Luxury</span><span class="sep">✦</span>
+    <span>Eco-Sustainability</span><span class="sep">✦</span>
+    <span>Smart Technologies</span><span class="sep">✦</span>
+    <span>Local Experiences</span><span class="sep">✦</span>
+    <span>Vietnam · Mexico · Texas</span><span class="sep">✦</span>
+    <span>Farm-to-Table Dining</span><span class="sep">✦</span>
+    <span>Spa by Bliss</span><span class="sep">✦</span>
+    <span>Community-Focused</span><span class="sep">✦</span>
+  </div>
+</div>
+
+<!-- ═══ PILLARS ═══ -->
+<section class="sec sec-alt" aria-labelledby="h-pillars">
+  <span class="lbl rv">Our Foundations</span>
+  <h2 class="h2 rv d1" id="h-pillars">Four Pillars of <em>NOI</em></h2>
+  <div class="pillars">
+    <div class="pillar rv d1">
+      <div class="p-icon" aria-hidden="true">✦</div>
+      <h3>Bespoke Luxury</h3>
+      <p>Personalized experiences tailored to every guest — from customized check-ins to curated excursions that leave a lasting impression shaped around individual preferences.</p>
+    </div>
+    <div class="pillar rv d2">
+      <div class="p-icon" aria-hidden="true">◎</div>
+      <h3>Eco-Sustainability</h3>
+      <p>Locally-sourced materials, renewable energy, and green technologies woven into every aspect of design and operations — minimizing impact without compromising luxury.</p>
+    </div>
+    <div class="pillar rv d3">
+      <div class="p-icon" aria-hidden="true">⬡</div>
+      <h3>Smart Technologies</h3>
+      <p>Voice assistants, IoT sensors, keyless access, and AI-powered guest journey planning — seamlessly invisible, powerfully effective, and always personalizing your stay.</p>
+    </div>
+    <div class="pillar rv d4">
+      <div class="p-icon" aria-hidden="true">❋</div>
+      <h3>Local Experiences</h3>
+      <p>Guided nature walks, farm-to-table cuisine, arts and beats — authentic connection with the communities and ecosystems we call home, leaving guests transformed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="sec" id="about" aria-labelledby="h-about">
+  <div class="about-g">
+    <div class="ab-vis rv" aria-hidden="true">
+      <div class="ab-main"><span class="tag">Est. 2023</span></div>
+      <div class="ab-accent">
+        <div class="ab-num">3</div>
+        <div class="ab-lbl">Active Property<br>Syndications</div>
+      </div>
+    </div>
+    <div class="about-copy">
+      <span class="lbl rv">Our Mission</span>
+      <h2 class="h2 rv d1" id="h-about">A New Standard of<br/><em>Conscious</em> Hospitality</h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">NOI was created to prove that extraordinary luxury and genuine sustainability are not in opposition — they are inseparable. We build boutique resort communities that honor the land, elevate local culture, and deliver experiences guests carry with them long after departure.</p>
+      <p class="body-txt rv d3" style="margin-top:15px">Through syndicated investment, NOI brings together visionary partners to fund the next generation of eco-luxury properties — starting in Vietnam, Mexico, and Texas, with a 10-year roadmap spanning every continent.</p>
+      <div class="stats-row rv d3">
+        <div class="si"><div class="v">6.5%</div><div class="l">Luxury Travel CAGR</div></div>
+        <div class="si"><div class="v">70%</div><div class="l">Prefer Eco Stays</div></div>
+        <div class="si"><div class="v">76%</div><div class="l">Value Experiences</div></div>
+      </div>
+      <div style="margin-top:32px" class="rv d4">
+        <a class="btn btn-teal" href="#contact">Partner with Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LOCATIONS ═══ -->
+<section class="sec sec-alt" id="locations" aria-labelledby="h-loc">
+  <span class="lbl rv">Active Syndications</span>
+  <h2 class="h2 rv d1" id="h-loc">Our <em>First</em> Three Properties</h2>
+
+  <div class="loc-tabs" role="tablist" aria-label="Property locations">
+    <button class="loc-tab act" role="tab" aria-selected="true"  aria-controls="p-vn" id="t-vn">🌏 Vietnam</button>
+    <button class="loc-tab"     role="tab" aria-selected="false" aria-controls="p-mx" id="t-mx">🌎 Mexico</button>
+    <button class="loc-tab"     role="tab" aria-selected="false" aria-controls="p-tx" id="t-tx">🌵 Texas</button>
+  </div>
+
+  <div class="loc-panels">
+    <!-- Vietnam -->
+    <div class="loc-panel act" id="p-vn" role="tabpanel" aria-labelledby="t-vn">
+      <div class="loc-vis">
+        <div class="loc-fill vn"></div>
+        <span class="loc-region">Southeast Asia</span>
+        <div class="loc-name">Vietnam</div>
+      </div>
+      <div class="loc-body">
+        <div><div class="sbadge"><div class="sdot"></div>Seeking Partners</div></div>
+        <h3>Coastal &amp; Highland Serenity</h3>
+        <p>Nestled between pristine coastline and lush highland terrain, NOI Vietnam brings together ancient culture, rich biodiversity, and contemporary eco-design in one extraordinary destination.</p>
+        <div class="loc-feats">
+          <div class="loc-feat">Bamboo and local timber architecture</div>
+          <div class="loc-feat">Solar &amp; water-powered energy systems</div>
+          <div class="loc-feat">Partnership with coastal conservation NGOs</div>
+          <div class="loc-feat">Farm-to-table dining from local rice paddies</div>
+          <div class="loc-feat">Cultural immersion: lantern festivals, ceramics, cuisine</div>
+        </div>
+        <a class="btn btn-gold" href="#contact" style="align-self:flex-start">Inquire About Vietnam</a>
+      </div>
+    </div>
+    <!-- Mexico -->
+    <div class="loc-panel" id="p-mx" role="tabpanel" aria-labelledby="t-mx">
+      <div class="loc-vis">
+        <div class="loc-fill mx"></div>
+        <span class="loc-region">Latin America</span>
+        <div class="loc-name">Mexico</div>
+      </div>
+      <div class="loc-body">
+        <div><div class="sbadge"><div class="sdot"></div>Seeking Partners</div></div>
+        <h3>Biodiverse &amp; Culturally Rich</h3>
+        <p>Where jungle meets ancient civilization — NOI Mexico is positioned within one of the world's greatest biodiversity corridors, offering immersion in natural wonders and living heritage.</p>
+        <div class="loc-feats">
+          <div class="loc-feat">Locally-sourced concrete and natural materials</div>
+          <div class="loc-feat">Partnership with Mayan artisan communities</div>
+          <div class="loc-feat">Cenote &amp; eco-reserve access exclusive to guests</div>
+          <div class="loc-feat">Boutique hotel professionals on-site</div>
+          <div class="loc-feat">Curated mezcal &amp; farm-to-table culinary experiences</div>
+        </div>
+        <a class="btn btn-gold" href="#contact" style="align-self:flex-start">Inquire About Mexico</a>
+      </div>
+    </div>
+    <!-- Texas -->
+    <div class="loc-panel" id="p-tx" role="tabpanel" aria-labelledby="t-tx">
+      <div class="loc-vis">
+        <div class="loc-fill tx"></div>
+        <span class="loc-region">North America</span>
+        <div class="loc-name">Texas</div>
+      </div>
+      <div class="loc-body">
+        <div><div class="sbadge"><div class="sdot"></div>Seeking Partners</div></div>
+        <h3>An Unexpected Luxury Frontier</h3>
+        <p>Wide-open Hill Country skies, a thriving creative arts scene, and dramatic geology — NOI Texas redefines what eco-luxury looks like in North America.</p>
+        <div class="loc-feats">
+          <div class="loc-feat">Passive solar and hydrogen energy exploration</div>
+          <div class="loc-feat">Live music &amp; local arts programming</div>
+          <div class="loc-feat">Indigenous plant landscaping &amp; wildlife corridors</div>
+          <div class="loc-feat">Corporate retreat &amp; events infrastructure</div>
+          <div class="loc-feat">Farm-to-fire dining with local Texas ranches</div>
+        </div>
+        <a class="btn btn-gold" href="#contact" style="align-self:flex-start">Inquire About Texas</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EXPERIENCES ═══ -->
+<section class="sec" id="experiences" aria-labelledby="h-exp">
+  <div class="exp-g">
+    <div>
+      <span class="lbl rv">Stay &amp; Play</span>
+      <h2 class="h2 rv d1" id="h-exp">The <em>Complete</em><br/>NOI Experience</h2>
+      <div class="rule rv d2"></div>
+      <div class="exp-list">
+        <div class="exp-item act rv d1" tabindex="0" role="button" aria-pressed="true">
+          <div class="exp-n">01</div>
+          <div><h4>Stay</h4><p>Eco-conscious accommodations built from locally sourced materials — immersive, beautiful, and designed for privacy and comfort.</p></div>
+        </div>
+        <div class="exp-item rv d2" tabindex="0" role="button" aria-pressed="false">
+          <div class="exp-n">02</div>
+          <div><h4>Spa by Bliss</h4><p>Holistic wellness rituals with eco-friendly products, meditation gardens, and the healing energy of the natural world.</p></div>
+        </div>
+        <div class="exp-item rv d3" tabindex="0" role="button" aria-pressed="false">
+          <div class="exp-n">03</div>
+          <div><h4>Eats</h4><p>Farm-to-table dining celebrating the flavors and traditions of each destination, sourced with intention and crafted with artistry.</p></div>
+        </div>
+        <div class="exp-item rv d4" tabindex="0" role="button" aria-pressed="false">
+          <div class="exp-n">04</div>
+          <div><h4>Arts &amp; Beats</h4><p>Sunset gatherings, private exhibitions, and live local music — culture experienced from within, not observed from the outside.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="exp-side rv d2">
+      <div class="exp-q">
+        <blockquote>"We are thrilled to introduce a new standard of luxury and sustainability — properties that deliver unforgettable experiences while contributing to the preservation of our planet."</blockquote>
+        <cite>— NOI Spokesperson</cite>
+      </div>
+      <div class="tech-box">
+        <span class="tech-lbl">Smart Technology Stack</span>
+        <div class="tech-items">
+          <div class="tech-i">In-room voice assistants &amp; smart climate controls</div>
+          <div class="tech-i">Mobile check-in &amp; keyless room access</div>
+          <div class="tech-i">IoT energy management &amp; waste reduction systems</div>
+          <div class="tech-i">AI-powered personalized guest journey planning</div>
+          <div class="tech-i">High-speed fiber &amp; uninterrupted connectivity</div>
+          <div class="tech-i">Smart mirrors &amp; robotics in common areas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INVEST ═══ -->
+<section class="sec sec-alt" id="invest" aria-labelledby="h-inv">
+  <div class="inv-wrap">
+    <span class="lbl rv">Investor Opportunity</span>
+    <h2 class="h2 rv d1" id="h-inv">Join the <em>NOI</em> Syndication</h2>
+    <div class="rule c rv d2"></div>
+    <p class="body-txt rv d2" style="max-width:630px;margin:0 auto">Actively seeking international partners to help bring our vision to life. Minimum investment $250,000 USD. Investors gain access to a rapidly growing market while generating positive environmental and community impact — with projected 10% margins by Year 3.</p>
+    <div class="inv-cards">
+      <div class="inv-card rv d1"><h4>Min. Investment</h4><div class="v">$250K</div><div class="u">USD per investor</div></div>
+      <div class="inv-card rv d2"><h4>Target Margin</h4><div class="v">10%</div><div class="u">Achieved by Year 3</div></div>
+      <div class="inv-card rv d3"><h4>Eco Tourism CAGR</h4><div class="v">9.3%</div><div class="u">Sustainable Tourism 2027</div></div>
+      <div class="inv-card rv d4"><h4>Break-Even</h4><div class="v">Yr 1</div><div class="u">Projected operational target</div></div>
+    </div>
+    <div class="inv-cta rv d2">
+      <a class="btn btn-gold" href="#contact">Request Investment Package</a>
+      <a class="btn btn-ghost" href="#contact">Schedule a Discovery Call</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ROADMAP ═══ -->
+<section class="sec" id="roadmap" aria-labelledby="h-road">
+  <span class="lbl rv">Growth Strategy</span>
+  <h2 class="h2 rv d1" id="h-road">The <em>NOI</em> Roadmap</h2>
+  <div class="road-g">
+    <div class="road-c rv d1">
+      <div class="road-ph">Phase One</div>
+      <div class="road-yr">5 YR</div>
+      <div class="road-items">
+        <div class="road-i">Establish properties in Asia &amp; Europe</div>
+        <div class="road-i">Launch sustainable technology innovations</div>
+        <div class="road-i">Strategic travel &amp; hospitality partnerships</div>
+        <div class="road-i">Community-focused programs across all sites</div>
+        <div class="road-i">Increase brand recognition via influencer &amp; digital campaigns</div>
+      </div>
+    </div>
+    <div class="road-c rv d2">
+      <div class="road-ph">Phase Two</div>
+      <div class="road-yr">10 YR</div>
+      <div class="road-items">
+        <div class="road-i">Expand to Africa, Australia &amp; South America</div>
+        <div class="road-i">Launch the NOI Foundation (non-profit)</div>
+        <div class="road-i">New luxury adventure travel sub-brand</div>
+        <div class="road-i">Industry-leading sustainability reporting (GRI / UN SDGs)</div>
+        <div class="road-i">Bespoke experiences showcasing indigenous cultures</div>
+      </div>
+    </div>
+    <div class="road-c rv d3">
+      <div class="road-ph">Legacy</div>
+      <div class="road-yr">∞</div>
+      <div class="road-items">
+        <div class="road-i">Every continent — every natural wonder</div>
+        <div class="road-i">Premier global sustainable luxury brand</div>
+        <div class="road-i">Generational environmental stewardship</div>
+        <div class="road-i">Inspire industry-wide sustainability transformation</div>
+        <div class="road-i">NOI Foundation supporting 1M+ community members</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="sec sec-alt" id="contact" aria-labelledby="h-cnt">
+  <div class="cnt-g">
+    <div>
+      <span class="lbl rv">Get in Touch</span>
+      <h2 class="h2 rv d1" id="h-cnt">Connect<br/>with <em>NOI</em></h2>
+      <div class="rule rv d2"></div>
+      <div class="cnt-info rv d2">
+        <div class="cnt-det">
+          <div class="cnt-ico" aria-hidden="true">✉</div>
+          <div><h5>General Inquiries</h5><a href="mailto:hello@noi.com">hello@noi.com</a></div>
+        </div>
+        <div class="cnt-det">
+          <div class="cnt-ico" aria-hidden="true">◈</div>
+          <div><h5>Investor Relations</h5><a href="mailto:invest@noi.com">invest@noi.com</a></div>
+        </div>
+        <div class="cnt-det">
+          <div class="cnt-ico" aria-hidden="true">❋</div>
+          <div><h5>Partnerships</h5><p>We welcome local organizations, conservation groups, tour operators, and hospitality professionals.</p></div>
+        </div>
+        <div class="cnt-det">
+          <div class="cnt-ico" aria-hidden="true">◎</div>
+          <div><h5>Press &amp; Media</h5><a href="mailto:press@noi.com">press@noi.com</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="rv d2">
+      <form class="cform" id="cForm" novalidate>
+        <div class="form-row">
+          <div class="fg">
+            <label for="fn">First Name *</label>
+            <input type="text" id="fn" placeholder="Jane" required autocomplete="given-name"/>
+          </div>
+          <div class="fg">
+            <label for="ln">Last Name *</label>
+            <input type="text" id="ln" placeholder="Smith" required autocomplete="family-name"/>
+          </div>
+        </div>
+        <div class="fg">
+          <label for="em">Email Address *</label>
+          <input type="email" id="em" placeholder="jane@company.com" required autocomplete="email"/>
+          <span class="form-msg" id="em-err">Please enter a valid email address.</span>
+        </div>
+        <div class="fg">
+          <label for="co">Company / Organization</label>
+          <input type="text" id="co" placeholder="Your company" autocomplete="organization"/>
+        </div>
+        <div class="fg">
+          <label for="int">Area of Interest *</label>
+          <select id="int" required>
+            <option value="" disabled selected>Select one…</option>
+            <option value="invest">Investment / Syndication</option>
+            <option value="vn">NOI Vietnam Property</option>
+            <option value="mx">NOI Mexico Property</option>
+            <option value="tx">NOI Texas Property</option>
+            <option value="partner">Partnership Opportunity</option>
+            <option value="press">Press &amp; Media</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label for="msg">Message *</label>
+          <textarea id="msg" placeholder="Tell us about your interest in NOI…" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold" id="cBtn" style="width:100%">Send Message</button>
+        <div class="form-ok" id="fOk" role="alert" aria-live="polite">
+          ✓ &nbsp; Thank you — we'll be in touch within 48 hours.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <a class="ft-logo" href="#">NOI</a>
+      <p>A collection of sustainable luxury stay &amp; play properties — harmonizing nature, smart technologies, and local experiences for the conscious traveler seeking meaning in every journey.</p>
+    </div>
+    <div class="ft-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="#about">About NOI</a></li>
+        <li><a href="#locations">Our Locations</a></li>
+        <li><a href="#experiences">Experiences</a></li>
+        <li><a href="#invest">Investment</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Connect</h4>
+      <ul>
+        <li><a href="mailto:hello@noi.com">hello@noi.com</a></li>
+        <li><a href="mailto:invest@noi.com">invest@noi.com</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">LinkedIn</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <span>© 2024 NOI. All rights reserved.</span>
+    <span class="ft-tag">Sustainable Luxury Resorts</span>
+    <div class="soc">
+      <a href="#" aria-label="Instagram">IG</a>
+      <a href="#" aria-label="LinkedIn">in</a>
+    </div>
+  </div>
+</footer>
+
+<button id="btt" aria-label="Back to top">↑</button>
+
+<script>
+!function(){
+  'use strict';
+
+  /* ── Particles ─────────────────────────────── */
+  const pc=document.getElementById('pts');
+  for(let i=0;i<22;i++){
+    const p=document.createElement('div');
+    p.className='pt';
+    const s=Math.random()*3.5+1.5;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;`
+      +`animation-duration:${Math.random()*22+13}s;`
+      +`animation-delay:${Math.random()*22}s;`
+      +`opacity:${Math.random()*.24+.06};`;
+    pc.appendChild(p);
+  }
+
+  /* ── Scroll: nav solid, progress, btt, active links ── */
+  const nav  = document.getElementById('nav');
+  const btt  = document.getElementById('btt');
+  const prog = document.getElementById('prog');
+  const de   = document.documentElement;
+
+  function onScroll(){
+    const y   = window.scrollY;
+    const max = de.scrollHeight - de.clientHeight;
+
+    // nav glass
+    nav.classList.toggle('solid', y > 55);
+
+    // reading progress
+    prog.style.width = max > 0 ? (y / max * 100) + '%' : '0%';
+
+    // back-to-top
+    btt.classList.toggle('show', y > 400);
+
+    // active nav link (highlight current section)
+    document.querySelectorAll('.nav-links [data-s]').forEach(a => {
+      const sec = document.getElementById(a.dataset.s);
+      if (!sec) return;
+      const r = sec.getBoundingClientRect();
+      a.classList.toggle('act', r.top <= 90 && r.bottom > 90);
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive: true});
+  onScroll();
+
+  /* ── Back to top ──────────────────────────── */
+  btt.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+
+  /* ── Scroll reveal ────────────────────────── */
+  const rvs = document.querySelectorAll('.rv');
+  const ro  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); }
+    });
+  }, {threshold: 0.09, rootMargin: '0px 0px -36px 0px'});
+  rvs.forEach(el => ro.observe(el));
+
+  /* ── Hamburger / Mobile drawer ────────────── */
+  const ham    = document.getElementById('ham');
+  const drawer = document.getElementById('drawer');
+  let drawerOpen = false;
+
+  function toggleDrawer(v) {
+    drawerOpen = v !== undefined ? v : !drawerOpen;
+    ham.classList.toggle('open', drawerOpen);
+    drawer.classList.toggle('open', drawerOpen);
+    ham.setAttribute('aria-expanded', String(drawerOpen));
+    document.body.style.overflow = drawerOpen ? 'hidden' : '';
+  }
+  ham.addEventListener('click', () => toggleDrawer());
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleDrawer(false)));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && drawerOpen) toggleDrawer(false); });
+
+  /* ── Location tabs ────────────────────────── */
+  document.querySelectorAll('.loc-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.loc-tab').forEach(t => {
+        t.classList.remove('act');
+        t.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.loc-panel').forEach(p => p.classList.remove('act'));
+      this.classList.add('act');
+      this.setAttribute('aria-selected', 'true');
+      const panel = document.getElementById(this.getAttribute('aria-controls'));
+      if (panel) panel.classList.add('act');
+    });
+    tab.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tab.click(); }
+    });
+  });
+
+  /* ── Experience items ─────────────────────── */
+  document.querySelectorAll('.exp-item').forEach(item => {
+    const activate = () => {
+      document.querySelectorAll('.exp-item').forEach(i => {
+        i.classList.remove('act');
+        i.setAttribute('aria-pressed', 'false');
+      });
+      item.classList.add('act');
+      item.setAttribute('aria-pressed', 'true');
+    };
+    item.addEventListener('click', activate);
+    item.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+    });
+  });
+
+  /* ── Contact form ─────────────────────────── */
+  const form  = document.getElementById('cForm');
+  const fOk   = document.getElementById('fOk');
+  const cBtn  = document.getElementById('cBtn');
+  const emErr = document.getElementById('em-err');
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function clearErr(f) {
+    f.classList.remove('err');
+    if (f.id === 'em') emErr.classList.remove('show');
+  }
+
+  function validate() {
+    let ok = true;
+    form.querySelectorAll('[required]').forEach(f => {
+      const empty = !f.value.trim();
+      f.classList.toggle('err', empty);
+      if (empty) ok = false;
+    });
+    const em = document.getElementById('em');
+    if (em.value && !emailRe.test(em.value)) {
+      em.classList.add('err');
+      emErr.classList.add('show');
+      ok = false;
+    } else {
+      emErr.classList.remove('show');
+    }
+    return ok;
+  }
+
+  form.querySelectorAll('input,select,textarea').forEach(f => {
+    f.addEventListener('input', () => clearErr(f));
+    f.addEventListener('change', () => clearErr(f));
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!validate()) return;
+    cBtn.textContent = 'Sending…';
+    cBtn.disabled = true;
+    cBtn.style.opacity = '.7';
+    setTimeout(() => {
+      form.querySelectorAll('input,select,textarea').forEach(f => { f.value = ''; f.classList.remove('err'); });
+      emErr.classList.remove('show');
+      fOk.classList.add('show');
+      cBtn.textContent = 'Send Message';
+      cBtn.disabled = false;
+      cBtn.style.opacity = '';
+      setTimeout(() => fOk.classList.remove('show'), 7000);
+    }, 1100);
+  });
+
+  /* ── Smooth scroll with fixed nav offset ─── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id === '#') return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      const navH = parseInt(getComputedStyle(de).getPropertyValue('--nav-h')) || 70;
+      window.scrollTo({
+        top: target.getBoundingClientRect().top + window.scrollY - navH,
+        behavior: 'smooth'
+      });
+    });
+  });
+
+}();
+</script>
+</body>
+</html>
