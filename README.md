@@ -21,7 +21,7 @@ https://trib3exp.github.io/lab/wecare.html
 
 ---
 
-## 📊 NOI (Net Operating Intelligence)
+## 📊 NOI 
 **Description:**  
 NOI is a collection of sustainable, technology-infused stay & play properties — designed for the conscious traveler seeking unforgettable connection with the world's most extraordinary landscapes.
 
