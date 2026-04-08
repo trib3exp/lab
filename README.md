@@ -23,7 +23,7 @@ https://trib3exp.github.io/lab/wecare.html
 
 ## 📊 NOI (Net Operating Intelligence)
 **Description:**  
-A data-driven platform for real estate performance and financial clarity. NOI simplifies property analytics, enabling smarter investment decisions through streamlined reporting and insights.
+NOI is a collection of sustainable, technology-infused stay & play properties — designed for the conscious traveler seeking unforgettable connection with the world's most extraordinary landscapes.
 
 **URL:**  
 https://trib3exp.github.io/lab/noi.html
