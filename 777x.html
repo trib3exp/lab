@@ -1,0 +1,2597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>777 LABS — Venture Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --color-bg: #F8F7F4;
+            --color-bg-alt: #EEECEA;
+            --color-surface: #FFFFFF;
+            --color-surface-dark: #0D0D0D;
+            --color-text: #0D0D0D;
+            --color-text-muted: #6B6B6B;
+            --color-text-light: #F8F7F4;
+            --color-accent: #1A1A1A;
+            --color-border: #D4D4D4;
+            --color-border-dark: #2A2A2A;
+            --color-grid: rgba(0,0,0,0.04);
+            --color-success: #10B981;
+            --font-mono: 'Space Mono', monospace;
+            --font-sans: 'Instrument Sans', -apple-system, sans-serif;
+            --grid-size: 40px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(var(--color-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+            background-size: var(--grid-size) var(--grid-size);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at center, rgba(0,0,0,0.08) 1px, transparent 1px);
+            background-size: calc(var(--grid-size) * 4) calc(var(--grid-size) * 4);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(248, 247, 244, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--color-text);
+        }
+
+        .nav-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-light);
+            font-size: 0.6rem;
+            font-weight: 700;
+            position: relative;
+        }
+
+        /* Solar System Orbit Animation */
+        .nav-logo-icon::before,
+        .nav-logo-icon::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(13, 13, 13, 0.2);
+            pointer-events: none;
+        }
+
+        .nav-logo-icon::before {
+            width: 44px;
+            height: 44px;
+            animation: orbit-spin 8s linear infinite;
+        }
+
+        .nav-logo-icon::after {
+            width: 56px;
+            height: 56px;
+            animation: orbit-spin 12s linear infinite reverse;
+        }
+
+        @keyframes orbit-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Electron particles */
+        .nav-logo-orbit {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            animation: orbit-spin 8s linear infinite;
+            pointer-events: none;
+        }
+
+        .nav-logo-orbit::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--color-text);
+            border-radius: 50%;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-logo-orbit-2 {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            animation: orbit-spin 12s linear infinite reverse;
+            pointer-events: none;
+        }
+
+        .nav-logo-orbit-2::before {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--color-text);
+            border-radius: 50%;
+            top: -1.5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-logo-orbit-2::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--color-text);
+            border-radius: 50%;
+            bottom: -1.5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .nav-links a:hover { color: var(--color-text); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--color-text);
+            color: var(--color-text-light);
+        }
+
+        .btn-primary:hover {
+            background: #2A2A2A;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-text);
+            color: var(--color-text-light);
+            border-color: var(--color-text);
+        }
+
+        .btn-arrow::after {
+            content: '→';
+            transition: transform var(--transition);
+        }
+
+        .btn-arrow:hover::after { transform: translateX(4px); }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text { position: relative; z-index: 2; }
+
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-label::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--color-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero-title {
+            font-family: var(--font-sans);
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title span { display: block; }
+
+        .hero-description {
+            font-size: 1.15rem;
+            color: var(--color-text-muted);
+            max-width: 480px;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            position: relative;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .orbit-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .orbit-ring {
+            position: absolute;
+            border: 1px solid var(--color-border);
+            border-radius: 50%;
+            animation: orbit-rotate 30s linear infinite;
+        }
+
+        .orbit-ring:nth-child(1) { width: 100%; height: 100%; top: 0; left: 0; }
+        .orbit-ring:nth-child(2) { width: 70%; height: 70%; top: 15%; left: 15%; animation-duration: 25s; animation-direction: reverse; }
+        .orbit-ring:nth-child(3) { width: 40%; height: 40%; top: 30%; left: 30%; animation-duration: 20s; }
+
+        @keyframes orbit-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .orbit-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .orbit-center span {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--color-text-light);
+        }
+
+        .orbit-node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--color-text);
+            border-radius: 50%;
+        }
+
+        .orbit-node:nth-child(4) { top: 0; left: 50%; transform: translateX(-50%); }
+        .orbit-node:nth-child(5) { top: 50%; right: 0; transform: translateY(-50%); }
+        .orbit-node:nth-child(6) { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .orbit-node:nth-child(7) { top: 50%; left: 0; transform: translateY(-50%); }
+
+        /* Infra Strip */
+        .infra-strip {
+            padding: 2rem;
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .infra-strip-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .infra-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        .infra-item::before {
+            content: '+';
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--color-text);
+        }
+
+        /* Section Styles */
+        .section-header { margin-bottom: 3rem; }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            max-width: 700px;
+        }
+
+        /* Value Prop */
+        .value-prop {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .value-prop-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .value-prop-text {
+            font-size: 1.1rem;
+            color: var(--color-text-muted);
+            line-height: 1.8;
+        }
+
+        .value-prop-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            transition: all var(--transition);
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-text);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--color-bg-alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Ventures */
+        .ventures {
+            padding: 6rem 2rem;
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .ventures-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .venture-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .venture-card {
+            position: relative;
+            padding: 2rem;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            text-decoration: none;
+            color: var(--color-text);
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
+
+        .venture-card:hover {
+            border-color: var(--color-text);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .venture-card:hover .venture-arrow {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        .venture-emoji { font-size: 1.75rem; margin-bottom: 1.25rem; }
+
+        .venture-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .venture-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .venture-subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .venture-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .venture-arrow {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 32px;
+            height: 32px;
+            background: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-light);
+            font-size: 0.85rem;
+            opacity: 0;
+            transform: translate(-8px, 8px);
+            transition: all var(--transition);
+        }
+
+        .venture-card.coming-soon { opacity: 0.7; }
+
+        .venture-card.coming-soon .venture-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.35rem 0.75rem;
+            background: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+        }
+
+        .venture-card.featured {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--color-bg) 0%, #E8E6E1 100%);
+        }
+
+        /* Features - Venture Development Process */
+        .features {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-block {
+            position: relative;
+            padding: 2rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            height: 360px;
+            transition: all var(--transition);
+        }
+
+        .feature-block:hover {
+            border-color: var(--color-text);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-block-number {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .feature-block-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            line-height: 1.25;
+        }
+
+        .feature-block-desc {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+            line-height: 1.6;
+        }
+
+        .feature-block-visual {
+            height: 130px;
+            margin-top: auto;
+            background: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Visual Animations - Venture Development Process */
+        
+        /* Shared animation container */
+        .visual-question,
+        .visual-strategy,
+        .visual-growth {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 01 - Ask Questions & Understand: Ripple Discovery */
+        .question-circle {
+            width: 16px;
+            height: 16px;
+            background: var(--color-text);
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.3s ease;
+        }
+
+        .question-ripple {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid var(--color-text);
+            border-radius: 50%;
+            animation: ripple-expand 3s ease-out infinite;
+        }
+
+        .question-ripple.delay-1 { animation-delay: 1s; }
+        .question-ripple.delay-2 { animation-delay: 2s; }
+
+        @keyframes ripple-expand {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(5); opacity: 0; }
+        }
+
+        .question-dots {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .question-dots span {
+            width: 4px;
+            height: 4px;
+            background: var(--color-text);
+            border-radius: 50%;
+            animation: inquiry-pulse 1.8s ease-in-out infinite;
+        }
+
+        .question-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .question-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes inquiry-pulse {
+            0%, 100% { opacity: 0.25; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-5px); }
+        }
+
+        .feature-block:hover .question-circle { transform: scale(1.4); }
+
+        /* 02 - Strategy Development: Iterative Loop */
+        .strategy-loop {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            animation: rotate-loop 12s linear infinite;
+        }
+
+        .loop-segment {
+            position: absolute;
+            inset: 0;
+            border: 2px solid transparent;
+            border-radius: 50%;
+        }
+
+        .loop-segment.seg-1 { border-top-color: var(--color-text); border-right-color: var(--color-text); }
+        .loop-segment.seg-2 { border-top-color: var(--color-text); border-right-color: var(--color-text); transform: rotate(120deg); opacity: 0.5; }
+        .loop-segment.seg-3 { border-top-color: var(--color-text); border-right-color: var(--color-text); transform: rotate(240deg); opacity: 0.2; }
+
+        @keyframes rotate-loop { to { transform: rotate(360deg); } }
+
+        .strategy-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--color-text);
+            border-radius: 50%;
+            animation: orbit-triangle 3.5s ease-in-out infinite;
+        }
+
+        @keyframes orbit-triangle {
+            0%, 100% { transform: translate(0, -30px); }
+            33% { transform: translate(26px, 15px); }
+            66% { transform: translate(-26px, 15px); }
+        }
+
+        .feature-block:hover .strategy-loop { animation-duration: 6s; }
+        .feature-block:hover .strategy-dot { animation-duration: 2s; }
+
+        /* 03 - Execution & Growth: Ascending Chart */
+        .growth-chart {
+            width: 80px;
+            height: 50px;
+            color: var(--color-text);
+        }
+
+        .growth-line {
+            stroke-dasharray: 120;
+            stroke-dashoffset: 120;
+            animation: trace-growth 2s ease-out forwards;
+        }
+
+        @keyframes trace-growth { to { stroke-dashoffset: 0; } }
+
+        .growth-point {
+            fill: var(--color-text);
+            opacity: 0;
+            animation: point-appear 0.3s ease forwards;
+        }
+
+        .growth-point.p1 { animation-delay: 0.4s; }
+        .growth-point.p2 { animation-delay: 0.8s; }
+        .growth-point.p3 { animation-delay: 1.2s; }
+        .growth-point.p4 { animation-delay: 1.6s; }
+        .growth-point.p5 { animation-delay: 2s; }
+
+        @keyframes point-appear { to { opacity: 1; } }
+
+        .growth-arrow {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 1rem;
+            color: var(--color-text);
+            opacity: 0;
+            animation: arrow-reveal 0.3s ease 2.2s forwards;
+        }
+
+        @keyframes arrow-reveal { to { opacity: 1; } }
+
+        .feature-block:hover .growth-arrow {
+            animation: arrow-bounce 0.6s ease infinite 2.2s;
+        }
+
+        @keyframes arrow-bounce {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(2px, -2px); }
+        }
+
+        /* Comparison */
+        .comparison {
+            padding: 6rem 2rem;
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .comparison-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 3rem;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .comparison-table th {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            color: var(--color-text-muted);
+        }
+
+        .comparison-table th:first-child { color: var(--color-text); }
+        .comparison-table td:first-child { font-weight: 600; }
+        .comparison-table td:nth-child(2) { color: var(--color-text-muted); }
+        .comparison-table td:nth-child(3) { color: var(--color-text); font-weight: 500; }
+        .comparison-highlight { background: var(--color-bg); }
+
+        /* Enterprise */
+        .enterprise {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .enterprise-card {
+            background: var(--color-surface-dark);
+            padding: 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+            color: var(--color-text-light);
+        }
+
+        .enterprise-content h2 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .enterprise-content p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+            line-height: 1.7;
+            max-width: 400px;
+        }
+
+        .enterprise-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+
+        .enterprise-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.875rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all var(--transition);
+        }
+
+        .enterprise-feature:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .enterprise-feature-icon {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .enterprise-feature-text h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .enterprise-feature-text p {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Templates */
+        .templates {
+            padding: 6rem 2rem;
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .templates-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .template-card {
+            padding: 2rem;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .template-card:hover {
+            border-color: var(--color-text);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .template-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            font-size: 1.1rem;
+        }
+
+        .template-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-desc {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            line-height: 1.6;
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 6rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-list { margin-top: 3rem; }
+
+        .faq-item { border-bottom: 1px solid var(--color-border); }
+
+        .faq-question {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--color-text);
+            font-family: var(--font-sans);
+        }
+
+        .faq-question:hover { color: var(--color-text-muted); }
+
+        .faq-toggle {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            color: var(--color-text-muted);
+            transition: transform var(--transition);
+        }
+
+        .faq-item.active .faq-toggle { transform: rotate(45deg); }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            padding-bottom: 1.5rem;
+        }
+
+        .faq-answer p {
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            line-height: 1.7;
+        }
+
+        /* CTA */
+        .cta {
+            padding: 8rem 2rem;
+            background: var(--color-surface-dark);
+            color: var(--color-text-light);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: var(--grid-size) var(--grid-size);
+            pointer-events: none;
+        }
+
+        .cta-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-marquee {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .cta-marquee span {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .cta h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta p {
+            font-size: 1.15rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-light {
+            background: var(--color-text-light);
+            color: var(--color-text);
+        }
+
+        .btn-light:hover {
+            background: #E5E5E5;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            color: var(--color-text-light);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 2rem;
+            background: var(--color-surface-dark);
+            border-top: 1px solid var(--color-border-dark);
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .footer-links a:hover { color: var(--color-text-light); }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--color-border-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all var(--transition);
+        }
+
+        .footer-social a:hover {
+            border-color: rgba(255,255,255,0.5);
+            color: var(--color-text-light);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--color-surface);
+            padding: 0;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform var(--transition);
+        }
+
+        .modal-overlay.active .modal { transform: translateY(0); }
+
+        .modal-header {
+            padding: 2rem 2.5rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: sticky;
+            top: 0;
+            background: var(--color-surface);
+            z-index: 10;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-header p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            color: var(--color-text-muted);
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+
+        .modal-close:hover {
+            background: var(--color-text);
+            color: var(--color-text-light);
+        }
+
+        .modal-body { padding: 2rem 2.5rem; }
+        .form-section { margin-bottom: 2.5rem; }
+
+        .form-section-title {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-text-muted);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.full { grid-template-columns: 1fr; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 0.75rem 1rem;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            transition: all var(--transition);
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--color-text);
+            background: var(--color-surface);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2.5rem;
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            position: sticky;
+            bottom: 0;
+            background: var(--color-surface);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .venture-grid { grid-template-columns: repeat(2, 1fr); }
+            .venture-card.featured { grid-column: span 2; }
+            .templates-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 968px) {
+            .nav-links { display: none; }
+            .hero-content { grid-template-columns: 1fr; text-align: center; }
+            .hero-description { margin-left: auto; margin-right: auto; }
+            .hero-buttons { justify-content: center; }
+            .hero-visual { height: 300px; }
+            .orbit-container { width: 280px; height: 280px; }
+            .value-prop-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+            .feature-block { height: auto; min-height: 280px; }
+            .enterprise-card { grid-template-columns: 1fr; padding: 2.5rem; }
+            .enterprise-features { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .nav { padding: 1rem; }
+            .venture-grid { grid-template-columns: 1fr; }
+            .venture-card.featured { grid-column: span 1; }
+            .value-prop-features { grid-template-columns: 1fr; }
+            .enterprise-features { grid-template-columns: repeat(2, 1fr); }
+            .templates-grid { grid-template-columns: 1fr; }
+            .comparison-table { font-size: 0.85rem; }
+            .comparison-table th, .comparison-table td { padding: 1rem; }
+            .infra-strip-inner { justify-content: center; }
+            .footer-inner { flex-direction: column; text-align: center; }
+            .footer-links { flex-wrap: wrap; justify-content: center; }
+            .modal-header, .modal-body, .modal-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero { padding: 7rem 1.25rem 3rem; }
+            .hero-buttons { flex-direction: column; width: 100%; }
+            .btn { width: 100%; justify-content: center; }
+            .cta-buttons { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
+            .enterprise-features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">
+                777
+                <div class="nav-logo-orbit"></div>
+                <div class="nav-logo-orbit-2"></div>
+            </div>
+            LABS
+        </a>
+        <ul class="nav-links">
+            <li><a href="#ventures">Ventures</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#enterprise">Enterprise</a></li>
+            <li><a href="#templates">Templates</a></li>
+            <li><a href="#faq">FAQ</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-label">Venture Ecosystem</div>
+                <h1 class="hero-title">
+                    <span>Solutions</span>
+                    <span>With A</span>
+                    <span>Purpose.</span>
+                </h1>
+                <p class="hero-description">
+                    A collection of ventures across tech, media, real estate, and experiential platforms—built to explore, validate, and scale high-impact ideas.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#ventures" class="btn btn-primary btn-arrow">Explore Ventures</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="orbit-container">
+                    <div class="orbit-ring"></div>
+                    <div class="orbit-ring"></div>
+                    <div class="orbit-ring"></div>
+                    <div class="orbit-node"></div>
+                    <div class="orbit-node"></div>
+                    <div class="orbit-node"></div>
+                    <div class="orbit-node"></div>
+                    <div class="orbit-center"><span>777</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Infra Strip -->
+    <section class="infra-strip">
+        <div class="infra-strip-inner">
+            <div class="infra-item">Modular Infrastructure</div>
+            <div class="infra-item">Real-World Deployment</div>
+            <div class="infra-item">Data-Driven Execution</div>
+            <div class="infra-item">Cross-Industry Integration</div>
+        </div>
+    </section>
+
+    <!-- Value Prop -->
+    <section class="value-prop">
+        <div class="section-header">
+            <div class="section-label">Why 777 Labs</div>
+            <h2 class="section-title">Smarter systems.<br>Built to scale.</h2>
+        </div>
+        <div class="value-prop-grid">
+            <div class="value-prop-text">
+                <p>Each venture operates independently while contributing to a larger interconnected ecosystem—sharing insights, infrastructure, and strategic alignment under the 777 framework. We don't just build companies; we engineer systems that compound.</p>
+            </div>
+            <div class="value-prop-features">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Rapid Validation</div>
+                    <div class="feature-desc">Test hypotheses in weeks, not months. Move from concept to market with precision.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <div class="feature-title">Shared Resources</div>
+                    <div class="feature-desc">Access pooled infrastructure across finance, marketing, operations, and technology.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Data-Driven</div>
+                    <div class="feature-desc">Every decision backed by metrics. No assumptions, only validated learning.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <div class="feature-title">Network Effects</div>
+                    <div class="feature-desc">Ventures power each other. Growth in one accelerates the entire portfolio.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ventures -->
+    <section id="ventures" class="ventures">
+        <div class="ventures-inner">
+            <div class="section-header">
+                <div class="section-label">Active Ventures</div>
+                <h2 class="section-title">The Portfolio</h2>
+            </div>
+            <div class="venture-grid">
+                <!-- TRIB3.EXP - Featured -->
+                <a href="https://trib3exp.github.io/trib3/777.html" class="venture-card featured">
+                    <div class="venture-emoji">🌴</div>
+                    <div class="venture-tag">Experiences / Community / Media</div>
+                    <div class="venture-name">TRIB3.EXP</div>
+                    <div class="venture-subtitle">Our Mission: SHAR3D PURPOSE</div>
+                    <div class="venture-desc">Experiences. Community. Media. A social operating system for real life—bringing people together through curated moments, content, and culture.</div>
+                    <div class="venture-arrow">→</div>
+                </a>
+
+                <!-- Mahjong Casino -->
+                <a href="https://trib3exp.github.io/lab/mahjong-casino.html" class="venture-card">
+                    <div class="venture-emoji">🀄</div>
+                    <div class="venture-tag">Entertainment / Gaming</div>
+                    <div class="venture-name">Mahjong Casino</div>
+                    <div class="venture-subtitle">Macau Noir</div>
+                    <div class="venture-desc">A cinematic digital casino blending Mahjong gameplay with Macau nightlife aesthetics.</div>
+                    <div class="venture-arrow">→</div>
+                </a>
+
+                <!-- WeCare -->
+                <a href="https://trib3exp.github.io/lab/wecare.html" class="venture-card">
+                    <div class="venture-emoji">❤️</div>
+                    <div class="venture-tag">Impact / Community</div>
+                    <div class="venture-name">WeCare</div>
+                    <div class="venture-subtitle">Access First</div>
+                    <div class="venture-desc">A platform connecting people to essential services through accessibility-first design.</div>
+                    <div class="venture-arrow">→</div>
+                </a>
+
+                <!-- NOI -->
+                <a href="https://trib3exp.github.io/lab/noi.html" class="venture-card">
+                    <div class="venture-emoji">📊</div>
+                    <div class="venture-tag">Experiential Hospitality</div>
+                    <div class="venture-name">NOI</div>
+                    <div class="venture-subtitle">Net Operating Intelligence</div>
+                    <div class="venture-desc">Sustainable, technology-infused stay & play properties for the conscious traveler.</div>
+                    <div class="venture-arrow">→</div>
+                </a>
+
+                <!-- Mission Control -->
+                <a href="https://trib3exp.github.io/lab/mission-control.html" class="venture-card">
+                    <div class="venture-emoji">🧭</div>
+                    <div class="venture-tag">Operations / Systems</div>
+                    <div class="venture-name">Mission Control</div>
+                    <div class="venture-subtitle">Command Hub</div>
+                    <div class="venture-desc">A centralized command system for managing ventures and execution workflows.</div>
+                    <div class="venture-arrow">→</div>
+                </a>
+
+                <!-- MKT:OSX -->
+                <a href="https://trib3exp.github.io/lab/trib3-marketing-os.html" class="venture-card">
+                    <div class="venture-emoji">🧠</div>
+                    <div class="venture-tag">Marketing / AI</div>
+                    <div class="venture-name">MKT:OSX</div>
+                    <div class="venture-subtitle">Marketing Intelligence OS</div>
+                    <div class="venture-desc">An intelligent marketing OS unifying data, automation, and execution.</div>
+                    <div class="venture-arrow">→</div>
+                </a>
+
+                <!-- MOEXP -->
+                <a href="https://trib3exp.github.io/lab/moexp" class="venture-card coming-soon">
+                    <div class="venture-badge">Coming Soon</div>
+                    <div class="venture-emoji">🌍</div>
+                    <div class="venture-tag">Travel / Social</div>
+                    <div class="venture-name">MOEXP</div>
+                    <div class="venture-subtitle">Mobile Experience</div>
+                    <div class="venture-desc">A next-gen platform for planning, booking, and sharing global experiences.</div>
+                    <div class="venture-arrow">→</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features - Venture Development Process -->
+    <section id="features" class="features">
+        <div class="section-header">
+            <div class="section-label">Core Capabilities</div>
+            <h2 class="section-title">Venture Development<br>Process</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-block">
+                <div class="feature-block-number">01</div>
+                <h3 class="feature-block-title">Ask Questions<br>& Understand</h3>
+                <p class="feature-block-desc">Identify obstacles and validate opportunities through customer discovery and market analysis.</p>
+                <div class="feature-block-visual">
+                    <div class="visual-question">
+                        <div class="question-circle"></div>
+                        <div class="question-ripple"></div>
+                        <div class="question-ripple delay-1"></div>
+                        <div class="question-ripple delay-2"></div>
+                        <div class="question-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-block">
+                <div class="feature-block-number">02</div>
+                <h3 class="feature-block-title">Strategy<br>Development</h3>
+                <p class="feature-block-desc">Test and iterate using lean, agile, and design sprint methodologies to minimize risk.</p>
+                <div class="feature-block-visual">
+                    <div class="visual-strategy">
+                        <div class="strategy-loop">
+                            <div class="loop-segment seg-1"></div>
+                            <div class="loop-segment seg-2"></div>
+                            <div class="loop-segment seg-3"></div>
+                        </div>
+                        <div class="strategy-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-block">
+                <div class="feature-block-number">03</div>
+                <h3 class="feature-block-title">Execution<br>& Growth</h3>
+                <p class="feature-block-desc">Deliver solutions, optimize operations, and scale effectively from MVP to market leader.</p>
+                <div class="feature-block-visual">
+                    <div class="visual-growth">
+                        <svg viewBox="0 0 100 60" class="growth-chart">
+                            <path class="growth-line" d="M 5 55 Q 20 50 30 42 T 50 28 T 70 15 T 95 5" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle class="growth-point p1" cx="5" cy="55" r="3"/>
+                            <circle class="growth-point p2" cx="30" cy="42" r="3"/>
+                            <circle class="growth-point p3" cx="50" cy="28" r="3"/>
+                            <circle class="growth-point p4" cx="70" cy="15" r="4"/>
+                            <circle class="growth-point p5" cx="95" cy="5" r="5"/>
+                        </svg>
+                        <div class="growth-arrow">↗</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="comparison">
+        <div class="comparison-inner">
+            <div class="section-header">
+                <div class="section-label">The Difference</div>
+                <h2 class="section-title">Why 777 Labs Wins</h2>
+            </div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Traditional</th>
+                        <th>777 Labs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Speed</td>
+                        <td>Months to validate</td>
+                        <td>Weeks to market</td>
+                    </tr>
+                    <tr class="comparison-highlight">
+                        <td>Scalability</td>
+                        <td>Linear growth</td>
+                        <td>Exponential compounding</td>
+                    </tr>
+                    <tr>
+                        <td>Cost</td>
+                        <td>High overhead per venture</td>
+                        <td>Shared infrastructure</td>
+                    </tr>
+                    <tr class="comparison-highlight">
+                        <td>Integration</td>
+                        <td>Siloed operations</td>
+                        <td>Cross-portfolio synergy</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Enterprise / Core Sectors -->
+    <section id="enterprise" class="enterprise">
+        <div class="enterprise-card">
+            <div class="enterprise-content">
+                <div class="section-label" style="color: rgba(255,255,255,0.5); margin-bottom: 1rem;">Where We Build</div>
+                <h2>Core Sectors</h2>
+                <p>Cross-industry ventures unified by shared infrastructure, strategic alignment, and a commitment to solving real problems.</p>
+            </div>
+            <div class="enterprise-features">
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">💼</div>
+                    <div class="enterprise-feature-text">
+                        <h4>Business</h4>
+                        <p>Operations & strategy</p>
+                    </div>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">🏢</div>
+                    <div class="enterprise-feature-text">
+                        <h4>Real Estate</h4>
+                        <p>Property & development</p>
+                    </div>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">⚡</div>
+                    <div class="enterprise-feature-text">
+                        <h4>Technology</h4>
+                        <p>Platforms & tools</p>
+                    </div>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">📺</div>
+                    <div class="enterprise-feature-text">
+                        <h4>Media</h4>
+                        <p>Content & distribution</p>
+                    </div>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">✨</div>
+                    <div class="enterprise-feature-text">
+                        <h4>Experiences</h4>
+                        <p>Events & activations</p>
+                    </div>
+                </div>
+                <div class="enterprise-feature">
+                    <div class="enterprise-feature-icon">✈️</div>
+                    <div class="enterprise-feature-text">
+                        <h4>Travel</h4>
+                        <p>Hospitality & exploration</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates -->
+    <section id="templates" class="templates">
+        <div class="templates-inner">
+            <div class="section-header">
+                <div class="section-label">Framework</div>
+                <h2 class="section-title">Template Tools</h2>
+            </div>
+            <div class="templates-grid">
+                <div class="template-card" onclick="openTemplateForm('venture')">
+                    <div class="template-icon">📋</div>
+                    <div class="template-name">Venture Overview</div>
+                    <div class="template-desc">Identity, positioning, mission, vision, values, and north star metric.</div>
+                </div>
+                <div class="template-card" onclick="openTemplateForm('timeline')">
+                    <div class="template-icon">📅</div>
+                    <div class="template-name">Strategic Timeline</div>
+                    <div class="template-desc">30-day sprint, 90-day OKRs, annual roadmap, and 10-year vision.</div>
+                </div>
+                <div class="template-card" onclick="openTemplateForm('monetization')">
+                    <div class="template-icon">💰</div>
+                    <div class="template-name">Monetization</div>
+                    <div class="template-desc">Revenue streams, financial targets, and sponsorship architecture.</div>
+                </div>
+                <div class="template-card" onclick="openTemplateForm('validation')">
+                    <div class="template-icon">✓</div>
+                    <div class="template-name">Validation & KPIs</div>
+                    <div class="template-desc">Core hypothesis, milestones, kill criteria, and KPI dashboard.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq">
+        <div class="section-header">
+            <div class="section-label">Questions</div>
+            <h2 class="section-title">Frequently Asked</h2>
+        </div>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-question">
+                    What is 777 Labs?
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>777 Labs is a venture collective that builds, validates, and scales high-impact businesses across technology, media, real estate, and experiential platforms. We operate as a startup studio—creating companies from scratch using shared infrastructure and a repeatable methodology.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    How are ventures connected?
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Each venture operates independently while sharing insights, resources, and strategic alignment. When one venture grows, it creates opportunities for others—shared deal flow, cross-promotion, and pooled infrastructure reduce costs and accelerate growth across the entire portfolio.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    Can I collaborate with 777?
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes. We work with founders, operators, and investors through multiple tracks: founder residencies, strategic partnerships, syndicate investments, and service agreements. Enter Mission Control to start a conversation about how we can build together.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    How fast can I launch a venture?
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Our 30-Day Sprint framework takes ventures from zero to a publicly-facing, tested version in one month. With shared infrastructure already in place, we eliminate the typical 3-6 month setup time that slows most startups.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    What tools are included?
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>The ecosystem includes Mission Control (command hub), MKT:OSX (marketing intelligence), our Master Planning Template, the FMOT resource stack, validation playbooks, and access to our network of operators, investors, and partners across industries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="cta-inner">
+            <div class="cta-marquee">
+                <span>Innovate together • Let's innovate together • Innovate together • Let's innovate together • Innovate together • Let's innovate together • </span>
+            </div>
+            <h2>Innovate together.</h2>
+            <p>No inflated overhead. No endless planning cycles. Just execution. Join the ecosystem and start building what matters.</p>
+            <div class="cta-buttons">
+                <a href="#ventures" class="btn btn-light btn-arrow">Explore Ventures</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-logo">⊞ 777 Labs</div>
+            <div class="footer-links">
+                <a href="#ventures">Ventures</a>
+                <a href="#features">Features</a>
+                <a href="#enterprise">Enterprise</a>
+                <a href="#templates">Templates</a>
+                <a href="#faq">FAQ</a>
+            </div>
+            <div class="footer-social">
+                <a href="#">X</a>
+                <a href="#">Li</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Venture Overview Modal -->
+    <div class="modal-overlay" id="modal-venture">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h3>01 Venture Overview</h3>
+                    <p>High-level identity, positioning, and north star for this initiative</p>
+                </div>
+                <button class="modal-close" onclick="closeModal('venture')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-venture">
+                    <div class="form-section">
+                        <div class="form-section-title">Basic Information</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Venture / Project Name</label>
+                                <input type="text" name="ventureName" placeholder="Enter venture name">
+                            </div>
+                            <div class="form-group">
+                                <label>Sector(s)</label>
+                                <input type="text" name="sectors" placeholder="e.g. Travel, Tech, Media">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stage</label>
+                                <select name="stage">
+                                    <option value="">Select stage...</option>
+                                    <option value="Concept">Concept</option>
+                                    <option value="Validation">Validation</option>
+                                    <option value="Launch">Launch</option>
+                                    <option value="Scale">Scale</option>
+                                    <option value="Expand">Expand</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Geographic Focus</label>
+                                <input type="text" name="geoFocus" placeholder="e.g. North America, Global">
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>One-Line Pitch</label>
+                                <input type="text" name="pitch" placeholder="What does this do in plain English?">
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Core Problem Solved</label>
+                                <textarea name="problem" placeholder="What obstacle does this venture address?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Target Audience</label>
+                                <textarea name="audience" placeholder="Who is the ONE perfect customer?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Comparable Ventures</label>
+                                <input type="text" name="comparables" placeholder="Similar companies or models">
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Unfair Advantage</label>
+                                <textarea name="advantage" placeholder="Network, domain expertise, audience, IP, timing..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>North Star Metric</label>
+                                <input type="text" name="northStar" placeholder="The one metric that matters most">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">Vision & Values</div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Vision Statement</label>
+                                <textarea name="vision" placeholder="Where is this venture going in 10 years?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Mission Statement</label>
+                                <textarea name="mission" placeholder="Purpose-driven reason this exists"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Core Values (3-5)</label>
+                                <textarea name="values" placeholder="List your core values"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('venture')">Cancel</button>
+                <button class="btn btn-primary" onclick="exportToPDF('venture')">Export PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategic Timeline Modal -->
+    <div class="modal-overlay" id="modal-timeline">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h3>02 Strategic Timeline</h3>
+                    <p>Zoom in on today. Zoom out to the decade. Operate both layers simultaneously.</p>
+                </div>
+                <button class="modal-close" onclick="closeModal('timeline')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-timeline">
+                    <div class="form-section">
+                        <div class="form-section-title">30-Day Sprint</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Week 1 Priority</label>
+                                <input type="text" name="week1Priority" placeholder="Main focus">
+                            </div>
+                            <div class="form-group">
+                                <label>Week 1 Outcome</label>
+                                <input type="text" name="week1Outcome" placeholder="Expected deliverable">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Week 2 Priority</label>
+                                <input type="text" name="week2Priority" placeholder="Main focus">
+                            </div>
+                            <div class="form-group">
+                                <label>Week 2 Outcome</label>
+                                <input type="text" name="week2Outcome" placeholder="Expected deliverable">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Week 3 Priority</label>
+                                <input type="text" name="week3Priority" placeholder="Main focus">
+                            </div>
+                            <div class="form-group">
+                                <label>Week 3 Outcome</label>
+                                <input type="text" name="week3Outcome" placeholder="Expected deliverable">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Week 4 Priority</label>
+                                <input type="text" name="week4Priority" placeholder="Main focus">
+                            </div>
+                            <div class="form-group">
+                                <label>Week 4 Outcome</label>
+                                <input type="text" name="week4Outcome" placeholder="Expected deliverable">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">90-Day Quarter — OKR Sprint</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Month 1 Objective</label>
+                                <input type="text" name="month1Obj" placeholder="Primary objective">
+                            </div>
+                            <div class="form-group">
+                                <label>Month 1 Key Result</label>
+                                <input type="text" name="month1KR" placeholder="Measurable outcome">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Month 2 Objective</label>
+                                <input type="text" name="month2Obj" placeholder="Primary objective">
+                            </div>
+                            <div class="form-group">
+                                <label>Month 2 Key Result</label>
+                                <input type="text" name="month2KR" placeholder="Measurable outcome">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Month 3 Objective</label>
+                                <input type="text" name="month3Obj" placeholder="Primary objective">
+                            </div>
+                            <div class="form-group">
+                                <label>Month 3 Key Result</label>
+                                <input type="text" name="month3KR" placeholder="Measurable outcome">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">Year 1 — Annual Roadmap</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Q1 Milestone</label>
+                                <input type="text" name="q1Milestone" placeholder="Key milestone">
+                            </div>
+                            <div class="form-group">
+                                <label>Q1 KPI Target</label>
+                                <input type="text" name="q1KPI" placeholder="Target metric">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Q2 Milestone</label>
+                                <input type="text" name="q2Milestone" placeholder="Key milestone">
+                            </div>
+                            <div class="form-group">
+                                <label>Q2 KPI Target</label>
+                                <input type="text" name="q2KPI" placeholder="Target metric">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Q3 Milestone</label>
+                                <input type="text" name="q3Milestone" placeholder="Key milestone">
+                            </div>
+                            <div class="form-group">
+                                <label>Q3 KPI Target</label>
+                                <input type="text" name="q3KPI" placeholder="Target metric">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Q4 Milestone</label>
+                                <input type="text" name="q4Milestone" placeholder="Key milestone">
+                            </div>
+                            <div class="form-group">
+                                <label>Q4 KPI Target</label>
+                                <input type="text" name="q4KPI" placeholder="Target metric">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">3-Year Growth Plan</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year 1 Phase/Theme</label>
+                                <input type="text" name="year1Theme" placeholder="e.g. Foundation">
+                            </div>
+                            <div class="form-group">
+                                <label>Year 1 Revenue Target</label>
+                                <input type="text" name="year1Revenue" placeholder="$">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year 2 Phase/Theme</label>
+                                <input type="text" name="year2Theme" placeholder="e.g. Scale">
+                            </div>
+                            <div class="form-group">
+                                <label>Year 2 Revenue Target</label>
+                                <input type="text" name="year2Revenue" placeholder="$">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year 3 Phase/Theme</label>
+                                <input type="text" name="year3Theme" placeholder="e.g. Expand">
+                            </div>
+                            <div class="form-group">
+                                <label>Year 3 Revenue Target</label>
+                                <input type="text" name="year3Revenue" placeholder="$">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">10-Year + Beyond — Legacy Play</div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>5-7 Year Vision</label>
+                                <textarea name="vision5to7" placeholder="Empire layer, category owned, market position"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>10+ Year Legacy</label>
+                                <textarea name="vision10plus" placeholder="Exit / Legacy play"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('timeline')">Cancel</button>
+                <button class="btn btn-primary" onclick="exportToPDF('timeline')">Export PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monetization Modal -->
+    <div class="modal-overlay" id="modal-monetization">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h3>03 Monetization Architecture</h3>
+                    <p>Map every dollar. Primary, secondary, and passive revenue layers.</p>
+                </div>
+                <button class="modal-close" onclick="closeModal('monetization')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-monetization">
+                    <div class="form-section">
+                        <div class="form-section-title">Revenue Streams</div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Primary Revenue Stream</label>
+                                <input type="text" name="primaryRevenue" placeholder="How does this business make most of its money?">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Revenue Type</label>
+                                <select name="revenueType">
+                                    <option value="">Select type...</option>
+                                    <option value="T">T - Ticket / Admission</option>
+                                    <option value="S">S - Sponsorship</option>
+                                    <option value="V">V - Vendor / Marketplace</option>
+                                    <option value="C">C - Content / Media</option>
+                                    <option value="M">M - Membership</option>
+                                    <option value="D">D - Data / IP</option>
+                                    <option value="P">P - Product</option>
+                                    <option value="I">I - Investment / Equity</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Est. Annual Revenue ($)</label>
+                                <input type="text" name="primaryAnnual" placeholder="$">
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Secondary Revenue Streams</label>
+                                <textarea name="secondaryRevenue" placeholder="Upsell, subscription, merch, licensing, data..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">Financial Targets</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year 1 Gross Revenue</label>
+                                <input type="text" name="y1Gross" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Year 1 Net Margin</label>
+                                <input type="text" name="y1Margin" placeholder="%">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year 1 Valuation</label>
+                                <input type="text" name="y1Valuation" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Year 1 Funding Stage</label>
+                                <input type="text" name="y1Funding" placeholder="e.g. Pre-Seed">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year 3 Gross Revenue</label>
+                                <input type="text" name="y3Gross" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Year 3 Valuation</label>
+                                <input type="text" name="y3Valuation" placeholder="$">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year 5 Gross Revenue</label>
+                                <input type="text" name="y5Gross" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Year 10 Exit Target</label>
+                                <input type="text" name="y10Exit" placeholder="$">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">Sponsorship Tiers</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Title Sponsor - Price</label>
+                                <input type="text" name="titlePrice" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Title Sponsor - Deliverables</label>
+                                <input type="text" name="titleDeliverables" placeholder="What they get">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Presenting Sponsor - Price</label>
+                                <input type="text" name="presentingPrice" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Presenting Sponsor - Deliverables</label>
+                                <input type="text" name="presentingDeliverables" placeholder="What they get">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Category Sponsor - Price</label>
+                                <input type="text" name="categoryPrice" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Category Sponsor - Deliverables</label>
+                                <input type="text" name="categoryDeliverables" placeholder="What they get">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Community Sponsor - Price</label>
+                                <input type="text" name="communityPrice" placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label>Community Sponsor - Deliverables</label>
+                                <input type="text" name="communityDeliverables" placeholder="What they get">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('monetization')">Cancel</button>
+                <button class="btn btn-primary" onclick="exportToPDF('monetization')">Export PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Validation & KPIs Modal -->
+    <div class="modal-overlay" id="modal-validation">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h3>09 KPI Dashboard & Validation</h3>
+                    <p>What gets measured gets managed. Track the metrics that predict success.</p>
+                </div>
+                <button class="modal-close" onclick="closeModal('validation')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-validation">
+                    <div class="form-section">
+                        <div class="form-section-title">Core Hypothesis</div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>We believe [customer] will [do X] because [reason]</label>
+                                <textarea name="hypothesis" placeholder="Write your testable hypothesis..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>We'll know we're right when [metric]</label>
+                                <input type="text" name="successMetric" placeholder="The validation signal">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">Milestones</div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>30-Day Milestone</label>
+                                <textarea name="milestone30" placeholder="What must be true in 30 days for this to be on track?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>90-Day Milestone</label>
+                                <textarea name="milestone90" placeholder="What must be true in 90 days for this to be a real business?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>12-Month Milestone</label>
+                                <textarea name="milestone365" placeholder="What must be true in 12 months to raise the next round or hit profitability?"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">Kill Criteria</div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>If ___ doesn't happen by ___, we pivot or kill the venture</label>
+                                <textarea name="killCriteria" placeholder="Define your kill criteria"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title">North Star + Supporting KPIs</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>KPI #1 - Metric</label>
+                                <input type="text" name="kpi1Name" placeholder="Metric name">
+                            </div>
+                            <div class="form-group">
+                                <label>KPI #1 - Baseline</label>
+                                <input type="text" name="kpi1Baseline" placeholder="Current">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>KPI #1 - Target</label>
+                                <input type="text" name="kpi1Target" placeholder="Goal">
+                            </div>
+                            <div class="form-group">
+                                <label>KPI #1 - Status</label>
+                                <select name="kpi1Status">
+                                    <option value="">Select...</option>
+                                    <option value="On Track">On Track</option>
+                                    <option value="At Risk">At Risk</option>
+                                    <option value="Behind">Behind</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>KPI #2 - Metric</label>
+                                <input type="text" name="kpi2Name" placeholder="Metric name">
+                            </div>
+                            <div class="form-group">
+                                <label>KPI #2 - Baseline</label>
+                                <input type="text" name="kpi2Baseline" placeholder="Current">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>KPI #2 - Target</label>
+                                <input type="text" name="kpi2Target" placeholder="Goal">
+                            </div>
+                            <div class="form-group">
+                                <label>KPI #2 - Status</label>
+                                <select name="kpi2Status">
+                                    <option value="">Select...</option>
+                                    <option value="On Track">On Track</option>
+                                    <option value="At Risk">At Risk</option>
+                                    <option value="Behind">Behind</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>KPI #3 - Metric</label>
+                                <input type="text" name="kpi3Name" placeholder="Metric name">
+                            </div>
+                            <div class="form-group">
+                                <label>KPI #3 - Baseline</label>
+                                <input type="text" name="kpi3Baseline" placeholder="Current">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>KPI #3 - Target</label>
+                                <input type="text" name="kpi3Target" placeholder="Goal">
+                            </div>
+                            <div class="form-group">
+                                <label>KPI #3 - Status</label>
+                                <select name="kpi3Status">
+                                    <option value="">Select...</option>
+                                    <option value="On Track">On Track</option>
+                                    <option value="At Risk">At Risk</option>
+                                    <option value="Behind">Behind</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('validation')">Cancel</button>
+                <button class="btn btn-primary" onclick="exportToPDF('validation')">Export PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', function() {
+                const item = this.parentElement;
+                const isActive = item.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(faq => faq.classList.remove('active'));
+                if (!isActive) item.classList.add('active');
+            });
+        });
+
+        // Modal functions
+        function openTemplateForm(type) {
+            document.getElementById('modal-' + type).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(type) {
+            document.getElementById('modal-' + type).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => modal.classList.remove('active'));
+                document.body.style.overflow = '';
+            }
+        });
+
+        // PDF Export
+        function exportToPDF(formType) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const form = document.getElementById('form-' + formType);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            let yPos = 20;
+            const margin = 20;
+            const lineHeight = 7;
+
+            const titles = {
+                venture: '01 VENTURE OVERVIEW',
+                timeline: '02 STRATEGIC TIMELINE',
+                monetization: '03 MONETIZATION ARCHITECTURE',
+                validation: '09 KPI DASHBOARD & VALIDATION'
+            };
+
+            const subtitles = {
+                venture: 'High-level identity, positioning, and north star for this initiative.',
+                timeline: 'Zoom in on today. Zoom out to the decade.',
+                monetization: 'Map every dollar. Primary, secondary, and passive revenue layers.',
+                validation: 'What gets measured gets managed. Track the metrics that predict success.'
+            };
+
+            // Header
+            doc.setFillColor(13, 13, 13);
+            doc.rect(0, 0, pageWidth, 45, 'F');
+            doc.setTextColor(248, 247, 244);
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.text('777 LABS', margin, 20);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text('MASTER PLANNING TEMPLATE', margin, 30);
+            doc.setFontSize(9);
+            doc.text(titles[formType], margin, 40);
+
+            yPos = 60;
+            doc.setTextColor(107, 107, 107);
+            doc.setFontSize(9);
+            doc.text(subtitles[formType], margin, yPos);
+            yPos += 15;
+
+            doc.setTextColor(13, 13, 13);
+
+            const sections = form.querySelectorAll('.form-section');
+            sections.forEach(section => {
+                const sectionTitle = section.querySelector('.form-section-title');
+                if (sectionTitle) {
+                    if (yPos > 250) { doc.addPage(); yPos = 20; }
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(107, 107, 107);
+                    doc.text(sectionTitle.textContent.toUpperCase(), margin, yPos);
+                    yPos += 3;
+                    doc.setDrawColor(212, 212, 212);
+                    doc.line(margin, yPos, pageWidth - margin, yPos);
+                    yPos += 10;
+                }
+
+                const groups = section.querySelectorAll('.form-group');
+                groups.forEach(group => {
+                    const label = group.querySelector('label');
+                    const input = group.querySelector('input, textarea, select');
+                    if (label && input) {
+                        if (yPos > 270) { doc.addPage(); yPos = 20; }
+                        doc.setFontSize(8);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(13, 13, 13);
+                        doc.text(label.textContent, margin, yPos);
+                        yPos += 5;
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(70, 70, 70);
+                        const value = input.value || '—';
+                        const lines = doc.splitTextToSize(value, pageWidth - (margin * 2));
+                        doc.text(lines, margin, yPos);
+                        yPos += (lines.length * lineHeight) + 4;
+                    }
+                });
+                yPos += 5;
+            });
+
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(7);
+                doc.setTextColor(150, 150, 150);
+                doc.text('CONFIDENTIAL — 777 LABS MASTER PLANNING TEMPLATE', margin, doc.internal.pageSize.getHeight() - 10);
+                doc.text('PAGE ' + i + ' / ' + pageCount, pageWidth - margin - 20, doc.internal.pageSize.getHeight() - 10);
+            }
+
+            const date = new Date().toISOString().split('T')[0];
+            doc.save(`777-labs-${formType}-${date}.pdf`);
+            closeModal(formType);
+        }
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.venture-card, .feature-block, .feature-card, .template-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
