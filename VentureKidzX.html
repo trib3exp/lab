@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<meta name="description" content="Learn pricing, strategy, and business thinking by running your own simulated businesses. Choose from lemonade stands, supply shops, and snow shoveling!"/>
+<meta name="theme-color" content="#1a1a2e"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<title>VentureKidz — Kid Business Simulator</title>
+<style>
+:root{
+  --bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--card:#16213e;
+  --gold:#FFB830;--gold2:#FFD93D;--green:#6BCB77;--red:#FF6B6B;
+  --blue:#4D96FF;--purple:#9B59B6;--cyan:#00D2FF;--pink:#FF6B9D;
+  --text:#f8f8f8;--muted:#a0a0c0;--border:rgba(255,255,255,.1);
+  --lemon:#FFD93D;--supply:#4D96FF;--snow:#87CEEB;
+  --r:16px;--r2:24px;--r3:32px;
+  --font:'Nunito',system-ui,-apple-system,sans-serif;
+  --shadow:0 4px 20px rgba(0,0,0,.3);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;min-height:100vh;
+  -webkit-font-smoothing:antialiased}
+button{font-family:var(--font)}
+
+/* ── SCREENS ─────────────────────────────────────────── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── LANDING ─────────────────────────────────────────── */
+#s-landing{align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(180deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+  padding:24px;position:relative;overflow:hidden}
+.land-floaters{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.floater{position:absolute;font-size:2.8rem;animation:float linear infinite;opacity:.3;will-change:transform;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+@keyframes float{0%{transform:translate3d(0,110vh,0) rotate(0deg)}100%{transform:translate3d(0,-10vh,0) rotate(360deg)}}
+
+.land-logo{font-size:clamp(56px,12vw,110px);font-weight:900;letter-spacing:-2px;
+  background:linear-gradient(135deg,#FFB830,#FFD93D,#fff,#FFD93D);background-size:200% 200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;line-height:1.05;margin-bottom:8px;
+  animation:shimmer 3s ease-in-out infinite;
+  filter:drop-shadow(0 4px 12px rgba(255,184,48,.4))}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.land-sub{font-size:clamp(13px,2.5vw,18px);color:var(--muted);margin-bottom:40px;letter-spacing:3px;
+  text-transform:uppercase;font-weight:700}
+.land-btns{display:flex;flex-direction:column;gap:16px;align-items:center}
+
+.btn-hero{background:linear-gradient(135deg,var(--gold),#FF9800);color:#1a1a2e;
+  font-size:22px;font-weight:900;padding:20px 60px;border:none;border-radius:60px;
+  cursor:pointer;letter-spacing:.5px;box-shadow:0 8px 32px rgba(255,184,48,.45),inset 0 -4px 0 rgba(0,0,0,.15);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;position:relative;overflow:hidden;
+  min-height:64px}
+.btn-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.25),transparent);border-radius:60px 60px 0 0}
+.btn-hero:hover{transform:translateY(-4px) scale(1.05);
+  box-shadow:0 14px 44px rgba(255,184,48,.6),inset 0 -4px 0 rgba(0,0,0,.15)}
+.btn-hero:active{transform:scale(.95);box-shadow:0 4px 16px rgba(255,184,48,.4),inset 0 -2px 0 rgba(0,0,0,.15)}
+
+.btn-ghost{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);color:var(--muted);
+  font-size:15px;font-weight:700;padding:14px 40px;border-radius:60px;cursor:pointer;
+  transition:all .2s;min-height:52px}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,184,48,.08)}
+
+.land-ticker{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);
+  padding:12px 0;overflow:hidden;border-top:1px solid var(--border)}
+.ticker-inner{display:flex;gap:60px;white-space:nowrap;animation:ticker 30s linear infinite;will-change:transform}
+.ticker-item{color:var(--gold2);font-size:13px;font-weight:700}
+.ticker-item::before{content:'📰 '}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.land-stats{display:flex;gap:36px;margin-bottom:40px;justify-content:center;flex-wrap:wrap}
+.land-stat{text-align:center;background:rgba(255,255,255,.06);padding:16px 24px;border-radius:var(--r2);
+  border:1px solid var(--border);backdrop-filter:blur(4px)}
+.land-stat-v{font-size:36px;font-weight:900;color:var(--gold);display:block}
+.land-stat-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-top:2px}
+
+/* ── SELECTION ───────────────────────────────────────── */
+#s-select{background:linear-gradient(180deg,var(--bg),var(--bg2));padding:24px}
+.sel-header{text-align:center;padding:28px 0 36px}
+.sel-header h1{font-size:clamp(26px,5vw,44px);font-weight:900;margin-bottom:8px}
+.sel-header p{color:var(--muted);font-size:16px;font-weight:600}
+.biz-cards{display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;max-width:1100px;margin:0 auto;padding:0 12px}
+.biz-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r2);
+  padding:24px;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1),border-color .2s,box-shadow .3s;
+  position:relative;overflow:hidden;display:flex;flex-direction:column}
+.biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;border-radius:var(--r2) var(--r2) 0 0}
+.biz-card.lemon::before{background:linear-gradient(90deg,var(--lemon),#FF9800)}
+.biz-card.supply::before{background:linear-gradient(90deg,var(--supply),var(--purple))}
+.biz-card.snow::before{background:linear-gradient(90deg,var(--snow),#E8F4FD)}
+.biz-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:var(--shadow-lg)}
+.biz-card.lemon:hover{border-color:var(--lemon);box-shadow:0 20px 60px rgba(255,217,61,.2)}
+.biz-card.supply:hover{border-color:var(--supply);box-shadow:0 20px 60px rgba(77,150,255,.2)}
+.biz-card.snow:hover{border-color:var(--snow);box-shadow:0 20px 60px rgba(135,206,235,.2)}
+.biz-card:active{transform:translateY(-2px) scale(.98)}
+.biz-emoji{font-size:48px;margin-bottom:12px;display:block;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.biz-name{font-size:20px;font-weight:900;margin-bottom:4px}
+.biz-tag{color:var(--muted);font-size:14px;margin-bottom:14px;font-weight:600}
+.biz-pills{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.pill{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.pill-diff{background:rgba(107,203,119,.2);color:var(--green)}
+.pill-diff.med{background:rgba(255,184,48,.2);color:var(--gold)}
+.pill-diff.hard{background:rgba(255,107,107,.2);color:var(--red)}
+.pill-earn{background:rgba(255,255,255,.08);color:var(--muted)}
+.biz-desc{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:14px;font-weight:600}
+.biz-skills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;flex:1;align-content:flex-start}
+.skill-tag{background:rgba(255,255,255,.08);border:1px solid var(--border);
+  padding:5px 12px;border-radius:20px;font-size:12px;color:var(--muted);font-weight:700}
+.btn-start{width:100%;padding:14px;border:none;border-radius:var(--r);
+  font-size:15px;font-weight:900;letter-spacing:.5px;cursor:pointer;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;margin-top:auto;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.15);min-height:52px}
+.lemon .btn-start{background:linear-gradient(135deg,#FFD93D,#FFB830);color:#1a1a2e}
+.supply .btn-start{background:linear-gradient(135deg,#4D96FF,#6366f1);color:#fff}
+.snow .btn-start{background:linear-gradient(135deg,#87CEEB,#E8F4FD);color:#1a1a2e}
+.btn-start:hover{transform:scale(1.04);box-shadow:0 6px 20px rgba(0,0,0,.3),inset 0 -3px 0 rgba(0,0,0,.15)}
+.btn-start:active{transform:scale(.96)}
+
+/* ── TOPBAR ──────────────────────────────────────────── */
+#topbar{background:rgba(26,26,46,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;gap:10px;flex-wrap:wrap}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{font-size:18px;font-weight:900;color:var(--gold);letter-spacing:-1px}
+.topbar-biz{font-size:12px;color:var(--muted);background:rgba(255,255,255,.08);
+  padding:5px 12px;border-radius:20px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.stat-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);
+  padding:7px 14px;border-radius:50px;font-size:14px;font-weight:800;
+  border:1.5px solid transparent;transition:transform .15s}
+.stat-chip .ico{font-size:16px}
+.money-chip{border-color:rgba(255,184,48,.35);color:var(--gold)}
+.xp-chip{border-color:rgba(155,89,182,.35);color:var(--purple)}
+.day-chip{border-color:var(--border);color:var(--muted)}
+.lv-badge{background:linear-gradient(135deg,var(--gold),#FF9800);color:#1a1a2e;
+  font-weight:900;font-size:13px;padding:6px 12px;border-radius:20px;
+  box-shadow:0 2px 8px rgba(255,184,48,.3);min-width:50px;text-align:center}
+
+/* ── DASHBOARD ───────────────────────────────────────── */
+#s-dash{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)}
+.dash-grid{display:grid;grid-template-columns:320px 1fr 320px;
+  gap:16px;padding:16px;max-width:1400px;margin:0 auto;align-items:start}
+@media(max-width:1100px){
+  .dash-grid{grid-template-columns:1fr 1fr}
+  #panel-right{grid-column:1/-1}
+}
+@media(max-width:680px){
+  .dash-grid{grid-template-columns:1fr}
+}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:22px;box-shadow:var(--shadow)}
+.panel-title{font-size:13px;text-transform:uppercase;letter-spacing:2px;
+  color:var(--muted);margin-bottom:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+
+/* Inputs */
+.input-group{margin-bottom:22px}
+.input-label{display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;font-size:15px;font-weight:700}
+.input-val{background:rgba(255,184,48,.15);color:var(--gold);font-weight:900;
+  padding:4px 14px;border-radius:20px;font-size:15px;border:1px solid rgba(255,184,48,.25)}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:8px;
+  background:rgba(255,255,255,.1);border-radius:4px;outline:none;cursor:pointer;
+  touch-action:manipulation}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;
+  border-radius:50%;background:linear-gradient(135deg,var(--gold),#FF9800);
+  box-shadow:0 2px 10px rgba(255,184,48,.5),inset 0 -2px 0 rgba(0,0,0,.15);
+  cursor:pointer;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.1)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border:none;
+  border-radius:50%;background:linear-gradient(135deg,var(--gold),#FF9800);
+  box-shadow:0 2px 10px rgba(255,184,48,.5);cursor:pointer}
+input[type=range]::-moz-range-track{height:8px;background:rgba(255,255,255,.1);border-radius:4px;border:none}
+
+.num-input-row{display:flex;align-items:center;gap:10px}
+.num-btn{background:rgba(255,255,255,.08);border:2px solid var(--border);color:var(--text);
+  width:48px;height:48px;border-radius:var(--r);font-size:24px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s cubic-bezier(.34,1.56,.64,1);font-weight:800;flex-shrink:0;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+.num-btn:hover{background:rgba(255,184,48,.15);border-color:rgba(255,184,48,.3);transform:scale(1.08)}
+.num-btn:active{transform:scale(.92)}
+.num-display{background:rgba(0,0,0,.2);border:2px solid var(--border);color:var(--text);
+  text-align:center;font-weight:900;font-size:20px;padding:10px;border-radius:var(--r);
+  flex:1;min-width:0}
+.cost-preview{background:rgba(107,203,119,.08);border:1.5px solid rgba(107,203,119,.2);
+  border-radius:var(--r);padding:16px;margin-top:10px}
+.cost-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;font-weight:600}
+.cost-row.total{font-weight:900;font-size:16px;border-top:1.5px solid rgba(255,255,255,.1);
+  margin-top:8px;padding-top:10px}
+.cost-row.total .cv{color:var(--gold)}
+
+/* Center panel */
+#panel-center{display:flex;flex-direction:column;gap:16px}
+.weather-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:22px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);
+  position:relative;overflow:hidden}
+.weather-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,184,48,.05),transparent);pointer-events:none}
+.weather-emoji{font-size:56px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));
+  animation:weatherBob 3s ease-in-out infinite}
+@keyframes weatherBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(5deg)}}
+.weather-info h3{font-size:20px;font-weight:900;margin-bottom:4px}
+.weather-info p{color:var(--muted);font-size:14px;font-weight:600}
+.event-badge{background:linear-gradient(135deg,rgba(255,184,48,.2),rgba(255,152,0,.2));
+  border:1.5px solid rgba(255,184,48,.35);
+  color:var(--gold2);font-size:12px;font-weight:800;padding:5px 14px;
+  border-radius:20px;display:inline-block;margin-top:8px;
+  animation:badgePulse 2s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,184,48,.2)}50%{box-shadow:0 0 0 6px rgba(255,184,48,0)}}
+
+.biz-visual{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:36px;text-align:center;position:relative;overflow:hidden;min-height:220px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  box-shadow:var(--shadow)}
+.biz-visual::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 30%,rgba(255,184,48,.06),transparent 70%);pointer-events:none}
+.biz-visual-emoji{font-size:88px;line-height:1;animation:bounce 2s ease-in-out infinite;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.3))}
+@keyframes bounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.05)}}
+.biz-visual-name{font-size:24px;font-weight:900}
+.biz-visual-day{color:var(--muted);font-size:15px;font-weight:700}
+
+.results-panel{background:var(--card);border:2.5px solid var(--green);border-radius:var(--r2);
+  padding:24px;display:none;animation:resultsIn .5s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 32px rgba(107,203,119,.15);position:relative;overflow:hidden}
+.results-panel::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(107,203,119,.06),transparent);pointer-events:none}
+.results-panel.loss{border-color:var(--red);box-shadow:0 8px 32px rgba(255,107,107,.15)}
+.results-panel.loss::before{background:linear-gradient(135deg,rgba(255,107,107,.06),transparent)}
+@keyframes resultsIn{0%{opacity:0;transform:translateY(30px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+.res-headline{font-size:20px;font-weight:900;display:flex;align-items:center;gap:8px}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.res-stat{text-align:center;background:rgba(255,255,255,.05);border-radius:var(--r);padding:16px 10px;
+  border:1px solid var(--border)}
+.res-stat-v{font-size:28px;font-weight:900;display:block;line-height:1}
+.res-stat-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
+  margin-top:6px;font-weight:700}
+.res-green{color:var(--green)}
+.res-red{color:var(--red)}
+.res-gold{color:var(--gold)}
+.res-details{font-size:14px;color:var(--muted);line-height:1.7;font-weight:600}
+
+.btn-run{width:100%;padding:22px;border:none;border-radius:var(--r3);
+  font-size:22px;font-weight:900;cursor:pointer;letter-spacing:.5px;
+  background:linear-gradient(135deg,var(--gold),#FF9800);color:#1a1a2e;
+  box-shadow:0 8px 32px rgba(255,184,48,.35),inset 0 -4px 0 rgba(0,0,0,.12);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+  position:relative;overflow:hidden;min-height:70px}
+.btn-run::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.2),transparent);border-radius:var(--r3) var(--r3) 0 0}
+.btn-run:hover{transform:translateY(-4px) scale(1.02);
+  box-shadow:0 14px 44px rgba(255,184,48,.5),inset 0 -4px 0 rgba(0,0,0,.12)}
+.btn-run:active{transform:scale(.96)}
+.btn-run:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-run.next-day{background:linear-gradient(135deg,var(--green),#4CAF50);
+  box-shadow:0 8px 32px rgba(107,203,119,.35),inset 0 -4px 0 rgba(0,0,0,.12)}
+.btn-run.next-day:hover{box-shadow:0 14px 44px rgba(107,203,119,.5),inset 0 -4px 0 rgba(0,0,0,.12)}
+.btn-secondary{background:rgba(255,255,255,.06);border:2px solid var(--border);color:var(--muted);
+  padding:14px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;
+  width:100%;transition:all .2s;min-height:52px}
+.btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+
+/* Right panel */
+.xp-bar-wrap{margin-bottom:22px}
+.xp-bar-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;font-weight:700}
+.xp-bar-track{height:14px;background:rgba(255,255,255,.08);border-radius:7px;overflow:hidden;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.2);position:relative}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,#9B59B6,#E056A0,#FF6B9D);background-size:200% 100%;
+  border-radius:7px;transition:width .8s cubic-bezier(.34,1.56,.64,1);
+  animation:xpShimmer 2s ease-in-out infinite;position:relative}
+@keyframes xpShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.xp-bar-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3));border-radius:0 7px 7px 0}
+
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.skill-item{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;transition:transform .15s}
+.skill-item:hover{transform:scale(1.02)}
+.skill-ico{font-size:24px;margin-bottom:6px;display:block}
+.skill-name{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);
+  margin-bottom:8px;font-weight:800}
+.skill-bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.2)}
+.skill-bar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+.skill-bar-fill.miq{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.skill-bar-fill.ops{background:linear-gradient(90deg,var(--green),#8BC34A)}
+.skill-bar-fill.mkt{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.skill-bar-fill.dec{background:linear-gradient(90deg,var(--purple),var(--pink))}
+.skill-level{font-size:14px;font-weight:900;color:var(--text);margin-top:4px}
+
+.mentor-bubble{background:rgba(155,89,182,.08);border:2px solid rgba(155,89,182,.25);
+  border-radius:var(--r2);padding:18px;margin-bottom:22px;position:relative;
+  min-height:80px;display:flex;gap:14px;align-items:flex-start}
+.mentor-avatar{font-size:40px;flex-shrink:0;animation:mentorBob 4s ease-in-out infinite;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+@keyframes mentorBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.mentor-text{font-size:14px;line-height:1.7;color:var(--text);font-weight:600}
+.mentor-text strong{color:var(--gold);font-weight:900}
+
+.achievements-list{display:flex;flex-wrap:wrap;gap:8px}
+.ach-badge{background:rgba(0,0,0,.2);border:2px solid var(--border);
+  border-radius:var(--r);padding:8px 12px;font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:8px;transition:all .2s}
+.ach-badge.earned{border-color:var(--gold);background:rgba(255,184,48,.1);
+  box-shadow:0 0 12px rgba(255,184,48,.15)}
+.ach-badge.earned:hover{transform:scale(1.05)}
+.ach-badge .ach-ico{font-size:18px}
+
+/* ── ACHIEVEMENT POPUP ──────────────────────────────── */
+#ach-popup{position:fixed;bottom:-200px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:2.5px solid var(--gold);border-radius:var(--r2);padding:22px 28px;
+  z-index:9999;display:flex;align-items:center;gap:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 30px rgba(255,184,48,.15);
+  transition:bottom .6s cubic-bezier(.34,1.56,.64,1);max-width:420px;width:90%}
+#ach-popup.show{bottom:24px}
+#ach-popup .ap-emoji{font-size:52px;animation:achSpin .6s cubic-bezier(.34,1.56,.64,1);
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
+@keyframes achSpin{0%{transform:rotate(-20deg) scale(0)}60%{transform:rotate(10deg) scale(1.2)}100%{transform:rotate(0) scale(1)}}
+#ach-popup .ap-title{font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--gold);
+  margin-bottom:4px;font-weight:800}
+#ach-popup .ap-name{font-size:20px;font-weight:900}
+#ach-popup .ap-desc{font-size:13px;color:var(--muted);margin-top:3px;font-weight:600}
+
+/* ── LEVEL UP ────────────────────────────────────────── */
+#levelup-modal{position:fixed;inset:0;z-index:9998;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(12px)}
+#levelup-modal.show{display:flex}
+.lu-card{background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:3px solid var(--gold);border-radius:var(--r3);padding:52px 44px;
+  text-align:center;max-width:460px;width:90%;position:relative;overflow:hidden;
+  box-shadow:0 0 60px rgba(255,184,48,.2)}
+.lu-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,184,48,.12),transparent 70%);pointer-events:none}
+.lu-emoji{font-size:88px;display:block;margin-bottom:20px;animation:levelPop .6s cubic-bezier(.34,1.56,.64,1);
+  filter:drop-shadow(0 4px 16px rgba(0,0,0,.3))}
+@keyframes levelPop{0%{transform:scale(0) rotate(-15deg)}70%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.lu-label{font-size:14px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:800}
+.lu-level{font-size:80px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2),#fff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.lu-msg{color:var(--muted);font-size:17px;margin:14px 0 32px;font-weight:700}
+.confetti-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.conf{position:absolute;width:10px;height:10px;border-radius:2px;animation:confFall linear forwards}
+@keyframes confFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* ── STREAKS (Duolingo-style) ──────────────────────── */
+.streaks{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.streak-dot{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.streak-dot.done{background:linear-gradient(135deg,#FF9800,var(--gold));border-color:transparent;
+  box-shadow:0 2px 10px rgba(255,152,0,.35);animation:streakPop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes streakPop{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* ── UTILS ───────────────────────────────────────────── */
+.pop{animation:numPop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes numPop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.shake{animation:shakeEl .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shakeEl{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-5px)}20%,40%,60%,80%{transform:translateX(5px)}}
+.upgrade-card{background:rgba(0,0,0,.2);border:2px solid var(--border);border-radius:var(--r);
+  padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.upgrade-card.owned{border-color:var(--green);background:rgba(107,203,119,.08)}
+.upgrade-info{flex:1}
+.upgrade-name{font-size:15px;font-weight:800}
+.upgrade-desc{font-size:13px;color:var(--muted);font-weight:600}
+.btn-upgrade{background:linear-gradient(135deg,var(--green),#4CAF50);color:#fff;
+  border:none;padding:10px 18px;border-radius:var(--r);font-weight:800;font-size:14px;
+  cursor:pointer;white-space:nowrap;transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);min-height:44px}
+.btn-upgrade:hover{transform:scale(1.06)}
+.btn-upgrade:active{transform:scale(.95)}
+.btn-upgrade:disabled{background:rgba(255,255,255,.08);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+.mini-chart{display:flex;align-items:flex-end;gap:4px;height:64px;margin-top:14px}
+.mini-bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;transition:height .6s cubic-bezier(.34,1.56,.64,1);position:relative}
+.mini-bar.pos{background:linear-gradient(180deg,var(--green),#4CAF50)}
+.mini-bar.neg{background:linear-gradient(180deg,var(--red),#E53935)}
+
+/* ── SCREEN FLASH (on profit/loss) ─────────────────── */
+.screen-flash{position:fixed;inset:0;pointer-events:none;z-index:50;
+  animation:screenFlash .6s ease-out forwards}
+@keyframes screenFlash{0%{opacity:.3}100%{opacity:0}}
+.flash-green{background:var(--green)}
+.flash-red{background:var(--red)}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:430px){
+  #s-landing{padding:16px}
+  .land-sub{margin-bottom:20px;font-size:12px}
+  .land-stats{gap:10px;margin-bottom:28px}
+  .land-stat{padding:12px 16px}
+  .land-stat-v{font-size:26px}
+  .land-stat-l{font-size:10px}
+  .btn-hero{font-size:18px;padding:16px 40px;min-height:56px}
+  .btn-ghost{font-size:14px;padding:12px 28px;min-height:48px}
+
+  #s-select{padding:12px}
+  .sel-header{padding:16px 0 20px}
+  .sel-header h1{font-size:22px}
+  .sel-header p{font-size:14px}
+  .biz-cards{grid-template-columns:1fr;gap:12px;padding:0}
+  .biz-card{padding:18px}
+  .biz-emoji{font-size:40px;margin-bottom:8px}
+  .biz-name{font-size:18px}
+  .biz-tag{font-size:13px}
+  .btn-start{padding:12px;font-size:14px;min-height:48px}
+
+  #topbar{padding:8px 10px;gap:6px;flex-wrap:nowrap}
+  .topbar-left{gap:8px;min-width:0;flex-shrink:1}
+  .topbar-logo{font-size:14px;letter-spacing:-.5px}
+  .topbar-biz{font-size:11px;padding:3px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+  .topbar-right{gap:5px;flex-shrink:0}
+  .stat-chip{font-size:11px;padding:5px 8px;gap:4px}
+  .stat-chip .ico{font-size:13px}
+  .lv-badge{font-size:11px;padding:5px 8px;min-width:42px}
+
+  .dash-grid{padding:10px;gap:10px}
+  .panel{padding:16px}
+  .biz-visual{padding:24px;min-height:160px}
+  .biz-visual-emoji{font-size:64px}
+  .biz-visual-name{font-size:20px}
+  .biz-visual-day{font-size:13px}
+  .weather-card{padding:16px;gap:12px}
+  .weather-emoji{font-size:42px}
+  .weather-info h3{font-size:17px}
+  .btn-run{font-size:18px;padding:18px;min-height:60px}
+  .results-grid{grid-template-columns:1fr 1fr}
+  .res-stat{padding:14px 8px}
+  .res-stat-v{font-size:22px}
+  .skills-grid{gap:8px}
+  .skill-item{padding:12px}
+  .mentor-avatar{font-size:32px}
+  .mentor-text{font-size:13px}
+  .streak-dot{width:32px;height:32px;font-size:14px}
+  .num-btn{width:44px;height:44px;font-size:20px}
+
+  .lu-card{padding:32px 24px}
+  .lu-emoji{font-size:64px}
+  .lu-level{font-size:56px}
+  .lu-msg{font-size:15px;margin:10px 0 24px}
+
+  #ach-popup{padding:16px 20px;gap:14px;max-width:calc(100% - 24px)}
+  #ach-popup .ap-emoji{font-size:40px}
+  #ach-popup .ap-name{font-size:18px}
+}
+@media(max-width:375px){
+  .biz-cards{gap:10px}
+  .topbar-biz{display:none}
+  .stat-chip{padding:4px 6px;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LANDING ══════════════════════════════════════════ -->
+<div id="s-landing" class="screen active">
+  <div class="land-floaters" id="floaters"></div>
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:0;padding:80px 24px 120px">
+    <div class="land-logo">VENTURE<br>KIDZ</div>
+    <div class="land-sub">Kid Business Simulator</div>
+    <div class="land-stats">
+      <div class="land-stat"><span class="land-stat-v">3</span><div class="land-stat-l">Businesses</div></div>
+      <div class="land-stat"><span class="land-stat-v">12</span><div class="land-stat-l">Achievements</div></div>
+      <div class="land-stat"><span class="land-stat-v">&infin;</span><div class="land-stat-l">Possibilities</div></div>
+    </div>
+    <div class="land-btns">
+      <button class="btn-hero" onclick="goTo('select')">🚀 Start Your Hustle</button>
+      <button class="btn-ghost" onclick="goTo('select')" id="continue-btn" style="display:none">▶️ Continue Playing</button>
+    </div>
+    <div style="margin-top:48px;color:var(--muted);font-size:14px;text-align:center;max-width:480px;line-height:1.8;font-weight:600">
+      Learn <strong style="color:var(--text)">pricing</strong>, <strong style="color:var(--text)">strategy</strong>, and <strong style="color:var(--text)">business thinking</strong><br>by running your own simulated businesses.
+    </div>
+  </div>
+  <div class="land-ticker">
+    <div class="ticker-inner" id="ticker"></div>
+  </div>
+</div>
+
+<!-- ══ SELECTION ════════════════════════════════════════ -->
+<div id="s-select" class="screen">
+  <div class="sel-header">
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px">
+      <button class="btn-ghost" onclick="goTo('landing')" style="padding:10px 20px;font-size:14px;min-height:44px">&larr; Back</button>
+    </div>
+    <h1>🏪 Choose Your Hustle</h1>
+    <p>Each business teaches different skills. Pick one to start!</p>
+  </div>
+  <div class="biz-cards">
+    <div class="biz-card lemon" onclick="startBusiness('lemonade')">
+      <span class="biz-emoji">🍋</span>
+      <div class="biz-name">Snack &amp; Lemonade Stand</div>
+      <div class="biz-tag">Run your neighborhood snack stand</div>
+      <div class="biz-pills">
+        <span class="pill pill-diff">Beginner</span>
+        <span class="pill pill-earn">Earning: $$</span>
+      </div>
+      <div class="biz-desc">Buy cups and snacks, set your prices, and serve thirsty neighbors. Learn how weather and pricing affect sales!</div>
+      <div class="biz-skills">
+        <span class="skill-tag">💰 Pricing</span>
+        <span class="skill-tag">📦 Inventory</span>
+        <span class="skill-tag">😊 Customer Service</span>
+      </div>
+      <button class="btn-start">Start Lemonade Stand &rarr;</button>
+    </div>
+    <div class="biz-card supply" onclick="startBusiness('supplies')">
+      <span class="biz-emoji">📚</span>
+      <div class="biz-name">School Supplies Shop</div>
+      <div class="biz-tag">Be the go-to student entrepreneur</div>
+      <div class="biz-pills">
+        <span class="pill pill-diff med">Intermediate</span>
+        <span class="pill pill-earn">Earning: $$$</span>
+      </div>
+      <div class="biz-desc">Source supplies wholesale, mark them up, and market to classmates. Learn about trends, competition, and inventory!</div>
+      <div class="biz-skills">
+        <span class="skill-tag">📦 Inventory</span>
+        <span class="skill-tag">📣 Marketing</span>
+        <span class="skill-tag">🏷️ Markups</span>
+      </div>
+      <button class="btn-start">Start Supplies Shop &rarr;</button>
+    </div>
+    <div class="biz-card snow" onclick="startBusiness('snow')">
+      <span class="biz-emoji">❄️</span>
+      <div class="biz-name">Snow Shoveling Biz</div>
+      <div class="biz-tag">Turn winter into your biggest season</div>
+      <div class="biz-pills">
+        <span class="pill pill-diff hard">Advanced</span>
+        <span class="pill pill-earn">Earning: $$$$</span>
+      </div>
+      <div class="biz-desc">Build a snow removal empire! Upgrade equipment, hire help, and maximize earnings during snowstorms!</div>
+      <div class="biz-skills">
+        <span class="skill-tag">⚙️ Operations</span>
+        <span class="skill-tag">📈 Scaling</span>
+        <span class="skill-tag">⏰ Time Mgmt</span>
+      </div>
+      <button class="btn-start">Start Snow Business &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ═════════════════════════════════════════ -->
+<div id="s-dash" class="screen">
+  <div id="topbar">
+    <div class="topbar-left">
+      <span class="topbar-logo">🚀 VentureKidz</span>
+      <span class="topbar-biz" id="tb-biz">Lemonade Stand</span>
+    </div>
+    <div class="topbar-right">
+      <div class="stat-chip day-chip"><span>📅</span><span id="tb-day">Day 1</span></div>
+      <div class="stat-chip money-chip"><span class="ico">💰</span><span id="tb-money">$100.00</span></div>
+      <div class="stat-chip xp-chip"><span class="ico">⚡</span><span id="tb-xp">0 XP</span></div>
+      <div class="lv-badge" id="tb-level">Lv 1</div>
+    </div>
+  </div>
+  <div class="dash-grid">
+    <div id="panel-left" class="panel">
+      <div class="panel-title" id="pl-title">⚙️ Today's Setup</div>
+      <div id="biz-inputs"></div>
+      <div id="cost-preview" class="cost-preview"></div>
+      <div id="upgrades-section" style="margin-top:20px"></div>
+    </div>
+    <div id="panel-center">
+      <div class="panel weather-card">
+        <div class="weather-emoji" id="w-emoji">☀️</div>
+        <div class="weather-info">
+          <h3 id="w-label">Nice &amp; Sunny</h3>
+          <p id="w-desc">A normal day — solid opportunity</p>
+          <div id="w-event-badge"></div>
+        </div>
+      </div>
+      <div class="panel biz-visual">
+        <div class="biz-visual-emoji" id="biz-vis-emoji">🍋</div>
+        <div class="biz-visual-name" id="biz-vis-name">Lemonade Stand</div>
+        <div class="biz-visual-day" id="biz-vis-day">Get ready to open!</div>
+        <div class="mini-chart" id="profit-chart" title="Profit history"></div>
+      </div>
+      <div class="panel results-panel" id="results-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div class="res-headline" id="res-headline">Day Complete! 🎉</div>
+          <div id="res-xp-gain" style="background:linear-gradient(135deg,rgba(155,89,182,.2),rgba(224,86,160,.2));
+            border:1.5px solid rgba(155,89,182,.4);
+            color:#E056A0;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:800"></div>
+        </div>
+        <div class="results-grid" id="results-grid"></div>
+        <div class="res-details" id="res-details"></div>
+      </div>
+      <button class="btn-run" id="btn-run" onclick="runDay()">🏪 Open for Business!</button>
+      <button class="btn-secondary" id="btn-change" onclick="goTo('select')" style="margin-top:8px">🔄 Try Different Business</button>
+    </div>
+    <div id="panel-right" class="panel">
+      <div class="panel-title">🧑‍🏫 Your Business Mentor</div>
+      <div class="mentor-bubble">
+        <div class="mentor-avatar">🦊</div>
+        <div class="mentor-text" id="mentor-text">Hey there! Set up your shop and hit <strong>Open for Business</strong> when you're ready. I'll coach you after each day! 💪</div>
+      </div>
+      <div class="panel-title">📊 Your Skills</div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-label">
+          <span id="xp-label">Level 1</span>
+          <span id="xp-to-next" style="color:var(--muted);font-size:13px">0 / 200 XP</span>
+        </div>
+        <div class="xp-bar-track"><div class="xp-bar-fill" id="xp-fill" style="width:0%"></div></div>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-item">
+          <span class="skill-ico">💰</span>
+          <div class="skill-name">Money IQ</div>
+          <div class="skill-bar"><div class="skill-bar-fill miq" id="sk-miq" style="width:10%"></div></div>
+          <div class="skill-level" id="sk-miq-v">1</div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-ico">📦</span>
+          <div class="skill-name">Operations</div>
+          <div class="skill-bar"><div class="skill-bar-fill ops" id="sk-ops" style="width:10%"></div></div>
+          <div class="skill-level" id="sk-ops-v">1</div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-ico">📣</span>
+          <div class="skill-name">Marketing</div>
+          <div class="skill-bar"><div class="skill-bar-fill mkt" id="sk-mkt" style="width:10%"></div></div>
+          <div class="skill-level" id="sk-mkt-v">1</div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-ico">🧠</span>
+          <div class="skill-name">Decisions</div>
+          <div class="skill-bar"><div class="skill-bar-fill dec" id="sk-dec" style="width:10%"></div></div>
+          <div class="skill-level" id="sk-dec-v">1</div>
+        </div>
+      </div>
+      <div class="panel-title">🔥 Streak</div>
+      <div class="streaks" id="streaks-row"></div>
+      <div class="panel-title" style="margin-top:16px">🏆 Achievements</div>
+      <div class="achievements-list" id="ach-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="ach-popup">
+  <div class="ap-emoji" id="ap-emoji">🏆</div>
+  <div>
+    <div class="ap-title">Achievement Unlocked!</div>
+    <div class="ap-name" id="ap-name">First Profit</div>
+    <div class="ap-desc" id="ap-desc">You made your first dollar!</div>
+  </div>
+</div>
+
+<div id="levelup-modal">
+  <div class="lu-card">
+    <div class="lu-glow"></div>
+    <div class="confetti-wrap" id="conf-wrap"></div>
+    <span class="lu-emoji">🎉</span>
+    <div class="lu-label">Level Up!</div>
+    <div class="lu-level" id="lu-level">2</div>
+    <div class="lu-msg" id="lu-msg">You're becoming a real entrepreneur!</div>
+    <button class="btn-hero" onclick="closeLevelUp()" style="font-size:18px;padding:16px 44px">Keep Going! 🚀</button>
+  </div>
+</div>
+
+<script>
+const DEFAULT_STATE = {
+  business: null, day: 0,
+  player: { money:100, xp:0, level:1, skills:{miq:1,ops:1,mkt:1,dec:1},
+    achievements:[], streak:0, consecutiveWins:0, totalProfit:0, totalDays:0 },
+  history:[], upgrades:{shovel:0}, inputs:{}
+};
+let G = loadState();
+
+const BIZ = {
+  lemonade: {
+    id:'lemonade', name:'Snack & Lemonade Stand', emoji:'🍋', color:'#FFD93D',
+    defaultInputs: { lemonPrice:1.00, snackPrice:0.75, cups:40, snacks:30 },
+    simulate(inp, cond) {
+      const { lemonPrice, snackPrice, cups, snacks } = inp;
+      const wMod = { scorching:2.0, hot:1.5, sunny:1.0, cloudy:0.7, rainy:0.2, stormy:0.05 }[cond.w] || 1;
+      const eMod = { heatwave:1.6, school_sports:1.7, park_event:1.4, bbq:1.5, rain_day:0.15, normal:1 }[cond.e] || 1;
+      const base = 20 + rng(0, 18);
+      const lPF = lemonPrice <= 1 ? 1 + (1-lemonPrice)*0.5 : Math.pow(0.68, (lemonPrice-1)/0.5);
+      const sPF = snackPrice <= 0.75 ? 1 + (0.75-snackPrice)*0.4 : Math.pow(0.72, (snackPrice-0.75)/0.25);
+      const cust = Math.floor(base * wMod * eMod * jitter());
+      const lWant = Math.floor(cust * lPF * jitter());
+      const lSold = Math.min(lWant, cups);
+      const sWant = Math.floor(cust * 0.38 * sPF * jitter());
+      const sSold = Math.min(sWant, snacks);
+      const rev = lSold*lemonPrice + sSold*snackPrice;
+      const cost = cups*0.40 + snacks*0.30;
+      return { customers:cust, sold:lSold+sSold, lSold, sSold, cupsLeft:cups-lSold, snacksLeft:snacks-sSold,
+        rev:r2(rev), cost:r2(cost), profit:r2(rev-cost), soldOut: lSold===cups && lWant>cups,
+        satisfaction: lSold/Math.max(lWant,1) };
+    },
+    getCostPreview(inp) {
+      const c = inp.cups*0.40 + inp.snacks*0.30;
+      return [
+        { l:`${inp.cups} cups of lemonade`, v:`$${r2(inp.cups*0.40)}` },
+        { l:`${inp.snacks} snacks`, v:`$${r2(inp.snacks*0.30)}` },
+        { l:'Total upfront cost', v:`$${r2(c)}`, bold:true }
+      ];
+    }
+  },
+  supplies: {
+    id:'supplies', name:'School Supplies Shop', emoji:'📚', color:'#4D96FF',
+    defaultInputs: { markup:35, units:35, marketing:10 },
+    simulate(inp, cond) {
+      const { markup, units, marketing } = inp;
+      const wholesale = 2.50;
+      const sellPrice = wholesale * (1 + markup/100);
+      const eMod = { back_to_school:2.5, exam_week:1.6, tiktok_trend:2.0, fundraiser:1.8,
+        competitor:0.5, regular:1.0, summer:0.3 }[cond.e] || 1;
+      const base = 18 + rng(0, 14);
+      const mPF = markup <= 35 ? 1+(35-markup)*0.01 : Math.pow(0.91,(markup-35)/5);
+      const mktF = 1 + (marketing/50)*0.8;
+      const want = Math.floor(base * eMod * mPF * mktF * jitter());
+      const sold = Math.min(want, units);
+      const rev = sold * sellPrice;
+      const cost = units * wholesale + marketing;
+      return { customers:sold, sold, unitsLeft:units-sold, sellPrice:r2(sellPrice),
+        rev:r2(rev), cost:r2(cost), profit:r2(rev-cost), soldOut: sold===units && want>units,
+        satisfaction: sold/Math.max(want,1) };
+    },
+    getCostPreview(inp) {
+      const inv = inp.units * 2.50;
+      const total = inv + inp.marketing;
+      const sell = r2(2.50*(1+inp.markup/100));
+      return [
+        { l:`${inp.units} units wholesale`, v:`$${r2(inv)}` },
+        { l:`Marketing budget`, v:`$${inp.marketing}` },
+        { l:`Sell price per unit`, v:`$${sell}` },
+        { l:'Total upfront cost', v:`$${r2(total)}`, bold:true }
+      ];
+    }
+  },
+  snow: {
+    id:'snow', name:'Snow Shoveling Business', emoji:'❄️', color:'#87CEEB',
+    defaultInputs: { price:40, hours:4, equipment:0 },
+    simulate(inp, cond) {
+      const { price, hours, equipment } = inp;
+      const eff = [1.0, 1.8, 3.5][equipment] || 1;
+      const maxJobs = Math.floor(hours * eff);
+      const snowF = { blizzard:3.0, heavy:2.0, moderate:1.3, light:0.7, flurries:0.3, none:0 }[cond.w] ?? 0;
+      if (snowF === 0) return { customers:0, sold:0, driveways:0, rev:0, cost:0, profit:0,
+        satisfaction:0, noSnow:true, message:"No snow today — no jobs! ☀️" };
+      const eMod = { blizzard_surge:1.8, referrals:1.5, warm_front:0.2, normal:1 }[cond.e] || 1;
+      const pF = price<=40 ? 1+(40-price)*0.015 : Math.pow(0.87,(price-40)/10);
+      const demand = Math.floor(10 * snowF * eMod * pF * (0.7+Math.random()*0.6));
+      const done = Math.min(demand, maxJobs);
+      const rev = done * price;
+      const cost = equipment===2 ? 5 : 0;
+      return { customers:demand, sold:done, driveways:done, rev:r2(rev), cost:r2(cost),
+        profit:r2(rev-cost), soldOut: done===maxJobs && demand>maxJobs,
+        satisfaction: done/Math.max(demand,1), noSnow:false };
+    },
+    getCostPreview(inp) {
+      const eff = [1.0, 1.8, 3.5][inp.equipment];
+      const max = Math.floor(inp.hours * eff);
+      const equipNames = ['🪣 Basic Shovel (free)','⛏️ Pro Shovel ($25)','🌀 Snow Blower ($80)'];
+      return [
+        { l:'Equipment', v: equipNames[inp.equipment] || 'Basic' },
+        { l:`${inp.hours}hrs × ${eff} eff = max jobs`, v:`${max} driveways` },
+        { l:'Revenue if full', v:`$${r2(max*inp.price)}` },
+        { l:'Upfront cost', v:inp.equipment===2?'$5 fuel':'$0', bold:true }
+      ];
+    }
+  }
+};
+
+const CONDITIONS = {
+  lemonade: [
+    { w:'scorching', e:'heatwave', emoji:'🌞', label:'SCORCHING HOT!', desc:'Perfect lemonade weather!', eventLabel:'🔥 Heatwave' },
+    { w:'hot', e:'school_sports', emoji:'⚽', label:'Hot & Game Day!', desc:'School sports = thirsty customers!', eventLabel:'🏆 Sports Event' },
+    { w:'sunny', e:'park_event', emoji:'🌳', label:'Sunny + Park Event', desc:'Lots of foot traffic today', eventLabel:'🎉 Park Event' },
+    { w:'hot', e:'normal', emoji:'☀️', label:'Hot & Sunny', desc:'Great conditions for cold drinks', eventLabel:'' },
+    { w:'sunny', e:'normal', emoji:'🌤️', label:'Nice & Sunny', desc:'A solid day to do business', eventLabel:'' },
+    { w:'sunny', e:'bbq', emoji:'🍖', label:'Neighborhood BBQ!', desc:'Everyone is outside today!', eventLabel:'🍖 BBQ Day' },
+    { w:'cloudy', e:'normal', emoji:'☁️', label:'Cloudy Day', desc:'Slower than usual', eventLabel:'' },
+    { w:'rainy', e:'rain_day', emoji:'🌧️', label:'Rainy Day', desc:'Most customers will stay inside', eventLabel:'☔ Rain Alert' },
+    { w:'scorching', e:'normal', emoji:'🌡️', label:'Scorching Summer Day', desc:'Peak lemonade weather!', eventLabel:'' },
+  ],
+  supplies: [
+    { w:'regular', e:'back_to_school', emoji:'🎒', label:'Back to School!', desc:'HUGE demand for supplies!', eventLabel:'🎒 B2S Rush' },
+    { w:'regular', e:'exam_week', emoji:'📝', label:'Exam Week', desc:'Students stocking up on essentials', eventLabel:'📝 Exams' },
+    { w:'regular', e:'tiktok_trend', emoji:'📱', label:'Viral TikTok Trend!', desc:'A cool school accessory is trending!', eventLabel:'📱 Viral Trend' },
+    { w:'regular', e:'fundraiser', emoji:'🏫', label:'School Fundraiser', desc:'Extra school traffic today!', eventLabel:'🏫 Fundraiser' },
+    { w:'regular', e:'competitor', emoji:'😤', label:'Cheap Competitor!', desc:'Someone undercut your prices today', eventLabel:'⚠️ Competition' },
+    { w:'regular', e:'regular', emoji:'📅', label:'Regular School Day', desc:'Normal day, normal sales', eventLabel:'' },
+    { w:'regular', e:'regular', emoji:'📚', label:'Study Season', desc:'Students need supplies', eventLabel:'' },
+    { w:'summer', e:'summer', emoji:'☀️', label:'Summer Break', desc:'No school = slow sales', eventLabel:'😴 Slow Season' },
+  ],
+  snow: [
+    { w:'blizzard', e:'blizzard_surge', emoji:'🌨️', label:'BLIZZARD!!', desc:'Maximum demand — go ALL OUT!', eventLabel:'🚨 Blizzard!' },
+    { w:'heavy', e:'referrals', emoji:'❄️', label:'Heavy Snow + Referrals!', desc:'Previous customers spreading the word', eventLabel:'⭐ Word of Mouth' },
+    { w:'heavy', e:'normal', emoji:'🌨️', label:'Heavy Snowfall', desc:'Great shoveling conditions', eventLabel:'' },
+    { w:'moderate', e:'normal', emoji:'❄️', label:'Moderate Snow', desc:'Solid demand from the neighborhood', eventLabel:'' },
+    { w:'light', e:'normal', emoji:'🌬️', label:'Light Snow', desc:'Some jobs available', eventLabel:'' },
+    { w:'flurries', e:'normal', emoji:'💨', label:'Just Flurries', desc:'Limited demand today', eventLabel:'' },
+    { w:'none', e:'warm_front', emoji:'🌤️', label:'Warm Front — No Snow!', desc:'No shoveling today!', eventLabel:'☀️ Too Warm' },
+    { w:'moderate', e:'blizzard_surge', emoji:'❄️🌨️', label:'Storm System Moving In', desc:'Demand is up — get out there!', eventLabel:'⛈️ Storm Alert' },
+  ]
+};
+
+const ACHIEVEMENTS = [
+  { id:'first_profit', emoji:'💵', name:'First Profit!', desc:'Made money on your first day', check:(g)=> g.player.totalProfit > 0 },
+  { id:'five_wins', emoji:'🏆', name:'5 Winning Days', desc:'Had 5 profitable days', check:(g)=> g.player.consecutiveWins>=5 || (g.history.filter(h=>h.profit>0).length>=5) },
+  { id:'money_100', emoji:'💯', name:'$100 Club', desc:'Accumulated $100 total profit', check:(g)=> g.player.totalProfit>=100 },
+  { id:'big_day', emoji:'🤑', name:'Big Day!', desc:'Made $30+ profit in a single day', check:(g,r)=> r && r.profit>=30 },
+  { id:'sold_out', emoji:'🔥', name:'Sold Out!', desc:'Sold everything in inventory', check:(g,r)=> r && r.soldOut },
+  { id:'streak_3', emoji:'🔥', name:'3-Day Streak', desc:'3 profitable days in a row', check:(g)=> g.player.consecutiveWins>=3 },
+  { id:'young_hustler', emoji:'🚀', name:'Young Hustler', desc:'Played 10 business days', check:(g)=> g.player.totalDays>=10 },
+  { id:'level_5', emoji:'⭐', name:'Rising Star', desc:'Reached Level 5', check:(g)=> g.player.level>=5 },
+  { id:'snow_king', emoji:'👑', name:'Snow King', desc:'Complete 20 driveways in a day', check:(g,r)=> r && r.driveways>=20 },
+  { id:'snack_boss', emoji:'🍕', name:'Snack Boss', desc:'Serve 50 lemonade customers in a day', check:(g,r)=> r && r.lSold>=50 },
+  { id:'marketing_genius', emoji:'📣', name:'Marketing Genius', desc:'Spend $40+ on marketing', check:(g)=> G.inputs && G.inputs.marketing>=40 },
+  { id:'comeback', emoji:'💪', name:'Comeback Kid', desc:'Turn a loss into a profit the next day', check:(g)=> g.history.length>=2 && g.history[g.history.length-2].profit<0 && g.history[g.history.length-1].profit>0 },
+];
+
+function getMentorFeedback(biz, inp, results, history) {
+  const msgs = [];
+  if (!results) return "Hey there! Set up your shop and hit <strong>Open for Business</strong> when ready! 💪";
+  const { profit, sold, customers, soldOut, noSnow, satisfaction } = results;
+  const lastTwoProfits = history.slice(-3).map(h => h.profit);
+  const trend = lastTwoProfits.length >= 2 ? lastTwoProfits[lastTwoProfits.length-1] - lastTwoProfits[0] : 0;
+
+  if (noSnow) return "No snow today — that's part of a seasonal business! Plan your strategy for tomorrow. ☀️";
+
+  if (profit > 0) {
+    if (soldOut) msgs.push("🔥 You SOLD OUT! Amazing! Try stocking more next time to serve even more customers.");
+    else if (satisfaction > 0.85) msgs.push(`Awesome run! You served ${Math.round(satisfaction*100)}% of customers — that's great!`);
+    else msgs.push(`Nice! <strong>$${profit}</strong> profit! You're getting the hang of this!`);
+    if (trend > 5) msgs.push("📈 Your profits are going UP — you're learning <strong>real strategy</strong>!");
+  } else if (profit < 0) {
+    if (biz === 'lemonade') {
+      const cupsLeft = results.cupsLeft || 0;
+      const wasteRatio = cupsLeft / (inp.cups || 1);
+      if (wasteRatio > 0.5) msgs.push(`Hmm, ${cupsLeft} cups left over! Try buying fewer — <strong>waste = lost money!</strong>`);
+      else if (inp.lemonPrice > 2.5) msgs.push("Price might be too high! Try around $1.00-$1.50 to attract more buyers.");
+      else msgs.push("Tough day! The weather wasn't in your favor. Check conditions before buying inventory!");
+    }
+    if (biz === 'supplies') {
+      if (inp.markup > 60) msgs.push("A 60%+ markup scares customers away! Try 25-40% for the sweet spot.");
+      else if (results.unitsLeft > inp.units * 0.5) msgs.push("Too much leftover inventory. Buy less to reduce your risk!");
+    }
+    if (biz === 'snow' && profit < 0) msgs.push("It happens! Check if your equipment cost makes sense for the revenue.");
+    if (trend < -5) msgs.push("⚠️ Profits are dropping — time to try something different! Great entrepreneurs <strong>adapt fast</strong>!");
+  }
+  if (!msgs.length) {
+    const tips = [
+      "Every day is a new experiment! Change one thing at a time to find what works best.",
+      "Real entrepreneurs watch the numbers. What conditions make your best days?",
+      "Lower prices = more customers. Higher prices = more per sale. Find YOUR balance!",
+      "The best business people plan ahead. What's the weather looking like?",
+    ];
+    msgs.push(tips[Math.floor(Math.random()*tips.length)]);
+  }
+  return msgs.join(' ');
+}
+
+function r2(n){ return Math.round(n*100)/100; }
+function rng(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function jitter(){ return 0.8 + Math.random()*0.4; }
+function $(id){ return document.getElementById(id); }
+function fmt(n){ return (n<0?'-':'')+'$'+Math.abs(n).toFixed(2); }
+function loadState(){
+  try{ const s=localStorage.getItem('yh_state'); return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+  catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+}
+function saveState(){ localStorage.setItem('yh_state',JSON.stringify(G)); }
+function xpForLevel(lv){ return lv * 200; }
+function totalXpForLevel(lv){ let t=0; for(let i=1;i<lv;i++) t+=xpForLevel(i); return t; }
+
+function screenFlash(color) {
+  const el = document.createElement('div');
+  el.className = 'screen-flash flash-' + color;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 700);
+}
+
+function goTo(screen) {
+  showingResults = false;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $('s-'+screen).classList.add('active');
+  if (screen==='dash') renderDashboard();
+  window.scrollTo(0,0);
+}
+
+function startBusiness(id) {
+  G.business = id;
+  G.day = 0;
+  G.history = [];
+  G.inputs = {...BIZ[id].defaultInputs};
+  G.upgrades = { shovel: 0 };
+  G.currentCondition = rollCondition(id);
+  saveState();
+  goTo('dash');
+}
+
+function rollCondition(biz) {
+  const list = CONDITIONS[biz];
+  return list[Math.floor(Math.random()*list.length)];
+}
+
+function renderDashboard() {
+  if (!G.business) return;
+  const biz = BIZ[G.business];
+  const p = G.player;
+
+  $('tb-biz').textContent = biz.name;
+  $('tb-day').textContent = 'Day '+(G.day+1);
+  $('tb-money').textContent = fmt(p.money);
+  $('tb-xp').textContent = p.xp+' XP';
+  $('tb-level').textContent = 'Lv '+p.level;
+
+  const xpInLevel = p.xp - totalXpForLevel(p.level);
+  const xpNeeded = xpForLevel(p.level);
+  const pct = Math.min(100, (xpInLevel/xpNeeded)*100);
+  $('xp-fill').style.width = pct+'%';
+  $('xp-label').textContent = 'Level '+p.level;
+  $('xp-to-next').textContent = xpInLevel+' / '+xpNeeded+' XP';
+
+  ['miq','ops','mkt','dec'].forEach(sk=>{
+    const v = p.skills[sk] || 1;
+    $('sk-'+sk).style.width = Math.min(100,v*5)+'%';
+    $('sk-'+sk+'-v').textContent = v;
+  });
+
+  renderStreaks();
+  $('biz-vis-emoji').textContent = biz.emoji;
+  $('biz-vis-name').textContent = biz.name;
+  $('biz-vis-day').textContent = G.day===0 ? 'Day 1 — Get ready to open!' : `Day ${G.day+1} ahead!`;
+  renderWeather();
+  renderInputs();
+  renderUpgrades();
+  renderAchievements();
+  renderChart();
+  $('results-panel').style.display = 'none';
+  $('btn-run').disabled = false;
+  $('btn-run').textContent = '🏪 Open for Business!';
+  $('btn-run').className = 'btn-run';
+}
+
+function renderWeather() {
+  const cond = G.currentCondition;
+  if (!cond) return;
+  $('w-emoji').textContent = cond.emoji;
+  $('w-label').textContent = cond.label;
+  $('w-desc').textContent = cond.desc;
+  $('w-event-badge').innerHTML = cond.eventLabel ? `<span class="event-badge">${cond.eventLabel}</span>` : '';
+}
+
+function renderInputs() {
+  const biz = G.business;
+  const inp = G.inputs;
+  const panel = $('biz-inputs');
+  $('pl-title').textContent = '⚙️ Today\'s Setup';
+
+  if (biz==='lemonade') {
+    panel.innerHTML = `
+      <div class="input-group">
+        <div class="input-label"><span>🍋 Lemonade Price</span><span class="input-val" id="iv-lp">$${inp.lemonPrice.toFixed(2)}</span></div>
+        <input type="range" min="0.25" max="5" step="0.25" value="${inp.lemonPrice}" oninput="updateInput('lemonPrice',+this.value);$('iv-lp').textContent='$'+(+this.value).toFixed(2)">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><span>🍿 Snack Price</span><span class="input-val" id="iv-sp">$${inp.snackPrice.toFixed(2)}</span></div>
+        <input type="range" min="0.25" max="3" step="0.25" value="${inp.snackPrice}" oninput="updateInput('snackPrice',+this.value);$('iv-sp').textContent='$'+(+this.value).toFixed(2)">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><span>🥤 Cups to Buy</span></div>
+        <div class="num-input-row">
+          <button class="num-btn" onclick="adjInput('cups',-5)">−</button>
+          <div class="num-display" id="iv-cups">${inp.cups}</div>
+          <button class="num-btn" onclick="adjInput('cups',5)">+</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><span>🍿 Snacks to Buy</span></div>
+        <div class="num-input-row">
+          <button class="num-btn" onclick="adjInput('snacks',-5)">−</button>
+          <div class="num-display" id="iv-snacks">${inp.snacks}</div>
+          <button class="num-btn" onclick="adjInput('snacks',5)">+</button>
+        </div>
+      </div>`;
+  } else if (biz==='supplies') {
+    panel.innerHTML = `
+      <div class="input-group">
+        <div class="input-label"><span>📈 Markup %</span><span class="input-val" id="iv-mu">${inp.markup}%</span></div>
+        <input type="range" min="5" max="120" step="5" value="${inp.markup}" oninput="updateInput('markup',+this.value);$('iv-mu').textContent=this.value+'%'">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><span>📦 Units to Buy</span></div>
+        <div class="num-input-row">
+          <button class="num-btn" onclick="adjInput('units',-5)">−</button>
+          <div class="num-display" id="iv-units">${inp.units}</div>
+          <button class="num-btn" onclick="adjInput('units',5)">+</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><span>📣 Marketing Budget</span><span class="input-val" id="iv-mkt">$${inp.marketing}</span></div>
+        <input type="range" min="0" max="50" step="5" value="${inp.marketing}" oninput="updateInput('marketing',+this.value);$('iv-mkt').textContent='$'+this.value">
+      </div>`;
+  } else if (biz==='snow') {
+    const eqNames = ['🪣 Basic Shovel','⛏️ Pro Shovel','🌀 Snow Blower'];
+    panel.innerHTML = `
+      <div class="input-group">
+        <div class="input-label"><span>💵 Price/Driveway</span><span class="input-val" id="iv-pr">$${inp.price}</span></div>
+        <input type="range" min="15" max="100" step="5" value="${inp.price}" oninput="updateInput('price',+this.value);$('iv-pr').textContent='$'+this.value">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><span>⏰ Hours Available</span><span class="input-val" id="iv-hr">${inp.hours}h</span></div>
+        <input type="range" min="1" max="8" step="1" value="${inp.hours}" oninput="updateInput('hours',+this.value);$('iv-hr').textContent=this.value+'h'">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><span>🛠️ Equipment</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          ${eqNames.map((n,i)=>{ const locked=i>0&&G.upgrades.shovel<i; return `<button onclick="${locked?'':'updateInput(\'equipment\','+i+')'}" style="padding:12px 14px;border-radius:var(--r);border:2.5px solid ${inp.equipment===i?'var(--gold)':locked?'rgba(255,255,255,.06)':'var(--border)'};background:${inp.equipment===i?'rgba(255,184,48,.12)':'rgba(0,0,0,.2)'};color:${locked?'var(--muted)':'var(--text)'};cursor:${locked?'not-allowed':'pointer'};font-size:14px;font-weight:700;transition:all .2s;opacity:${locked?'.4':'1'};font-family:var(--font);min-height:48px">${n}${locked?' 🔒':''}</button>`; }).join('')}
+        </div>
+      </div>`;
+  }
+  updateCostPreview();
+}
+
+function renderUpgrades() {
+  const el = $('upgrades-section');
+  if (!el) return;
+  if (G.business !== 'snow') { el.innerHTML = ''; return; }
+  const upgrades = [
+    { key:'shovel', level:1, name:'Pro Shovel ⛏️', desc:'1.8× efficiency', cost:30 },
+    { key:'shovel', level:2, name:'Snow Blower 🌀', desc:'3.5× efficiency', cost:80 },
+  ];
+  const owned = G.upgrades.shovel;
+  const next = upgrades.find(u => u.level > owned);
+  if (!next) { el.innerHTML = '<div class="upgrade-card owned"><div class="upgrade-info"><div class="upgrade-name">Fully Upgraded ✅</div><div class="upgrade-desc">You have the best equipment!</div></div></div>'; return; }
+  el.innerHTML = `
+    <div class="panel-title" style="margin-top:16px">🛠️ Upgrades</div>
+    <div class="upgrade-card">
+      <div class="upgrade-info">
+        <div class="upgrade-name">${next.name}</div>
+        <div class="upgrade-desc">${next.desc} — $${next.cost}</div>
+      </div>
+      <button class="btn-upgrade" onclick="buyUpgrade('${next.key}',${next.level},${next.cost})" ${G.player.money<next.cost?'disabled':''}>Buy</button>
+    </div>`;
+}
+
+function buyUpgrade(key, level, cost) {
+  if (G.player.money < cost) return;
+  G.player.money = r2(G.player.money - cost);
+  G.upgrades[key] = level;
+  saveState();
+  renderDashboard();
+}
+
+function updateCostPreview() {
+  const biz = BIZ[G.business];
+  const rows = biz.getCostPreview(G.inputs);
+  $('cost-preview').innerHTML = rows.map(r=>
+    `<div class="cost-row ${r.bold?'total':''}"><span>${r.l}</span><span class="cv">${r.v}</span></div>`
+  ).join('');
+}
+
+function renderStreaks() {
+  const n = 7;
+  const wins = G.player.consecutiveWins;
+  $('streaks-row').innerHTML = Array.from({length:n},(_,i)=>
+    `<div class="streak-dot ${i<wins?'done':''}">${i<wins?'🔥':''}</div>`
+  ).join('');
+}
+
+function renderAchievements() {
+  const all = ACHIEVEMENTS.map(a=>({...a, earned: G.player.achievements.includes(a.id)}));
+  const earned = all.filter(a=>a.earned);
+  const locked = all.filter(a=>!a.earned);
+  let html = earned.map(a=>
+    `<div class="ach-badge earned" title="${a.desc}"><span class="ach-ico">${a.emoji}</span><span>${a.name}</span></div>`
+  ).join('');
+  if (locked.length && earned.length < 4) {
+    html += locked.slice(0,3-earned.length).map(a=>
+      `<div class="ach-badge" title="${a.desc}"><span class="ach-ico" style="opacity:.3">🔒</span><span style="color:var(--muted)">${a.name}</span></div>`
+    ).join('');
+  }
+  $('ach-list').innerHTML = html || '<div style="color:var(--muted);font-size:14px;font-weight:600">Play to earn badges! 🏅</div>';
+}
+
+function renderChart() {
+  const hist = G.history.slice(-8);
+  if (!hist.length) { $('profit-chart').innerHTML=''; return; }
+  const max = Math.max(...hist.map(h=>Math.abs(h.profit)), 1);
+  $('profit-chart').innerHTML = hist.map(h=>{
+    const pct = Math.round((Math.abs(h.profit)/max)*56)+4;
+    return `<div class="mini-bar ${h.profit>=0?'pos':'neg'}" style="height:${pct}px" title="$${h.profit}"></div>`;
+  }).join('');
+}
+
+function updateInput(key, val) {
+  G.inputs[key] = val;
+  updateCostPreview();
+  if (key==='equipment') renderInputs();
+}
+function adjInput(key, delta) {
+  const limits = { cups:[5,120], snacks:[5,80], units:[5,120] };
+  const lim = limits[key]||[0,999];
+  G.inputs[key] = Math.max(lim[0], Math.min(lim[1], (G.inputs[key]||0)+delta));
+  const el = $('iv-'+key);
+  if (el) { el.textContent = G.inputs[key]; el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),400); }
+  updateCostPreview();
+}
+
+function getUpfrontCost(bizId, inp) {
+  if (bizId === 'lemonade') return r2(inp.cups * 0.40 + inp.snacks * 0.30);
+  if (bizId === 'supplies') return r2(inp.units * 2.50 + inp.marketing);
+  if (bizId === 'snow') return inp.equipment === 2 ? 5 : 0;
+  return 0;
+}
+
+let showingResults = false;
+
+function runDay() {
+  if (showingResults) { nextDay(); return; }
+  const biz = BIZ[G.business];
+  const cond = G.currentCondition;
+  const inp = G.inputs;
+  const p = G.player;
+
+  const totalCost = getUpfrontCost(G.business, inp);
+  if (totalCost > p.money) {
+    $('btn-run').classList.add('shake');
+    setTimeout(()=>$('btn-run').classList.remove('shake'), 500);
+    setMentor("⚠️ Not enough cash for that setup! Try buying less inventory or lowering your spending.");
+    return;
+  }
+
+  const results = biz.simulate(inp, cond);
+  p.money = r2(p.money - (results.cost||0) + (results.rev||0));
+  if (p.money < 0) p.money = 0;
+
+  const xpGain = calcXP(results);
+  const oldLevel = p.level;
+  p.xp += xpGain;
+  p.level = calcLevel(p.xp);
+  updateSkills(results);
+
+  G.day++;
+  p.totalDays++;
+  G.history.push({...results, day:G.day, conditions:cond.label});
+  if (results.profit > 0) {
+    p.totalProfit = r2(p.totalProfit + results.profit);
+    p.consecutiveWins++;
+    p.streak++;
+  } else {
+    p.consecutiveWins = 0;
+  }
+
+  const newAchs = checkAchievements(results);
+  saveState();
+  renderDashboard();
+  showResults(results, xpGain, newAchs);
+
+  screenFlash(results.profit >= 0 ? 'green' : 'red');
+  showingResults = true;
+  $('btn-run').textContent = '➡️ Next Day';
+  $('btn-run').className = 'btn-run next-day';
+  $('btn-run').disabled = false;
+  setTimeout(()=>$('results-panel').scrollIntoView({behavior:'smooth',block:'start'}),100);
+
+  if (p.level > oldLevel) setTimeout(()=>showLevelUp(p.level), 1200);
+  if (newAchs.length > 0) setTimeout(()=>showAchPopup(newAchs[0]), p.level>oldLevel ? 3000 : 800);
+}
+
+function nextDay() {
+  showingResults = false;
+  G.currentCondition = rollCondition(G.business);
+  saveState();
+  renderDashboard();
+  if (G.player.money <= 0) {
+    setMentor("💸 Out of cash! Every entrepreneur has setbacks. Here's a $25 loan — make it count!");
+    G.player.money = 25;
+    saveState();
+    $('tb-money').textContent = fmt(G.player.money);
+  }
+}
+
+function calcXP(results) {
+  if (results.noSnow) return 5;
+  let xp = 15;
+  if (results.profit > 0) xp += 20;
+  if (results.profit > 10) xp += 10;
+  if (results.profit > 25) xp += 15;
+  if (results.soldOut) xp += 20;
+  xp += Math.max(0, Math.floor(results.profit * 0.5));
+  return Math.max(5, xp);
+}
+
+function calcLevel(xp) {
+  let lv = 1, total = 0;
+  while (total + xpForLevel(lv) <= xp) { total += xpForLevel(lv); lv++; }
+  return lv;
+}
+
+function updateSkills(results) {
+  const sk = G.player.skills;
+  if (results.profit > 10) sk.miq = Math.min(20, sk.miq+1);
+  if (results.soldOut) sk.ops = Math.min(20, sk.ops+1);
+  if (G.business==='supplies' && G.inputs.marketing>20) sk.mkt = Math.min(20, sk.mkt+1);
+  if (G.history.length>3) sk.dec = Math.min(20, sk.dec+1);
+}
+
+function checkAchievements(results) {
+  const newOnes = [];
+  ACHIEVEMENTS.forEach(a=>{
+    if (!G.player.achievements.includes(a.id) && a.check(G, results)) {
+      G.player.achievements.push(a.id);
+      newOnes.push(a);
+    }
+  });
+  return newOnes;
+}
+
+function showResults(res, xpGain, newAchs) {
+  const panel = $('results-panel');
+  panel.style.display = 'block';
+  const win = res.profit >= 0 && !res.noSnow;
+  panel.className = 'panel results-panel '+(win?'':'loss');
+
+  $('res-headline').innerHTML = res.noSnow ? "No Business Today ☀️"
+    : res.profit > 20 ? "Crushing It! 🔥🔥🔥"
+    : res.profit > 0 ? "Day Complete! 🎉"
+    : "Tough Day — Keep Going! 💪";
+
+  $('res-xp-gain').textContent = '+'+xpGain+' XP';
+
+  const stats = buildResultStats(res);
+  $('results-grid').innerHTML = stats.map(s=>
+    `<div class="res-stat"><span class="res-stat-v ${s.cls}">${s.v}</span><div class="res-stat-l">${s.l}</div></div>`
+  ).join('');
+
+  $('res-details').innerHTML = buildResultDetails(res);
+  setMentor(getMentorFeedback(G.business, G.inputs, res, G.history));
+
+  const mc = $('tb-money');
+  mc.textContent = fmt(G.player.money);
+  mc.classList.add('pop');
+  setTimeout(()=>mc.classList.remove('pop'),400);
+}
+
+function buildResultStats(res) {
+  if (G.business==='lemonade') return [
+    { v: res.customers||0, l:'Customers', cls:'' },
+    { v: '$'+res.rev.toFixed(2), l:'Revenue', cls:'res-gold' },
+    { v: (res.profit>=0?'+':'')+'$'+res.profit.toFixed(2), l:'Profit', cls:res.profit>=0?'res-green':'res-red' },
+  ];
+  if (G.business==='supplies') return [
+    { v: res.sold||0, l:'Units Sold', cls:'' },
+    { v: '$'+res.rev.toFixed(2), l:'Revenue', cls:'res-gold' },
+    { v: (res.profit>=0?'+':'')+'$'+res.profit.toFixed(2), l:'Profit', cls:res.profit>=0?'res-green':'res-red' },
+  ];
+  return [
+    { v: res.driveways||0, l:'Driveways', cls:'' },
+    { v: '$'+res.rev.toFixed(2), l:'Earned', cls:'res-gold' },
+    { v: (res.profit>=0?'+':'')+'$'+res.profit.toFixed(2), l:'Profit', cls:res.profit>=0?'res-green':'res-red' },
+  ];
+}
+
+function buildResultDetails(res) {
+  if (res.noSnow) return `<div>☀️ No snow = no shoveling jobs. Plan for tomorrow!</div>`;
+  const parts = [];
+  if (res.cupsLeft!=null && res.cupsLeft>0) parts.push(`⚠️ ${res.cupsLeft} cups left over`);
+  if (res.snacksLeft!=null && res.snacksLeft>0) parts.push(`⚠️ ${res.snacksLeft} snacks left over`);
+  if (res.unitsLeft!=null && res.unitsLeft>0) parts.push(`⚠️ ${res.unitsLeft} units unsold`);
+  if (res.soldOut) parts.push('🔥 Sold out completely!');
+  if (res.satisfaction!=null) parts.push(`😊 ${Math.round(res.satisfaction*100)}% customer satisfaction`);
+  return parts.join(' &nbsp;·&nbsp; ');
+}
+
+function setMentor(msg) { $('mentor-text').innerHTML = msg; }
+
+function showLevelUp(lv) {
+  const msgs = ["You're building real skills!","Your business brain is growing!","Nothing can stop you now!",
+    "Investors would be impressed!","You're thinking like a CEO!"];
+  $('lu-level').textContent = lv;
+  $('lu-msg').textContent = msgs[lv%msgs.length];
+  spawnConfetti();
+  $('levelup-modal').classList.add('show');
+}
+function closeLevelUp() { $('levelup-modal').classList.remove('show'); }
+function spawnConfetti() {
+  const wrap = $('conf-wrap'); wrap.innerHTML = '';
+  const colors = ['#FFB830','#6BCB77','#4D96FF','#9B59B6','#FF6B6B','#FF9800','#FFD93D','#E056A0'];
+  for (let i=0;i<50;i++) {
+    const c = document.createElement('div');
+    c.className = 'conf';
+    c.style.cssText = `left:${rng(5,95)}%;background:${colors[rng(0,7)]};
+      animation-duration:${1.5+Math.random()*1.5}s;animation-delay:${Math.random()*0.6}s;
+      width:${rng(6,12)}px;height:${rng(6,12)}px;border-radius:${rng(0,1)?'50%':'2px'}`;
+    wrap.appendChild(c);
+  }
+}
+function showAchPopup(ach) {
+  $('ap-emoji').textContent = ach.emoji;
+  $('ap-name').textContent = ach.name;
+  $('ap-desc').textContent = ach.desc;
+  const popup = $('ach-popup');
+  popup.classList.add('show');
+  setTimeout(()=>popup.classList.remove('show'), 4000);
+}
+
+function spawnFloaters() {
+  const emojis = ['💰','🍋','📚','❄️','🚀','💵','📈','🏆','⭐','🎯','🔥','💎'];
+  const wrap = $('floaters');
+  for (let i=0; i<16; i++) {
+    const el = document.createElement('div');
+    el.className='floater';
+    el.textContent = emojis[i%emojis.length];
+    el.style.cssText = `left:${rng(2,95)}%;animation-duration:${7+rng(0,8)}s;animation-delay:-${rng(0,12)}s;font-size:${rng(24,40)}px`;
+    wrap.appendChild(el);
+  }
+}
+
+const HEADLINES = [
+  'Heatwave drives lemonade demand through the roof!',
+  'Back-to-school season creates massive supplies opportunity',
+  'Blizzard warning issued — snow businesses surge!',
+  'Young entrepreneur earns $500 in one summer',
+  'Marketing tips: Social media boosts small business sales 40%',
+  'Pricing strategy 101: Find your perfect price point',
+  'Supply chain tip: Never buy more than you can sell',
+  'Record snowfall expected this weekend in the region',
+  'Student entrepreneur sells out inventory on first day!',
+  'Competition spotted: Adapt your pricing strategy now',
+];
+function buildTicker() {
+  $('ticker').innerHTML = [...HEADLINES, ...HEADLINES].map(h=>`<span class="ticker-item">${h}</span>`).join('');
+}
+
+function boot() {
+  spawnFloaters();
+  buildTicker();
+  if (G.business && G.player.totalDays > 0) {
+    $('continue-btn').style.display='block';
+    $('continue-btn').onclick = ()=>goTo('dash');
+  }
+}
+boot();
+</script>
+</body>
+</html>
